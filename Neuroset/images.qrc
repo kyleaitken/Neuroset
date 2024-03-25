@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>images/pause.png</file>
+        <file>images/PowerOff.png</file>
+        <file>images/PowerOn.png</file>
+        <file>images/stop.png</file>
+        <file>images/play.png</file>
+        <file>images/1Battery.png</file>
+        <file>images/2Battery.png</file>
+        <file>images/3Battery.png</file>
+        <file>images/4Battery.png</file>
+    </qresource>
+</RCC>
