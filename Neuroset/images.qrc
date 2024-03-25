@@ -9,5 +9,7 @@
         <file>images/2Battery.png</file>
         <file>images/3Battery.png</file>
         <file>images/4Battery.png</file>
+        <file>images/down.png</file>
+        <file>images/up.png</file>
     </qresource>
 </RCC>
