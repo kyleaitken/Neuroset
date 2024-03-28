@@ -22,17 +22,22 @@ private:
     QVector<Electrode*> electrodes;
     QVector<QThread*> electrodeThreads;
     std::set<int> electrodesFinishedInitialBaseline;
+    std::set<int> electrodesFinishedFinalBaseline;
+
 
     void setupElectrodes();
     bool checkInitialBaselineFinished();
+    bool checkFinalBaselineFinished();
     void startIndividualElectrodeTreatment();
 
 public slots:
     void startTreatment();
     void setElectrodeFinishedInitialBaseline(int electrodeNum);
+    void setElectrodeFinishedFinalBaseline(int electrodeNum);
 
 signals:
     void startElectrodeInitialBaseline();
+    void startElectrodeFinalBaseline();
 };
 
 #endif // CONTROLLER_H

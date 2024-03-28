@@ -15,12 +15,16 @@ public:
 
 private:
     int electrodeNum;
+    int initialFreq;
+
 
 signals:
     void initialBaselineFinished(int electrodeNum);
+    void finalBaselineFinished(int electrodeNum);
 
 public slots:
     void getBaselineFrequency();
+    void getFinalBaselineFrequency();
 };
 
 #endif // ELECTRODE_H
