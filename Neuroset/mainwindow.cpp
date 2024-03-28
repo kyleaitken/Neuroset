@@ -20,6 +20,15 @@ MainWindow::MainWindow(QWidget *parent)
     QPixmap pixmap(":/images/images/4Battery.png");
     ui->battery->setPixmap(pixmap);
 
+    qInfo() << "MainWindow thread: " << QThread::currentThreadId();
+
+    QThread* controllerThread = new QThread(this);
+    Controller* controller = new Controller();
+    controller->moveToThread(controllerThread);
+
+    connect(ui->playButton, &QPushButton::released, controller, &Controller::startTreatment);
+
+    controllerThread->start();
 
 }
 
