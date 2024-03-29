@@ -6,19 +6,13 @@
 #include <QDebug>
 #include <QMap>
 #include <QString>
+#include "frequencydata.h"
 
 class Electrode : public QObject
 {
     Q_OBJECT
 
 public:
-    struct FrequencyData
-    {
-        QString electrodeSite;
-        int initialFreq;
-        int finalFreq;
-    };
-
     Electrode(int electrodeNum, const QString &electrodeSiteName);
     bool startTreatment();
     FrequencyData getFrequencyData() const;

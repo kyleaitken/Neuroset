@@ -2,14 +2,14 @@
 
 Electrode::Electrode(int electrodeNum, const QString &electrodeSiteName) : electrodeNum(electrodeNum)
 {
-    freqData.electrodeSite = electrodeSiteName;
+    freqData.setElectrodeSiteName(electrodeSiteName);
 }
 
 void Electrode::getInitialBaselineFrequency()
 {
     qInfo() << "Electrode " << electrodeNum << " getting baseline freq in thread: " << QThread::currentThreadId();
     QThread::msleep(2000);
-    freqData.initialFreq = 10;
+    freqData.setBefore(10);
     emit initialBaselineFinished(electrodeNum);
 }
 
@@ -17,7 +17,7 @@ void Electrode::getFinalBaselineFrequency()
 {
     qInfo() << "Electrode " << electrodeNum << " getting baseline freq in thread: " << QThread::currentThreadId();
     QThread::msleep(2000);
-    freqData.finalFreq = 15;
+    freqData.setAfter(15); // hard coded example
     emit finalBaselineFinished(electrodeNum);
 }
 
@@ -28,7 +28,7 @@ bool Electrode::startTreatment()
     return true;
 }
 
-FrequencyData Electrode::getElectrodeData()
+FrequencyData Electrode::getFrequencyData() const
 {
     return freqData;
 }
