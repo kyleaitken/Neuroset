@@ -13,6 +13,7 @@ SOURCES += \
     defs.cpp \
     electrode.cpp \
     filemanager.cpp \
+    frequencydata.cpp \
     main.cpp \
     mainwindow.cpp \
     qcustomplot.cpp
@@ -22,6 +23,7 @@ HEADERS += \
     defs.h \
     electrode.h \
     filemanager.h \
+    frequencydata.h \
     mainwindow.h \
     qcustomplot.h
 
