@@ -1,6 +1,6 @@
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++11
 
@@ -10,16 +10,20 @@ CONFIG += c++11
 
 SOURCES += \
     controller.cpp \
+    defs.cpp \
     electrode.cpp \
     filemanager.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    qcustomplot.cpp
 
 HEADERS += \
     controller.h \
+    defs.h \
     electrode.h \
     filemanager.h \
-    mainwindow.h
+    mainwindow.h \
+    qcustomplot.h
 
 FORMS += \
     mainwindow.ui

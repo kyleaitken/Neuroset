@@ -4,9 +4,16 @@
 #include <QMainWindow>
 #include <controller.h>
 #include <QThread>
+#include <QDebug>
+#include <QThread>
+#include <QListView>
+#include <QStringListModel>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+    class MainWindow;
+}
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -19,7 +26,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QThread* controllerThread;
-    Controller* controller;
+    QThread *controllerThread;
+    Controller *controller;
 };
 #endif // MAINWINDOW_H
