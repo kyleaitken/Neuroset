@@ -28,7 +28,7 @@ bool Electrode::startTreatment()
     return true;
 }
 
-FrequencyData Electrode::getElectrodeData()
-{
-    return freqData;
-}
+// FrequencyData Electrode::getElectrodeData()
+// {
+//     return freqData;
+// }

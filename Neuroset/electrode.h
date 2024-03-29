@@ -26,7 +26,7 @@ public:
 private:
     // members
     int electrodeNum;
-    FrequencyData freqData;
+    // FrequencyData freqData;
 
 signals:
     void initialBaselineFinished(int electrodeNum); // signals to controller that this electrode has finished gathering its initial freq

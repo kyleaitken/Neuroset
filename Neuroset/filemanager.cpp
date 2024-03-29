@@ -39,7 +39,6 @@ void FileManager::writeArrayToFile(const QString &relativeDirPath, const QString
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     { // might not need useless clutter but good for test
-        // qWarning() << "Could not open file for writing:";
         return;
     }
 
@@ -58,11 +57,10 @@ QStringList FileManager::readFileToArray(const QString &filePath)
     QFile file(filePath);
     QStringList array;
 
-    // if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    // {
-    //     // qWarning() << "Could not open";
-    //     return array;
-    // } // same deal with clutter
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return array;
+    } // same deal with clutter
 
     QTextStream in(&file);
 
@@ -85,15 +83,12 @@ int main()
     QString fileName = "Data1.txt";
 
     manager.writeArrayToFile(relativeDirPath, fileName, myArray);
+    QStringList readArray = manager.readFileToArray(QDir::currentPath() + "\\Data Output\\" + fileName);
 
-    QStringList readArray = manager.readFileToArray("\\Data Output" + fileName);
-
-    // Print the contents to verify
     for (const QString &line : readArray)
     {
         qDebug() << line;
     }
 
-    qInfo() << "Done!";
     return 0;
 }
