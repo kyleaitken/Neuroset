@@ -21,7 +21,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>80</y>
+      <y>50</y>
       <width>16</width>
       <height>31</height>
      </rect>
@@ -42,7 +42,7 @@
     <property name="geometry">
      <rect>
       <x>50</x>
-      <y>80</y>
+      <y>50</y>
       <width>16</width>
       <height>31</height>
      </rect>
@@ -63,7 +63,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>80</y>
+      <y>50</y>
       <width>16</width>
       <height>31</height>
      </rect>
@@ -81,7 +81,7 @@
     <property name="geometry">
      <rect>
       <x>300</x>
-      <y>80</y>
+      <y>50</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -335,6 +335,33 @@
       <normaloff>images/down.png</normaloff>images/down.png</iconset>
     </property>
    </widget>
+   <widget class="QPushButton" name="menuButton">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>100</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>images/Menu.png</normaloff>images/Menu.png</iconset>
+    </property>
+   </widget>
+   <widget class="QCustomPlot" name="widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>80</y>
+      <width>261</width>
+      <height>51</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -348,6 +375,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

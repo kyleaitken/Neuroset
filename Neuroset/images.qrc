@@ -11,5 +11,9 @@
         <file>images/4Battery.png</file>
         <file>images/down.png</file>
         <file>images/up.png</file>
+        <file>images/Menu.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>images/Menu.png</file>
     </qresource>
 </RCC>
