@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // starts a new session when user presses play - needs adjusting to respond to pressing when when 'Start Session' is highlighted on the UI
     connect(ui->playButton, &QPushButton::released, controller, &Controller::startNewSession);
+    connect(ui->pauseButton, &QPushButton::released, controller, &Controller::pauseSession);
 
     controllerThread->start();
 }

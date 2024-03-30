@@ -21,10 +21,17 @@ void Electrode::getFinalBaselineFrequency()
     emit finalBaselineFinished(electrodeNum);
 }
 
+void Electrode::startTreatmentListener(int electrodeNum) {
+    if (this->electrodeNum == electrodeNum) {
+        startTreatment();
+    }
+}
+
 bool Electrode::startTreatment()
 {
     qInfo() << "Electrode " << electrodeNum << " starting treatment in thread: " << QThread::currentThreadId();
     QThread::msleep(3000);
+    emit treatmentFinished(electrodeNum);
     return true;
 }
 

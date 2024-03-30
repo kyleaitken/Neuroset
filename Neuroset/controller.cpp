@@ -1,6 +1,6 @@
 #include "controller.h"
 
-Controller::Controller(QObject *parent) : QObject(parent){
+Controller::Controller(QObject *parent) : QObject(parent), currentStage(Idle){
     setupElectrodes();
 }
 
@@ -16,13 +16,15 @@ void Controller::setupElectrodes(){
         electrodeThreads.push_back(thread);
         electrodes.push_back(electrode);
 
-        // signals to tell electrodes to generate their initial and final baselines
+        // signals to tell electrodes to generate their initial and final baselines, start treatments, etc
         connect(this, &Controller::startElectrodeInitialBaseline, electrode, &Electrode::getInitialBaselineFrequency);
         connect(this, &Controller::startElectrodeFinalBaseline, electrode, &Electrode::getFinalBaselineFrequency);
+        connect(this, &Controller::startElectrodeTreatment, electrode, &Electrode::startTreatmentListener);
 
         // slots to keep track of electrodes that have finished their initial/final baselines
         connect(electrode, &Electrode::initialBaselineFinished, this, &Controller::setElectrodeFinishedInitialBaseline);
         connect(electrode, &Electrode::finalBaselineFinished, this, &Controller::setElectrodeFinishedFinalBaseline);
+        connect(electrode, &Electrode::treatmentFinished, this, &Controller::setElectrodeFinishedTreatment);
 
         thread->start();
     }
@@ -31,6 +33,7 @@ void Controller::setupElectrodes(){
 
 void Controller::startNewSession(){
     qInfo() << "Controller starting a new session, signalling to electrodes to get initial baseline ";
+    currentStage = InitialBaseline;
     emit startElectrodeInitialBaseline();
 }
 
@@ -41,7 +44,8 @@ void Controller::setElectrodeFinishedInitialBaseline(int electrodeNum){
     QMutexLocker locker(&mutex);
     electrodesFinishedInitialBaseline.insert(electrodeNum);
     if (checkInitialBaselineFinished()){
-        startIndividualElectrodeTreatment();
+        currentStage = IndividualTreatment;
+        startIndividualElectrodeTreatment(0);
     }
 }
 
@@ -53,6 +57,7 @@ void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum){
     electrodesFinishedFinalBaseline.insert(electrodeNum);
     if (checkFinalBaselineFinished()){
         qInfo() << "Electrodes have finished final baseline";
+        currentStage = Idle;
         recordSession();
     }
 }
@@ -68,29 +73,8 @@ bool Controller::checkFinalBaselineFinished(){
 }
 
 // Iterates through the electrodes and instructs them to perform their site specific eeg analysis and treatment
-void Controller::startIndividualElectrodeTreatment() {
-    qInfo() << "Starting treatment";
-    Electrode *e = nullptr;
-    bool treatmentComplete = true;
-    for (int i = 0; i < numElectrodes; i++)
-    {
-        e = electrodes[i];
-        bool treatmentFinished = e->startTreatment();
-        if (!treatmentFinished) {
-            qInfo() << "Error completing treatment";
-            treatmentComplete = false;
-        }
-
-        else {
-            qInfo() << "Electrode " << i << " finished treatment";
-        }
-    }
-
-    if (treatmentComplete) {
-        emit startElectrodeFinalBaseline();
-    } else {
-        // This would be some kind of error handling
-    }
+void Controller::startIndividualElectrodeTreatment(int electrodeNum) {
+    emit startElectrodeTreatment(electrodeNum);
 }
 
 
@@ -101,6 +85,26 @@ void Controller::recordSession() {
         electrodeData.push_back(e->getFrequencyData());
     }
     SessionLog* session = new SessionLog(sessionDateTime, electrodeData);
+    qInfo() << "Completed session at " << session->getDateTime();
     // send session log to file manager
 }
 
+
+void Controller::pauseSession() {
+    qInfo() << "Add implementation for pausing session";
+    // idea: sets a bool pauseState to true, electrodes check this boolean frequently in their computations if possible,
+    // they wait if its true, then controller wakes threads again when user plays again
+}
+
+
+void Controller::setElectrodeFinishedTreatment(int electrodeNum) {
+    QMutexLocker locker(&mutex);
+    electrodesFinishedTreatment.insert(electrodeNum);
+    int numElectrodesFinished = static_cast<int>(electrodesFinishedTreatment.size());
+    if (numElectrodesFinished == numElectrodes) {
+        currentStage = FinalBaseline;
+        emit startElectrodeFinalBaseline();
+    } else {
+        startIndividualElectrodeTreatment(numElectrodesFinished);
+    }
+}

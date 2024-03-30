@@ -15,7 +15,12 @@ class Controller : public QObject
 {
     Q_OBJECT
 
-    mutable QMutex mutex;
+    enum TreatmentStage {
+        Idle,
+        InitialBaseline,
+        IndividualTreatment,
+        FinalBaseline
+    };
 
 public:
     Controller(QObject *parent = nullptr);
@@ -25,28 +30,36 @@ private:
     int numElectrodes = 21;
     QDateTime customDateTime;
     QDateTime referenceDateTime;
+    TreatmentStage currentStage;
+
+    // state
+    mutable QMutex mutex;
 
     // containees
     QVector<Electrode *> electrodes;
     QVector<QThread *> electrodeThreads;
     std::set<int> electrodesFinishedInitialBaseline;
     std::set<int> electrodesFinishedFinalBaseline;
+    std::set<int> electrodesFinishedTreatment;
 
     // methods
     void setupElectrodes();
     bool checkInitialBaselineFinished();
     bool checkFinalBaselineFinished();
-    void startIndividualElectrodeTreatment();
+    void startIndividualElectrodeTreatment(int electrodeNum);
     void recordSession();
 
 public slots:
     void startNewSession(); // starts a new treatment session
     void setElectrodeFinishedInitialBaseline(int electrodeNum);
     void setElectrodeFinishedFinalBaseline(int electrodeNum);
+    void setElectrodeFinishedTreatment(int electrodeNum);
+    void pauseSession();
 
 signals:
     void startElectrodeInitialBaseline(); // tells all electrodes to get their initial baseline
     void startElectrodeFinalBaseline();   // tells all electrodes to get their final baseline
+    void startElectrodeTreatment(int electrodeNum);
 };
 
 #endif // CONTROLLER_H
