@@ -1,12 +1,11 @@
 #include "controller.h"
 
-Controller::Controller(QObject *parent) : QObject(parent)
-{
+Controller::Controller(QObject *parent) : QObject(parent){
     setupElectrodes();
 }
 
-void Controller::setupElectrodes()
-{
+// Initializes electrode threads, sets up signals/slots
+void Controller::setupElectrodes(){
     for (int i = 0; i < numElectrodes; i++)
     {
         QThread *thread = new QThread(this);
@@ -29,46 +28,47 @@ void Controller::setupElectrodes()
     }
 }
 
-void Controller::startTreatment()
-{
-    qInfo() << "Controller starting electrode initial baseline in thread: " << QThread::currentThreadId();
+
+void Controller::startNewSession(){
+    qInfo() << "Controller starting a new session, signalling to electrodes to get initial baseline ";
     emit startElectrodeInitialBaseline();
 }
 
-void Controller::setElectrodeFinishedInitialBaseline(int electrodeNum)
-{
+// When the controller receives a signal from an electrode it's finished, adds it to the list of finished electrodes and
+// then checks if they're all done. If they are, then it proceeds with individual electrode treatments
+void Controller::setElectrodeFinishedInitialBaseline(int electrodeNum){
     qInfo() << "Setting electrode " << electrodeNum << " to done initial baseline in controller thread: " << QThread::currentThreadId();
     QMutexLocker locker(&mutex);
     electrodesFinishedInitialBaseline.insert(electrodeNum);
-    if (checkInitialBaselineFinished())
-    {
+    if (checkInitialBaselineFinished()){
         startIndividualElectrodeTreatment();
     }
 }
 
-void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum)
-{
+// When the controller receives a signal from an electrode it's finished, adds it to the list of finished electrodes and
+// then checks if they're all done. If they are, then it gathers data to send to the file manager
+void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum){
     qInfo() << "Setting electrode " << electrodeNum << " to done final baseline in controller thread: " << QThread::currentThreadId();
     QMutexLocker locker(&mutex);
     electrodesFinishedFinalBaseline.insert(electrodeNum);
-    if (checkFinalBaselineFinished())
-    {
+    if (checkFinalBaselineFinished()){
         qInfo() << "Electrodes have finished final baseline";
+        recordSession();
     }
 }
 
-bool Controller::checkInitialBaselineFinished()
-{
+
+bool Controller::checkInitialBaselineFinished(){
     return static_cast<int>(electrodesFinishedInitialBaseline.size()) == numElectrodes;
 }
 
-bool Controller::checkFinalBaselineFinished()
-{
+
+bool Controller::checkFinalBaselineFinished(){
     return static_cast<int>(electrodesFinishedInitialBaseline.size()) == numElectrodes;
 }
 
-void Controller::startIndividualElectrodeTreatment()
-{
+// Iterates through the electrodes and instructs them to perform their site specific eeg analysis and treatment
+void Controller::startIndividualElectrodeTreatment() {
     qInfo() << "Starting treatment";
     Electrode *e = nullptr;
     bool treatmentComplete = true;
@@ -76,19 +76,31 @@ void Controller::startIndividualElectrodeTreatment()
     {
         e = electrodes[i];
         bool treatmentFinished = e->startTreatment();
-        if (!treatmentFinished)
-        {
+        if (!treatmentFinished) {
             qInfo() << "Error completing treatment";
             treatmentComplete = false;
         }
-        else
-        {
+
+        else {
             qInfo() << "Electrode " << i << " finished treatment";
         }
     }
 
-    if (treatmentComplete)
-    {
+    if (treatmentComplete) {
         emit startElectrodeFinalBaseline();
+    } else {
+        // This would be some kind of error handling
     }
 }
+
+
+void Controller::recordSession() {
+    QDateTime sessionDateTime = QDateTime::currentDateTime(); // use current date/time for now until we handle custom user date/time
+    QVector<FrequencyData> electrodeData;
+    for (auto e : electrodes) {
+        electrodeData.push_back(e->getFrequencyData());
+    }
+    SessionLog* session = new SessionLog(sessionDateTime, electrodeData);
+    // send session log to file manager
+}
+

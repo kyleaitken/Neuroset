@@ -1,25 +1,27 @@
 #ifndef SESSIONLOG_H
 #define SESSIONLOG_H
 
+#include <QDateTime>
 #include <QDate>
 #include <QTime>
 #include <QVector>
 #include "defs.h"
+#include "frequencydata.h"
 
 class SessionLog
 {
 public:
-    SessionLog(QDate &date, QTime &time, QVector<FrequencyData> &freqData);
+    SessionLog(QDateTime &sessionTime, QVector<FrequencyData> &freqData);
 
     // getters
     QDate getDate() const;
     QTime getTime() const;
+    QDateTime getDateTime() const;
     QVector<FrequencyData> getFrequencyData() const;
 
 private:
-    QDate sessionDate; // could change this to string
-    QTime sessionTime; // could change this to string
+    QDateTime sessionDateTime; // could change this to string
     QVector<FrequencyData> frequencyData;
 };
 
-#endif // SESSIONLOG_H
+#endif

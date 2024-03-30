@@ -3,11 +3,13 @@
 
 #include <QObject>
 #include <QThread>
+#include <QDateTime>
 #include <electrode.h>
 #include <set>
 #include <QMutex>
 #include <QMutexLocker>
 #include <defs.h>
+#include "sessionlog.h"
 
 class Controller : public QObject
 {
@@ -19,8 +21,12 @@ public:
     Controller(QObject *parent = nullptr);
 
 private:
-    // members
+    // attributes
     int numElectrodes = 21;
+    QDateTime customDateTime;
+    QDateTime referenceDateTime;
+
+    // containees
     QVector<Electrode *> electrodes;
     QVector<QThread *> electrodeThreads;
     std::set<int> electrodesFinishedInitialBaseline;
@@ -31,9 +37,10 @@ private:
     bool checkInitialBaselineFinished();
     bool checkFinalBaselineFinished();
     void startIndividualElectrodeTreatment();
+    void recordSession();
 
 public slots:
-    void startTreatment(); // starts a new treatment session
+    void startNewSession(); // starts a new treatment session
     void setElectrodeFinishedInitialBaseline(int electrodeNum);
     void setElectrodeFinishedFinalBaseline(int electrodeNum);
 
