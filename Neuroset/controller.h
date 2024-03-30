@@ -30,10 +30,10 @@ private:
     int numElectrodes = 21;
     QDateTime customDateTime;
     QDateTime referenceDateTime;
-    TreatmentStage currentStage;
 
     // state
     mutable QMutex mutex;
+    TreatmentStage currentStage;
 
     // containees
     QVector<Electrode *> electrodes;
