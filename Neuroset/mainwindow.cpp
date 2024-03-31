@@ -5,6 +5,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
 
+
+    // Connect the listView signal to a slot to handle selection
+    //connect(ui->menuView, &QListView::activated, this, &MainWindow::onMenuOptionActivated);
+
     // Setting up UI icons
     ui->setupUi(this);
     ui->powerButton->setIcon(QIcon(":/images/images/PowerOn.png"));
@@ -20,10 +24,39 @@ MainWindow::MainWindow(QWidget *parent)
     QThread *controllerThread = new QThread(this);
     Controller *controller = new Controller();
     controller->moveToThread(controllerThread);
+// Setting up Menu settings + styling
+    ui->menuView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->menuView->setStyleSheet(R"(
+        QListView {
+            font-size: 14pt; /* Adjust the size as needed */
+        }
+        QListView::item {
+            color: black; /* Text color for items */
+            background-color: white; /* Background color for items */
+        }
+        QListView::item:selected {
+            font-weight: bold; /* Make selected items bold */
+            background-color: #E0E0E0; /* Background color for selected items */
+        }
+        QListView::item:selected:!active {
+            background-color: #E0E0E0; /* Background color for selected items when not focused */
+        }
+    )");
+    ui->menuView->setSelectionMode(QAbstractItemView::NoSelection);
+
+
 
     // starts a new session when user presses play - needs adjusting to respond to pressing when when 'Start Session' is highlighted on the UI
-    connect(ui->playButton, &QPushButton::released, controller, &Controller::startNewSession);
-    connect(ui->pauseButton, &QPushButton::released, controller, &Controller::pauseSession);
+    //connect(ui->playButton, &QPushButton::released, controller, &Controller::startNewSession);
+    //connect(ui->pauseButton, &QPushButton::released, controller, &Controller::pauseSession);
+    //signals to handle each menu selection
+    connect(this, &MainWindow::signalNewSession, controller, &Controller::newSession);
+    connect(this, &MainWindow::signalSessionLog, controller, &Controller::sessionLog);
+    connect(this, &MainWindow::signalTimeAndDate, controller, &Controller::timeAndDate);
+    connect(this, &MainWindow::playButtonPressed, controller, &Controller::playButton);
+    connect(this, &MainWindow::pauseButtonPressed, controller, &Controller::pauseButton);
+    connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopButton);
+
 
     controllerThread->start();
 }
@@ -32,3 +65,134 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
+void MainWindow::on_upButton_clicked()
+{
+    int currentRow = ui->menuView->currentIndex().row();
+    int previousRow = currentRow > 0 ? currentRow - 1 : 0;
+    QModelIndex newIndex = ui->menuView->model()->index(previousRow, 0);
+    ui->menuView->setCurrentIndex(newIndex);
+    ui->menuView->setFocus();
+    ui->menuView->repaint();
+
+}
+
+
+void MainWindow::on_downButton_clicked()
+{
+    int currentRow = ui->menuView->currentIndex().row();
+    int rows = ui->menuView->model()->rowCount();
+    int nextRow = currentRow < rows - 1 ? currentRow + 1 : rows - 1;
+    QModelIndex newIndex = ui->menuView->model()->index(nextRow, 0);
+    ui->menuView->setCurrentIndex(newIndex);
+    ui->menuView->setFocus();
+    ui->menuView->repaint();
+
+}
+
+void MainWindow::togglePower(){
+    if (this->poweredOn == false){
+        this->poweredOn = true;
+    }
+    else{
+        this->poweredOn = false;
+    }
+}
+
+
+
+
+void MainWindow::on_powerButton_clicked()
+{
+
+    if (poweredOn == false){
+        ui->upButton->setEnabled(true);
+        ui->downButton->setEnabled(true);
+        ui->playButton->setEnabled(true);
+        ui->pauseButton->setEnabled(true);
+        ui->stopButton->setEnabled(true);
+        ui->selectButton->setEnabled(true);
+
+    QStringList menuOptions;
+    menuOptions << "New Session" << "Session Logs" << "Time and Date";
+
+    // Create a QStringListModel and set the menu options
+    QStringListModel *model = new QStringListModel(this);
+    model->setStringList(menuOptions);
+
+    // Set the model on the QListView
+    ui->menuView->setModel(model);
+
+    QModelIndex firstIndex = ui->menuView->model()->index(0, 0);
+    ui->menuView->setCurrentIndex(firstIndex);
+
+    ui->menuView->setFocus();
+    togglePower();
+    }
+    else{
+        auto *model = dynamic_cast<QStringListModel*>(ui->menuView->model());
+        if (model) {
+            model->setStringList(QStringList()); // Clear the model
+        }
+
+        ui->upButton->setEnabled(false);
+        ui->downButton->setEnabled(false);
+        ui->playButton->setEnabled(false);
+        ui->pauseButton->setEnabled(false);
+        ui->stopButton->setEnabled(false);
+        ui->selectButton->setEnabled(false);
+
+        togglePower();
+
+
+    }
+}
+
+
+void MainWindow::on_selectButton_clicked()
+{
+    QModelIndex currentIndex = ui->menuView->currentIndex();
+
+       if (!currentIndex.isValid()) {
+           qDebug() << "No item is selected.";
+           return; // No selection made
+       }
+
+       int selectedRow = currentIndex.row(); // Get the selected row number
+       switch (selectedRow) {
+           case 0:
+               emit signalNewSession();
+               break;
+           case 1:
+               emit signalSessionLog();
+               break;
+           case 2:
+               emit signalTimeAndDate();
+               break;
+           // Handle other cases as needed
+           default:
+               qDebug() << "Selected option is not handled.";
+       }
+}
+
+
+void MainWindow::on_playButton_clicked()
+{
+    emit playButtonPressed();
+}
+
+
+void MainWindow::on_pauseButton_clicked()
+{
+    emit pauseButtonPressed();
+
+}
+
+
+void MainWindow::on_stopButton_clicked()
+{
+    emit stopButtonPressed();
+
+}
+
