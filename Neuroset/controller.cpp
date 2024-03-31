@@ -1,6 +1,6 @@
 #include "controller.h"
 
-Controller::Controller(QObject *parent) : QObject(parent), currentStage(Idle){
+Controller::Controller(QObject *parent) : QObject(parent){
     setupElectrodes();
 }
 
@@ -40,7 +40,6 @@ void Controller::startNewSession(){
         paused = false;
     } else {
         qInfo() << "Controller starting a new session, signalling to electrodes to get initial baseline ";
-        currentStage = InitialBaseline;
         emit startElectrodeInitialBaseline();
     }
 }
@@ -52,7 +51,6 @@ void Controller::setElectrodeFinishedInitialBaseline(int electrodeNum){
     QMutexLocker locker(&mutex);
     electrodesFinishedInitialBaseline.insert(electrodeNum);
     if (checkInitialBaselineFinished()){
-        currentStage = IndividualTreatment;
         startIndividualElectrodeTreatment(0);
     }
 }
@@ -65,7 +63,6 @@ void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum){
     electrodesFinishedFinalBaseline.insert(electrodeNum);
     if (checkFinalBaselineFinished()){
         qInfo() << "Electrodes have finished final baseline";
-        currentStage = Idle;
         recordSession();
     }
 }
@@ -110,7 +107,6 @@ void Controller::setElectrodeFinishedTreatment(int electrodeNum) {
     electrodesFinishedTreatment.insert(electrodeNum);
     int numElectrodesFinished = static_cast<int>(electrodesFinishedTreatment.size());
     if (numElectrodesFinished == numElectrodes) {
-        currentStage = FinalBaseline;
         emit startElectrodeFinalBaseline();
     } else {
         startIndividualElectrodeTreatment(numElectrodesFinished);

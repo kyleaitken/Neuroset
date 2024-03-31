@@ -15,13 +15,6 @@ class Controller : public QObject
 {
     Q_OBJECT
 
-    enum TreatmentStage {
-        Idle,
-        InitialBaseline,
-        IndividualTreatment,
-        FinalBaseline
-    };
-
 public:
     Controller(QObject *parent = nullptr);
 
@@ -33,7 +26,6 @@ private:
 
     // state
     mutable QMutex mutex;
-    TreatmentStage currentStage;
     bool paused = false;
 
     // containees
