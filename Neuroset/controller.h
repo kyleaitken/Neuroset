@@ -27,13 +27,14 @@ public:
 
 private:
     // attributes
-    int numElectrodes = 21;
+    int numElectrodes = 2;
     QDateTime customDateTime; // set when user specifies a date/time on the device
     QDateTime referenceDateTime; // initialize when user sets a custom date/time for time stamp calculations
 
     // state
     mutable QMutex mutex;
     TreatmentStage currentStage;
+    bool paused = false;
 
     // containees
     QVector<Electrode *> electrodes;
@@ -60,6 +61,8 @@ signals:
     void startElectrodeInitialBaseline(); // tells all electrodes to get their initial baseline
     void startElectrodeFinalBaseline();   // tells all electrodes to get their final baseline
     void startElectrodeTreatment(int electrodeNum);
+    void pauseElectrodes();
+    void resumeSession();
 };
 
 #endif // CONTROLLER_H

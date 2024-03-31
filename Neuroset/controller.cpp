@@ -20,6 +20,8 @@ void Controller::setupElectrodes(){
         connect(this, &Controller::startElectrodeInitialBaseline, electrode, &Electrode::getInitialBaselineFrequency);
         connect(this, &Controller::startElectrodeFinalBaseline, electrode, &Electrode::getFinalBaselineFrequency);
         connect(this, &Controller::startElectrodeTreatment, electrode, &Electrode::startTreatmentListener);
+        connect(this, &Controller::pauseElectrodes, electrode, &Electrode::handlePauseRequested);
+        connect(this, &Controller::resumeSession, electrode, &Electrode::resume);
 
         // slots to keep track of electrodes that have finished their initial/final baselines
         connect(electrode, &Electrode::initialBaselineFinished, this, &Controller::setElectrodeFinishedInitialBaseline);
@@ -32,9 +34,15 @@ void Controller::setupElectrodes(){
 
 
 void Controller::startNewSession(){
-    qInfo() << "Controller starting a new session, signalling to electrodes to get initial baseline ";
-    currentStage = InitialBaseline;
-    emit startElectrodeInitialBaseline();
+    if (paused) {
+        qInfo() << "Paused, restarting";
+        emit resumeSession();
+        paused = false;
+    } else {
+        qInfo() << "Controller starting a new session, signalling to electrodes to get initial baseline ";
+        currentStage = InitialBaseline;
+        emit startElectrodeInitialBaseline();
+    }
 }
 
 // When the controller receives a signal from an electrode it's finished, adds it to the list of finished electrodes and
@@ -91,9 +99,9 @@ void Controller::recordSession() {
 
 
 void Controller::pauseSession() {
-    qInfo() << "Add implementation for pausing session";
-    // idea: sets a bool pauseState to true, electrodes check this boolean frequently in their computations if possible,
-    // they wait if its true, then controller wakes threads again when user plays again
+    QMutexLocker locker(&mutex);
+    paused = true;
+    emit pauseElectrodes();
 }
 
 
