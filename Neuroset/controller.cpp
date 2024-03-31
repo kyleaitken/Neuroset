@@ -35,11 +35,10 @@ void Controller::setupElectrodes(){
 
 void Controller::startNewSession(){
     if (paused) {
-        qInfo() << "Paused, restarting";
+        qInfo() << "Restarting electrodes";
         emit resumeSession();
         paused = false;
     } else {
-        qInfo() << "Controller starting a new session, signalling to electrodes to get initial baseline ";
         emit startElectrodeInitialBaseline();
     }
 }
@@ -47,7 +46,6 @@ void Controller::startNewSession(){
 // When the controller receives a signal from an electrode it's finished, adds it to the list of finished electrodes and
 // then checks if they're all done. If they are, then it proceeds with individual electrode treatments
 void Controller::setElectrodeFinishedInitialBaseline(int electrodeNum){
-    qInfo() << "Setting electrode " << electrodeNum << " to done initial baseline in controller thread: " << QThread::currentThreadId();
     QMutexLocker locker(&mutex);
     electrodesFinishedInitialBaseline.insert(electrodeNum);
     if (checkInitialBaselineFinished()){
@@ -58,7 +56,6 @@ void Controller::setElectrodeFinishedInitialBaseline(int electrodeNum){
 // When the controller receives a signal from an electrode it's finished, adds it to the list of finished electrodes and
 // then checks if they're all done. If they are, then it gathers data to send to the file manager
 void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum){
-    qInfo() << "Setting electrode " << electrodeNum << " to done final baseline in controller thread: " << QThread::currentThreadId();
     QMutexLocker locker(&mutex);
     electrodesFinishedFinalBaseline.insert(electrodeNum);
     if (checkFinalBaselineFinished()){

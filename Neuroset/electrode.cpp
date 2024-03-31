@@ -32,7 +32,6 @@ void Electrode::getFinalBaselineFrequency(){
 
     // Simulate some work that can be broken up so we can check the pause requested state
     for (int i = 0; i < 5; i++) {
-        qInfo()<< "loop";
         QThread::msleep(2000);
         QCoreApplication::processEvents();
         if (pauseRequested) {
@@ -58,7 +57,6 @@ void Electrode::startTreatmentListener(int electrodeNum) {
 
 bool Electrode::startTreatment()
 {
-    qInfo() << "Electrode " << electrodeNum << " starting treatment in thread: " << QThread::currentThreadId();
     QThread::msleep(3000);
     emit treatmentFinished(electrodeNum);
     return true;
@@ -71,14 +69,12 @@ FrequencyData Electrode::getFrequencyData() const
 }
 
 void Electrode::handlePauseRequested() {
-    qInfo() << "Pause requested in electrode, thread id: " << QThread::currentThreadId();
     QMutexLocker locker(&pauseMutex);
     pauseRequested = true;
 }
 
 
 void Electrode::resume() {
-    qInfo() << "Resume session in electrode";
     QMutexLocker locker(&pauseMutex);
     pauseRequested = false;
 }
