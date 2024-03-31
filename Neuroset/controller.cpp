@@ -1,12 +1,11 @@
 #include "controller.h"
 
-Controller::Controller(QObject *parent) : QObject(parent)
-{
+Controller::Controller(QObject *parent) : QObject(parent){
     setupElectrodes();
 }
 
-void Controller::setupElectrodes()
-{
+// Initializes electrode threads, sets up signals/slots
+void Controller::setupElectrodes(){
     for (int i = 0; i < numElectrodes; i++)
     {
         QThread *thread = new QThread(this);
@@ -17,78 +16,96 @@ void Controller::setupElectrodes()
         electrodeThreads.push_back(thread);
         electrodes.push_back(electrode);
 
-        // signals to tell electrodes to generate their initial and final baselines
+        // signals to tell electrodes to generate their initial and final baselines, start treatments, etc
         connect(this, &Controller::startElectrodeInitialBaseline, electrode, &Electrode::getInitialBaselineFrequency);
         connect(this, &Controller::startElectrodeFinalBaseline, electrode, &Electrode::getFinalBaselineFrequency);
+        connect(this, &Controller::startElectrodeTreatment, electrode, &Electrode::startTreatmentListener);
+        connect(this, &Controller::pauseElectrodes, electrode, &Electrode::handlePauseRequested);
+        connect(this, &Controller::resumeSession, electrode, &Electrode::resume);
 
         // slots to keep track of electrodes that have finished their initial/final baselines
         connect(electrode, &Electrode::initialBaselineFinished, this, &Controller::setElectrodeFinishedInitialBaseline);
         connect(electrode, &Electrode::finalBaselineFinished, this, &Controller::setElectrodeFinishedFinalBaseline);
+        connect(electrode, &Electrode::treatmentFinished, this, &Controller::setElectrodeFinishedTreatment);
 
         thread->start();
     }
 }
 
-void Controller::startTreatment()
-{
-    qInfo() << "Controller starting electrode initial baseline in thread: " << QThread::currentThreadId();
-    emit startElectrodeInitialBaseline();
+
+void Controller::startNewSession(){
+    if (paused) {
+        qInfo() << "Restarting electrodes";
+        emit resumeSession();
+        paused = false;
+    } else {
+        emit startElectrodeInitialBaseline();
+    }
 }
 
-void Controller::setElectrodeFinishedInitialBaseline(int electrodeNum)
-{
-    qInfo() << "Setting electrode " << electrodeNum << " to done initial baseline in controller thread: " << QThread::currentThreadId();
+// When the controller receives a signal from an electrode it's finished, adds it to the list of finished electrodes and
+// then checks if they're all done. If they are, then it proceeds with individual electrode treatments
+void Controller::setElectrodeFinishedInitialBaseline(int electrodeNum){
     QMutexLocker locker(&mutex);
     electrodesFinishedInitialBaseline.insert(electrodeNum);
-    if (checkInitialBaselineFinished())
-    {
-        startIndividualElectrodeTreatment();
+    if (checkInitialBaselineFinished()){
+        startIndividualElectrodeTreatment(0);
     }
 }
 
-void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum)
-{
-    qInfo() << "Setting electrode " << electrodeNum << " to done final baseline in controller thread: " << QThread::currentThreadId();
+// When the controller receives a signal from an electrode it's finished, adds it to the list of finished electrodes and
+// then checks if they're all done. If they are, then it gathers data to send to the file manager
+void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum){
     QMutexLocker locker(&mutex);
     electrodesFinishedFinalBaseline.insert(electrodeNum);
-    if (checkFinalBaselineFinished())
-    {
+    if (checkFinalBaselineFinished()){
         qInfo() << "Electrodes have finished final baseline";
+        recordSession();
     }
 }
 
-bool Controller::checkInitialBaselineFinished()
-{
+
+bool Controller::checkInitialBaselineFinished(){
     return static_cast<int>(electrodesFinishedInitialBaseline.size()) == numElectrodes;
 }
 
-bool Controller::checkFinalBaselineFinished()
-{
+
+bool Controller::checkFinalBaselineFinished(){
     return static_cast<int>(electrodesFinishedInitialBaseline.size()) == numElectrodes;
 }
 
-void Controller::startIndividualElectrodeTreatment()
-{
-    qInfo() << "Starting treatment";
-    Electrode *e = nullptr;
-    bool treatmentComplete = true;
-    for (int i = 0; i < numElectrodes; i++)
-    {
-        e = electrodes[i];
-        bool treatmentFinished = e->startTreatment();
-        if (!treatmentFinished)
-        {
-            qInfo() << "Error completing treatment";
-            treatmentComplete = false;
-        }
-        else
-        {
-            qInfo() << "Electrode " << i << " finished treatment";
-        }
+// Iterates through the electrodes and instructs them to perform their site specific eeg analysis and treatment
+void Controller::startIndividualElectrodeTreatment(int electrodeNum) {
+    emit startElectrodeTreatment(electrodeNum);
+}
+
+
+void Controller::recordSession() {
+    QDateTime sessionDateTime = QDateTime::currentDateTime(); // use current date/time for now until we handle custom user date/time
+    QVector<FrequencyData> electrodeData;
+    for (auto e : electrodes) {
+        electrodeData.push_back(e->getFrequencyData());
     }
+    SessionLog* session = new SessionLog(sessionDateTime, electrodeData);
+    qInfo() << "Completed session at " << session->getDateTime();
+    // send session log to file manager
+}
 
-    if (treatmentComplete)
-    {
+
+void Controller::pauseSession() {
+    QMutexLocker locker(&mutex);
+    paused = true;
+    emit pauseElectrodes();
+}
+
+
+void Controller::setElectrodeFinishedTreatment(int electrodeNum) {
+    QMutexLocker locker(&mutex);
+    electrodesFinishedTreatment.insert(electrodeNum);
+    int numElectrodesFinished = static_cast<int>(electrodesFinishedTreatment.size());
+    if (numElectrodesFinished == numElectrodes) {
         emit startElectrodeFinalBaseline();
+    } else {
+        startIndividualElectrodeTreatment(numElectrodesFinished);
     }
 }

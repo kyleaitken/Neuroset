@@ -17,14 +17,15 @@ MainWindow::MainWindow(QWidget *parent)
     QPixmap pixmap(":/images/images/4Battery.png");
     ui->battery->setPixmap(pixmap);
 
-    //QThread *controllerThread = new QThread(this);
-    //Controller *controller = new Controller();
-    //controller->moveToThread(controllerThread);
+    QThread *controllerThread = new QThread(this);
+    Controller *controller = new Controller();
+    controller->moveToThread(controllerThread);
 
-    // starts a new treatment when user presses play - needs adjusting
-    connect(ui->playButton, &QPushButton::released, controller, &Controller::startTreatment);
+    // starts a new session when user presses play - needs adjusting to respond to pressing when when 'Start Session' is highlighted on the UI
+    connect(ui->playButton, &QPushButton::released, controller, &Controller::startNewSession);
+    connect(ui->pauseButton, &QPushButton::released, controller, &Controller::pauseSession);
 
-    //controllerThread->start();
+    controllerThread->start();
 }
 
 MainWindow::~MainWindow()
