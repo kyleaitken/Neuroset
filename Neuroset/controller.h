@@ -20,7 +20,7 @@ public:
 
 private:
     // attributes
-    int numElectrodes = 2;
+    int numElectrodes = 21;
     QDateTime customDateTime; // set when user specifies a date/time on the device
     QDateTime referenceDateTime; // initialize when user sets a custom date/time for time stamp calculations
 
