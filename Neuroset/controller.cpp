@@ -17,11 +17,14 @@ void Controller::setupElectrodes(){
         electrodes.push_back(electrode);
 
         // signals to tell electrodes to generate their initial and final baselines, start treatments, etc
-        connect(this, &Controller::startElectrodeInitialBaseline, electrode, &Electrode::getInitialBaselineFrequency);
+        connect(this, &Controller::startElectrodeInitialBaseline, electrode, &Electrode::startSession);
         connect(this, &Controller::startElectrodeFinalBaseline, electrode, &Electrode::getFinalBaselineFrequency);
         connect(this, &Controller::startElectrodeTreatment, electrode, &Electrode::startTreatmentListener);
+
+        // pause/resume/stop
         connect(this, &Controller::pauseElectrodes, electrode, &Electrode::handlePauseRequested);
         connect(this, &Controller::resumeSession, electrode, &Electrode::resume);
+        connect(this, &Controller::stopElectrodes, electrode, &Electrode::stop);
 
         // slots to keep track of electrodes that have finished their initial/final baselines
         connect(electrode, &Electrode::initialBaselineFinished, this, &Controller::setElectrodeFinishedInitialBaseline);
@@ -34,13 +37,21 @@ void Controller::setupElectrodes(){
 
 
 void Controller::startNewSession(){
-    if (paused) {
-        qInfo() << "Restarting electrodes";
-        emit resumeSession();
-        paused = false;
-    } else {
-        emit startElectrodeInitialBaseline();
+    sessionTimer = new QTimer(this);
+    remainingTime = 23 * 60;
+    connect(sessionTimer, &QTimer::timeout, this, &Controller::updateSessionTimer);
+    sessionTimer->start(1000); // Start the timer, ticking every second
+    emit startElectrodeInitialBaseline();
+
+}
+
+void Controller::resumeTreatmentSession() {
+    qInfo() << "Restarting electrodes";
+    emit resumeSession();
+    if (remainingTime > 0) {
+        sessionTimer->start();
     }
+    paused = false;
 }
 
 // When the controller receives a signal from an electrode it's finished, adds it to the list of finished electrodes and
@@ -49,6 +60,7 @@ void Controller::setElectrodeFinishedInitialBaseline(int electrodeNum){
     QMutexLocker locker(&mutex);
     electrodesFinishedInitialBaseline.insert(electrodeNum);
     if (checkInitialBaselineFinished()){
+        qInfo() << "all electrodes finished initial baseline";
         startIndividualElectrodeTreatment(0);
     }
 }
@@ -95,11 +107,13 @@ void Controller::recordSession() {
 void Controller::pauseSession() {
     QMutexLocker locker(&mutex);
     paused = true;
+    sessionTimer->stop();
     emit pauseElectrodes();
 }
 
 
 void Controller::setElectrodeFinishedTreatment(int electrodeNum) {
+    qInfo() << "setting electrode " << electrodeNum << " finished treatment";
     QMutexLocker locker(&mutex);
     electrodesFinishedTreatment.insert(electrodeNum);
     int numElectrodesFinished = static_cast<int>(electrodesFinishedTreatment.size());
@@ -110,34 +124,44 @@ void Controller::setElectrodeFinishedTreatment(int electrodeNum) {
     }
 }
 
-void Controller::newSession(){
-    qDebug() << "New Session";
-    //Handle new session
-    //will emit to update MainWindow menu as appropriate
-}
 void Controller::sessionLog(){
     qDebug() << "Session Log";
     //Handle session log
 
     //will emit to update MainWindow menu as appropriate
-
 }
+
 void Controller::timeAndDate(){
     qDebug() << "Time and Date";
     //Handle time and date
 
     //will emit to update MainWindow menu as appropriate
-
 }
-void Controller::playButton(){
-    qDebug() << "Play Button";
 
-}
-void Controller::pauseButton(){
-    qDebug() << "Pause Button";
 
-}
-void Controller::stopButton(){
+void Controller::stopSession(){
     qDebug() << "Stop Button";
+    emit stopElectrodes();
 
+    if (sessionTimer) {
+        sessionTimer->stop();
+        delete sessionTimer;
+        sessionTimer = nullptr;
+    }
+
+    electrodesFinishedInitialBaseline.clear();
+    electrodesFinishedFinalBaseline.clear();
+    electrodesFinishedTreatment.clear();
+}
+
+void Controller::updateSessionTimer() {
+    if (remainingTime > 0) {
+         remainingTime--;
+         int minutes = remainingTime / 60;
+         int seconds = remainingTime % 60;
+         QString timeString = QString("%1:%2").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
+         emit updateTimerView(timeString);
+     } else {
+         sessionTimer->stop();
+     }
 }

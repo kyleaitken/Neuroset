@@ -26,3 +26,8 @@ QString FrequencyData::getElectrodeSiteName() const {
 void FrequencyData::setElectrodeSiteName(const QString &value) {
     electrodeSiteName = value;
 }
+
+void FrequencyData::reset() {
+    before = 0;
+    after = 0;
+}

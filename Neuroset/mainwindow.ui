@@ -278,31 +278,6 @@
      <string>Electrode disconnect</string>
     </property>
    </widget>
-   <widget class="QListView" name="menuView">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>130</y>
-      <width>256</width>
-      <height>192</height>
-     </rect>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::StrongFocus</enum>
-    </property>
-    <property name="verticalScrollBarPolicy">
-     <enum>Qt::ScrollBarAsNeeded</enum>
-    </property>
-    <property name="horizontalScrollBarPolicy">
-     <enum>Qt::ScrollBarAsNeeded</enum>
-    </property>
-    <property name="selectionBehavior">
-     <enum>QAbstractItemView::SelectRows</enum>
-    </property>
-    <property name="movement">
-     <enum>QListView::Static</enum>
-    </property>
-   </widget>
    <widget class="QPushButton" name="electrodeDisconnect_2">
     <property name="geometry">
      <rect>
@@ -319,7 +294,7 @@
    <widget class="QPushButton" name="upButton">
     <property name="geometry">
      <rect>
-      <x>300</x>
+      <x>320</x>
       <y>190</y>
       <width>31</width>
       <height>31</height>
@@ -336,7 +311,7 @@
    <widget class="QPushButton" name="downButton">
     <property name="geometry">
      <rect>
-      <x>300</x>
+      <x>320</x>
       <y>230</y>
       <width>31</width>
       <height>31</height>
@@ -380,9 +355,9 @@
    <widget class="QPushButton" name="selectButton">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>280</y>
-      <width>61</width>
+      <x>300</x>
+      <y>270</y>
+      <width>71</width>
       <height>25</height>
      </rect>
     </property>
@@ -392,6 +367,88 @@
     <property name="text">
      <string>SELECT</string>
     </property>
+   </widget>
+   <widget class="QStackedWidget" name="screenStack">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>130</y>
+      <width>261</width>
+      <height>191</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="menuPage">
+     <widget class="QListView" name="menuView">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>256</width>
+        <height>192</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::StrongFocus</enum>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <property name="movement">
+       <enum>QListView::Static</enum>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="sessionPage">
+     <widget class="QLabel" name="timerLabel">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>40</y>
+        <width>151</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Nimbus Mono L</family>
+        <pointsize>25</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>23:00</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QProgressBar" name="progressBar">
+      <property name="geometry">
+       <rect>
+        <x>67</x>
+        <y>120</y>
+        <width>131</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
