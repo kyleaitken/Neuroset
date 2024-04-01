@@ -44,7 +44,12 @@ MainWindow::MainWindow(QWidget *parent)
     )");
     ui->menuView->setSelectionMode(QAbstractItemView::NoSelection);
 
-
+    ui->upButton->setEnabled(false);
+    ui->downButton->setEnabled(false);
+    ui->playButton->setEnabled(false);
+    ui->pauseButton->setEnabled(false);
+    ui->stopButton->setEnabled(false);
+    ui->selectButton->setEnabled(false);
 
     // starts a new session when user presses play - needs adjusting to respond to pressing when when 'Start Session' is highlighted on the UI
     //connect(ui->playButton, &QPushButton::released, controller, &Controller::startNewSession);
@@ -74,7 +79,6 @@ void MainWindow::on_upButton_clicked()
     QModelIndex newIndex = ui->menuView->model()->index(previousRow, 0);
     ui->menuView->setCurrentIndex(newIndex);
     ui->menuView->setFocus();
-    ui->menuView->repaint();
 
 }
 
@@ -87,7 +91,6 @@ void MainWindow::on_downButton_clicked()
     QModelIndex newIndex = ui->menuView->model()->index(nextRow, 0);
     ui->menuView->setCurrentIndex(newIndex);
     ui->menuView->setFocus();
-    ui->menuView->repaint();
 
 }
 
