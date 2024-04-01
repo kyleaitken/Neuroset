@@ -23,10 +23,31 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void togglePower();
+
+signals:
+    void togglePowerStatus();
+    void signalNewSession();
+    void signalSessionLog();
+    void signalTimeAndDate();
+    void playButtonPressed();
+    void pauseButtonPressed();
+    void stopButtonPressed();
+
+private slots:
+    void on_upButton_clicked();
+    void on_downButton_clicked();
+    void on_powerButton_clicked();
+    void on_selectButton_clicked();
+    void on_playButton_clicked();
+    void on_pauseButton_clicked();
+    void on_stopButton_clicked();
 
 private:
     Ui::MainWindow *ui;
     QThread *controllerThread;
     Controller *controller;
+    bool poweredOn = false;
+
 };
 #endif // MAINWINDOW_H

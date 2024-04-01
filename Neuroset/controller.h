@@ -17,7 +17,6 @@ class Controller : public QObject
 
 public:
     Controller(QObject *parent = nullptr);
-
 private:
     // attributes
     int numElectrodes = 21;
@@ -48,6 +47,14 @@ public slots:
     void setElectrodeFinishedFinalBaseline(int electrodeNum);
     void setElectrodeFinishedTreatment(int electrodeNum);
     void pauseSession();
+    void newSession();
+    void sessionLog();
+    void timeAndDate();
+    //slots to handle play, pause, and stop buttons
+    void playButton();
+    void pauseButton();
+    void stopButton();
+
 
 signals:
     void startElectrodeInitialBaseline(); // tells all electrodes to get their initial baseline
@@ -55,6 +62,8 @@ signals:
     void startElectrodeTreatment(int electrodeNum);
     void pauseElectrodes();
     void resumeSession();
+    void powerStateChanged(bool newState);
+
 };
 
 #endif // CONTROLLER_H

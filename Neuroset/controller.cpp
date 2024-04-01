@@ -109,3 +109,35 @@ void Controller::setElectrodeFinishedTreatment(int electrodeNum) {
         startIndividualElectrodeTreatment(numElectrodesFinished);
     }
 }
+
+void Controller::newSession(){
+    qDebug() << "New Session";
+    //Handle new session
+    //will emit to update MainWindow menu as appropriate
+}
+void Controller::sessionLog(){
+    qDebug() << "Session Log";
+    //Handle session log
+
+    //will emit to update MainWindow menu as appropriate
+
+}
+void Controller::timeAndDate(){
+    qDebug() << "Time and Date";
+    //Handle time and date
+
+    //will emit to update MainWindow menu as appropriate
+
+}
+void Controller::playButton(){
+    qDebug() << "Play Button";
+
+}
+void Controller::pauseButton(){
+    qDebug() << "Pause Button";
+
+}
+void Controller::stopButton(){
+    qDebug() << "Stop Button";
+
+}
