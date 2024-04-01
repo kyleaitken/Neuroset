@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Setting up UI icons
     ui->setupUi(this);
-    ui->powerButton->setIcon(QIcon(":/images/images/PowerOn.png"));
+    ui->powerButton->setIcon(QIcon(":/images/images/PowerOff.png"));
     ui->stopButton->setIcon(QIcon(":/images/images/stop.png"));
     ui->playButton->setIcon(QIcon(":/images/images/play.png"));
     ui->pauseButton->setIcon(QIcon(":/images/images/pause.png"));
@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     Controller *controller = new Controller();
     controller->moveToThread(controllerThread);
 
-// Setting up Menu settings + styling
+    // Setting up Menu settings + styling
     ui->menuView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->menuView->setStyleSheet(R"(
         QListView {
@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->stopButton->setEnabled(false);
     ui->selectButton->setEnabled(false);
 
-    //signals to handle each menu selection
+    // signals to handle each menu selection
     connect(this, &MainWindow::signalNewSession, controller, &Controller::startNewSession);
     connect(this, &MainWindow::signalSessionLog, controller, &Controller::sessionLog);
     connect(this, &MainWindow::signalTimeAndDate, controller, &Controller::timeAndDate);
@@ -64,7 +64,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
 void MainWindow::on_upButton_clicked()
 {
     // TODO: check state first, should not be in an active session
@@ -73,9 +72,7 @@ void MainWindow::on_upButton_clicked()
     QModelIndex newIndex = ui->menuView->model()->index(previousRow, 0);
     ui->menuView->setCurrentIndex(newIndex);
     ui->menuView->setFocus();
-
 }
-
 
 void MainWindow::on_downButton_clicked()
 {
@@ -86,25 +83,26 @@ void MainWindow::on_downButton_clicked()
     QModelIndex newIndex = ui->menuView->model()->index(nextRow, 0);
     ui->menuView->setCurrentIndex(newIndex);
     ui->menuView->setFocus();
-
 }
 
-void MainWindow::togglePower(){
-    if (this->poweredOn == false){
+void MainWindow::togglePower()
+{
+    if (this->poweredOn == false)
+    {
         this->poweredOn = true;
     }
-    else{
+    else
+    {
         this->poweredOn = false;
     }
 }
 
-
-
-
 void MainWindow::on_powerButton_clicked()
 {
 
-    if (poweredOn == false){
+    if (poweredOn == false)
+    {
+        ui->powerButton->setIcon(QIcon(":/images/images/PowerOn.png"));
         ui->upButton->setEnabled(true);
         ui->downButton->setEnabled(true);
         ui->playButton->setEnabled(true);
@@ -112,25 +110,30 @@ void MainWindow::on_powerButton_clicked()
         ui->stopButton->setEnabled(true);
         ui->selectButton->setEnabled(true);
 
-    QStringList menuOptions;
-    menuOptions << "New Session" << "Session Logs" << "Time and Date";
+        QStringList menuOptions;
+        menuOptions << "New Session"
+                    << "Session Logs"
+                    << "Time and Date";
 
-    // Create a QStringListModel and set the menu options
-    QStringListModel *model = new QStringListModel(this);
-    model->setStringList(menuOptions);
+        // Create a QStringListModel and set the menu options
+        QStringListModel *model = new QStringListModel(this);
+        model->setStringList(menuOptions);
 
-    // Set the model on the QListView
-    ui->menuView->setModel(model);
+        // Set the model on the QListView
+        ui->menuView->setModel(model);
 
-    QModelIndex firstIndex = ui->menuView->model()->index(0, 0);
-    ui->menuView->setCurrentIndex(firstIndex);
+        QModelIndex firstIndex = ui->menuView->model()->index(0, 0);
+        ui->menuView->setCurrentIndex(firstIndex);
 
-    ui->menuView->setFocus();
-    togglePower();
+        ui->menuView->setFocus();
+        togglePower();
     }
-    else{
-        auto *model = dynamic_cast<QStringListModel*>(ui->menuView->model());
-        if (model) {
+    else
+    {
+        ui->powerButton->setIcon(QIcon(":/images/images/PowerOff.png"));
+        auto *model = dynamic_cast<QStringListModel *>(ui->menuView->model());
+        if (model)
+        {
             model->setStringList(QStringList()); // Clear the model
         }
 
@@ -142,39 +145,37 @@ void MainWindow::on_powerButton_clicked()
         ui->selectButton->setEnabled(false);
 
         togglePower();
-
-
     }
 }
-
 
 void MainWindow::on_selectButton_clicked()
 {
     // TODO: check state first, should not be a current session active
     QModelIndex currentIndex = ui->menuView->currentIndex();
 
-       if (!currentIndex.isValid()) {
-           qDebug() << "No item is selected.";
-           return; // No selection made
-       }
+    if (!currentIndex.isValid())
+    {
+        qDebug() << "No item is selected.";
+        return; // No selection made
+    }
 
-       int selectedRow = currentIndex.row(); // Get the selected row number
-       switch (selectedRow) {
-           case 0:
-               emit signalNewSession();
-               break;
-           case 1:
-               emit signalSessionLog();
-               break;
-           case 2:
-               emit signalTimeAndDate();
-               break;
-           // Handle other cases as needed
-           default:
-               qDebug() << "Selected option is not handled.";
-       }
+    int selectedRow = currentIndex.row(); // Get the selected row number
+    switch (selectedRow)
+    {
+    case 0:
+        emit signalNewSession();
+        break;
+    case 1:
+        emit signalSessionLog();
+        break;
+    case 2:
+        emit signalTimeAndDate();
+        break;
+    // Handle other cases as needed
+    default:
+        qDebug() << "Selected option is not handled.";
+    }
 }
-
 
 void MainWindow::on_playButton_clicked()
 {
@@ -182,19 +183,14 @@ void MainWindow::on_playButton_clicked()
     emit playButtonPressed();
 }
 
-
 void MainWindow::on_pauseButton_clicked()
 {
     // TODO: check state of controller, should be in an active session
     emit pauseButtonPressed();
-
 }
-
 
 void MainWindow::on_stopButton_clicked()
 {
     // TODO: check state of controller first, should be in an active session
     emit stopButtonPressed();
-
 }
-
