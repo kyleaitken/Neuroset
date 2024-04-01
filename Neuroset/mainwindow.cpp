@@ -5,10 +5,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
 
-
-    // Connect the listView signal to a slot to handle selection
-    //connect(ui->menuView, &QListView::activated, this, &MainWindow::onMenuOptionActivated);
-
     // Setting up UI icons
     ui->setupUi(this);
     ui->powerButton->setIcon(QIcon(":/images/images/PowerOn.png"));
@@ -24,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     QThread *controllerThread = new QThread(this);
     Controller *controller = new Controller();
     controller->moveToThread(controllerThread);
+
 // Setting up Menu settings + styling
     ui->menuView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->menuView->setStyleSheet(R"(
@@ -51,17 +48,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->stopButton->setEnabled(false);
     ui->selectButton->setEnabled(false);
 
-    // starts a new session when user presses play - needs adjusting to respond to pressing when when 'Start Session' is highlighted on the UI
-    //connect(ui->playButton, &QPushButton::released, controller, &Controller::startNewSession);
-    //connect(ui->pauseButton, &QPushButton::released, controller, &Controller::pauseSession);
     //signals to handle each menu selection
-    connect(this, &MainWindow::signalNewSession, controller, &Controller::newSession);
+    connect(this, &MainWindow::signalNewSession, controller, &Controller::startNewSession);
     connect(this, &MainWindow::signalSessionLog, controller, &Controller::sessionLog);
     connect(this, &MainWindow::signalTimeAndDate, controller, &Controller::timeAndDate);
     connect(this, &MainWindow::playButtonPressed, controller, &Controller::playButton);
-    connect(this, &MainWindow::pauseButtonPressed, controller, &Controller::pauseButton);
+    connect(this, &MainWindow::pauseButtonPressed, controller, &Controller::pauseSession);
     connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopButton);
-
 
     controllerThread->start();
 }
@@ -74,6 +67,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_upButton_clicked()
 {
+    // TODO: check state first, should not be in an active session
     int currentRow = ui->menuView->currentIndex().row();
     int previousRow = currentRow > 0 ? currentRow - 1 : 0;
     QModelIndex newIndex = ui->menuView->model()->index(previousRow, 0);
@@ -85,6 +79,7 @@ void MainWindow::on_upButton_clicked()
 
 void MainWindow::on_downButton_clicked()
 {
+    // TODO: check state first, should not be in an active session
     int currentRow = ui->menuView->currentIndex().row();
     int rows = ui->menuView->model()->rowCount();
     int nextRow = currentRow < rows - 1 ? currentRow + 1 : rows - 1;
@@ -155,6 +150,7 @@ void MainWindow::on_powerButton_clicked()
 
 void MainWindow::on_selectButton_clicked()
 {
+    // TODO: check state first, should not be a current session active
     QModelIndex currentIndex = ui->menuView->currentIndex();
 
        if (!currentIndex.isValid()) {
@@ -182,12 +178,14 @@ void MainWindow::on_selectButton_clicked()
 
 void MainWindow::on_playButton_clicked()
 {
+    // TODO: check state of controller first, should be in paused state (if using a select button)
     emit playButtonPressed();
 }
 
 
 void MainWindow::on_pauseButton_clicked()
 {
+    // TODO: check state of controller, should be in an active session
     emit pauseButtonPressed();
 
 }
@@ -195,6 +193,7 @@ void MainWindow::on_pauseButton_clicked()
 
 void MainWindow::on_stopButton_clicked()
 {
+    // TODO: check state of controller first, should be in an active session
     emit stopButtonPressed();
 
 }
