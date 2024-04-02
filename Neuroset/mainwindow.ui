@@ -377,6 +377,9 @@
       <height>191</height>
      </rect>
     </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
     <property name="currentIndex">
      <number>0</number>
     </property>
@@ -408,6 +411,9 @@
      </widget>
     </widget>
     <widget class="QWidget" name="sessionPage">
+     <property name="styleSheet">
+      <string notr="true">background: white;</string>
+     </property>
      <widget class="QLabel" name="timerLabel">
       <property name="geometry">
        <rect>

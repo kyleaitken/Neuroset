@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::playButtonPressed, controller, &Controller::resumeTreatmentSession);
     connect(this, &MainWindow::pauseButtonPressed, controller, &Controller::pauseSession);
     connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopSession);
-    connect(controller, &Controller::updateTimerView, this, &MainWindow::updateUISessionTimer);
+    connect(controller, &Controller::updateTimerAndProgressDisplay, this, &MainWindow::updateUITimerAndProgress);
 
     controllerThread->start();
 }
@@ -200,6 +200,7 @@ void MainWindow::on_stopButton_clicked()
     emit stopButtonPressed();
 }
 
-void MainWindow::updateUISessionTimer(const QString& timeString) {
+void MainWindow::updateUITimerAndProgress(const QString& timeString, int progressPercentage) {
     ui->timerLabel->setText(timeString);
+    ui->progressBar->setValue(progressPercentage);
 }

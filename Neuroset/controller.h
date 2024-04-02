@@ -54,7 +54,7 @@ public slots:
     void sessionLog();
     void timeAndDate();
     void stopSession();
-    void updateSessionTimer();
+    void updateSessionTimerAndProgress();
 
 
 signals:
@@ -65,7 +65,7 @@ signals:
     void resumeSession();
     void stopElectrodes();
     void powerStateChanged(bool newState);
-    void updateTimerView(const QString& timer);
+    void updateTimerAndProgressDisplay(const QString& timer, int progressPercentage);
 
 
 };

@@ -3,7 +3,7 @@
 Controller::Controller(QObject *parent) : QObject(parent){
     setupElectrodes();
     sessionTimer = new QTimer(this);
-    connect(sessionTimer, &QTimer::timeout, this, &Controller::updateSessionTimer);
+    connect(sessionTimer, &QTimer::timeout, this, &Controller::updateSessionTimerAndProgress);
 }
 
 // Initializes electrode threads, sets up signals/slots
@@ -39,7 +39,7 @@ void Controller::setupElectrodes(){
 
 
 void Controller::startNewSession(){
-    remainingTime = 23 * 60;
+    remainingTime = TREATMENT_TIME_SECONDS;
     sessionTimer->start(1000);
     emit startElectrodeInitialBaseline();
 }
@@ -149,13 +149,15 @@ void Controller::stopSession(){
     electrodesFinishedTreatment.clear();
 }
 
-void Controller::updateSessionTimer() {
+void Controller::updateSessionTimerAndProgress() {
     if (remainingTime > 0) {
          remainingTime--;
          int minutes = remainingTime / 60;
          int seconds = remainingTime % 60;
          QString timeString = QString("%1:%2").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
-         emit updateTimerView(timeString);
+         float progressPercentage = (1.0f - static_cast<float>(remainingTime) / static_cast<float>(TREATMENT_TIME_SECONDS)) * 100;
+         int percentageAsInt = static_cast<int>(progressPercentage);
+         emit updateTimerAndProgressDisplay(timeString, percentageAsInt);
      } else {
          sessionTimer->stop();
      }

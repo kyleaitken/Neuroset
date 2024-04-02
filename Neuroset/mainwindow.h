@@ -43,7 +43,7 @@ private slots:
     void on_playButton_clicked();
     void on_pauseButton_clicked();
     void on_stopButton_clicked();
-    void updateUISessionTimer(const QString& timeString);
+    void updateUITimerAndProgress(const QString& timeString, int progressPercentage);
 
 private:
     Ui::MainWindow *ui;
