@@ -2,6 +2,8 @@
 
 Controller::Controller(QObject *parent) : QObject(parent){
     setupElectrodes();
+    sessionTimer = new QTimer(this);
+    connect(sessionTimer, &QTimer::timeout, this, &Controller::updateSessionTimer);
 }
 
 // Initializes electrode threads, sets up signals/slots
@@ -37,12 +39,9 @@ void Controller::setupElectrodes(){
 
 
 void Controller::startNewSession(){
-    sessionTimer = new QTimer(this);
     remainingTime = 23 * 60;
-    connect(sessionTimer, &QTimer::timeout, this, &Controller::updateSessionTimer);
-    sessionTimer->start(1000); // Start the timer, ticking every second
+    sessionTimer->start(1000);
     emit startElectrodeInitialBaseline();
-
 }
 
 void Controller::resumeTreatmentSession() {
@@ -143,11 +142,7 @@ void Controller::stopSession(){
     qDebug() << "Stop Button";
     emit stopElectrodes();
 
-    if (sessionTimer) {
-        sessionTimer->stop();
-        delete sessionTimer;
-        sessionTimer = nullptr;
-    }
+    sessionTimer->stop();
 
     electrodesFinishedInitialBaseline.clear();
     electrodesFinishedFinalBaseline.clear();
