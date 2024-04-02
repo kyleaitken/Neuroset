@@ -151,7 +151,7 @@ void Controller::stopSession(){
 
 void Controller::updateSessionTimerAndProgress() {
     if (remainingTime > 0) {
-         remainingTime-= 50;
+         remainingTime--;
          int minutes = remainingTime / 60;
          int seconds = remainingTime % 60;
          QString timeString = QString("%1:%2").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
