@@ -197,6 +197,7 @@ void MainWindow::on_stopButton_clicked()
     // TODO: check state of controller first, should be in an active session
     ui->screenStack->setCurrentIndex(0);
     ui->timerLabel->setText("23:00");
+    ui->progressBar->setValue(0);
     emit stopButtonPressed();
 }
 
