@@ -342,13 +342,13 @@
       <normaloff>images/Menu.png</normaloff>images/Menu.png</iconset>
     </property>
    </widget>
-   <widget class="QCustomPlot" name="widget" native="true">
+   <widget class="QCustomPlot" name="graphDisplayPC" native="true">
     <property name="geometry">
      <rect>
-      <x>480</x>
-      <y>80</y>
-      <width>261</width>
-      <height>51</height>
+      <x>390</x>
+      <y>60</y>
+      <width>381</width>
+      <height>81</height>
      </rect>
     </property>
    </widget>
@@ -455,6 +455,19 @@
       </property>
      </widget>
     </widget>
+   </widget>
+   <widget class="QPushButton" name="EEGSampleButton">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>160</y>
+      <width>83</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>EEG Sample</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

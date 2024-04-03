@@ -57,6 +57,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopSession);
     connect(controller, &Controller::updateTimerAndProgressDisplay, this, &MainWindow::updateUITimerAndProgress);
 
+
+    /***************  PC  ******************/
+    pc = new PC(this);    // external device to test Neuroset device with display window for graphing EEG   [ MEMORY ALLOC ]
+    connect(pc, SIGNAL(signalDisplayGraphData(QVector<double>)), this, SLOT(slotDisplayGraphData(QVector<double>)));    // connecting PC signal to MAINWINDOW slot for PC -> MAINWINDOW ui display event
+    /***************  PC  ******************/
+
     controllerThread->start();
 }
 
@@ -205,3 +211,60 @@ void MainWindow::updateUITimerAndProgress(const QString& timeString, int progres
     ui->timerLabel->setText(timeString);
     ui->progressBar->setValue(progressPercentage);
 }
+
+// on signal emission from PC this slot function is called for a PC->MainWindow display event to plot graph data to QCustomPlot::graphDisplayPC
+void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
+{
+    ui->graphDisplayPC->xAxis->setNumberFormat("g"); // use general formatting for tick labels
+    ui->graphDisplayPC->xAxis->setNumberPrecision(6); // set the precision of tick labels
+
+    // set the tick count and label spacing for the y-axis
+    ui->graphDisplayPC->yAxis->setNumberFormat("g"); // use general formatting for tick labels
+    ui->graphDisplayPC->yAxis->setNumberPrecision(6); // set the precision of tick labels
+
+    // set font size for the x-axis tick labels
+    QFont xAxisFont = ui->graphDisplayPC->xAxis->tickLabelFont();
+    xAxisFont.setPointSize(6); // Adjust the font size as needed
+    ui->graphDisplayPC->xAxis->setTickLabelFont(xAxisFont);
+
+    // set font size for the y-axis tick labels
+    QFont yAxisFont = ui->graphDisplayPC->yAxis->tickLabelFont();
+    yAxisFont.setPointSize(6); // Adjust the font size as needed
+    ui->graphDisplayPC->yAxis->setTickLabelFont(yAxisFont);
+
+    ui->graphDisplayPC->yAxis->setLabel("SITE TITLE"); // set y-axis label
+    ui->graphDisplayPC->xAxis->setLabelFont(QFont("Arial", 4)); // set x-axis label font
+    ui->graphDisplayPC->yAxis->setLabelFont(QFont("Arial", 8)); // set y-axis label font
+    ui->graphDisplayPC->xAxis->setLabelColor(Qt::black); // set x-axis label color
+    ui->graphDisplayPC->yAxis->setLabelColor(Qt::black); // set y-axis label color
+
+    // following is adding the points to the graph and scalling the graph
+    int numDataPoints = yPlot.size();
+
+    QVector<double> xPlot;
+    for (int i = 0; i < numDataPoints; ++i)
+    {
+       double x = i*SAMPLE_RATE + DATA_START;    // DATA_START  points <20 look have an inconsistent look
+       xPlot.push_back(x);
+    }
+
+    // add a graph if one doesn't exist already
+    if (ui->graphDisplayPC->graphCount() == 0)
+    {
+        ui->graphDisplayPC->addGraph();
+    }
+    ui->graphDisplayPC->graph(0)->setData(xPlot, yPlot);              // set data to the first graph
+    ui->graphDisplayPC->xAxis->setRange(xPlot.first(), xPlot.last()); // set the range of the x-axis based on the calculated x values
+    ui->graphDisplayPC->rescaleAxes(true);                            // rescale the axes to ensure all data points are visible
+
+    // replot the graph
+    ui->graphDisplayPC->replot();
+}
+
+
+void MainWindow::on_EEGSampleButton_clicked()
+{
+    pc->displayElectrodeEEG("Fp1");
+}
+
+
