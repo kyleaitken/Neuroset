@@ -16,8 +16,10 @@ SOURCES += \
     frequencydata.cpp \
     main.cpp \
     mainwindow.cpp \
+    pc.cpp \
     qcustomplot.cpp \
-    sessionlog.cpp
+    sessionlog.cpp \
+    source.cpp
 
 HEADERS += \
     controller.h \
@@ -26,8 +28,10 @@ HEADERS += \
     filemanager.h \
     frequencydata.h \
     mainwindow.h \
+    pc.h \
     qcustomplot.h \
-    sessionlog.h
+    sessionlog.h \
+    source.h
 
 FORMS += \
     mainwindow.ui
