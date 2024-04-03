@@ -18,16 +18,19 @@ class Electrode : public QObject
 
 public:
     Electrode(int electrodeNum, const QString &electrodeSiteName);
-    bool startTreatment();
     FrequencyData getFrequencyData() const;
 
 private:
     // members
     int electrodeNum;
     FrequencyData freqData;
-    mutable QMutex pauseMutex;
+    mutable QMutex mutex;
     QWaitCondition pauseCondition;
     bool pauseRequested = false;
+    bool stopRequested = false;
+
+    // methods
+    void startTreatment();
 
 signals:
     void initialBaselineFinished(int electrodeNum); // signals to controller that this electrode has finished gathering its initial freq
@@ -35,11 +38,13 @@ signals:
     void treatmentFinished(int electrodeNum);
 
 public slots:
+    void startSession();
     void getInitialBaselineFrequency();
     void getFinalBaselineFrequency();
     void startTreatmentListener(int electrodeNum);
     void handlePauseRequested();
     void resume();
+    void stop();
 };
 
 #endif // ELECTRODE_H

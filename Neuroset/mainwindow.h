@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <controller.h>
 #include <QThread>
+#include <QTimer>
 #include <QDebug>
 #include <QThread>
 #include <QListView>
@@ -42,12 +43,12 @@ private slots:
     void on_playButton_clicked();
     void on_pauseButton_clicked();
     void on_stopButton_clicked();
+    void updateUITimerAndProgress(const QString& timeString, int progressPercentage);
 
 private:
     Ui::MainWindow *ui;
     QThread *controllerThread;
     Controller *controller;
     bool poweredOn = false;
-
 };
 #endif // MAINWINDOW_H

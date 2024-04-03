@@ -7,14 +7,16 @@ class FrequencyData {
 public:
     FrequencyData(double before = 0, double after = 0, const QString& electrodeSiteName = QString());
 
+    // getters
     double getBefore() const;
-    void setBefore(double value);
-
     double getAfter() const;
-    void setAfter(double value);
-
     QString getElectrodeSiteName() const;
+
+   // setters
+    void setBefore(double value);
+    void setAfter(double value);
     void setElectrodeSiteName(const QString &value);
+    void reset();
 
 private:
     double before;

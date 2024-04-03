@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QDateTime>
+#include <QTimer>
 #include <electrode.h>
 #include <set>
 #include <QMutex>
@@ -26,6 +27,8 @@ private:
     // state
     mutable QMutex mutex;
     bool paused = false;
+    QTimer *sessionTimer;
+    int remainingTime;
 
     // containees
     QVector<Electrode *> electrodes;
@@ -47,13 +50,11 @@ public slots:
     void setElectrodeFinishedFinalBaseline(int electrodeNum);
     void setElectrodeFinishedTreatment(int electrodeNum);
     void pauseSession();
-    void newSession();
+    void resumeTreatmentSession();
     void sessionLog();
     void timeAndDate();
-    //slots to handle play, pause, and stop buttons
-    void playButton();
-    void pauseButton();
-    void stopButton();
+    void stopSession();
+    void updateSessionTimerAndProgress();
 
 
 signals:
@@ -62,7 +63,10 @@ signals:
     void startElectrodeTreatment(int electrodeNum);
     void pauseElectrodes();
     void resumeSession();
+    void stopElectrodes();
     void powerStateChanged(bool newState);
+    void updateTimerAndProgressDisplay(const QString& timer, int progressPercentage);
+
 
 };
 
