@@ -61,7 +61,7 @@ private:
     BatteryThread *batterythread;
     PC *pc; // external device to test Neuroset device with display window for graphing EEG
     bool poweredOn = false;
-    void turnDeviceOff();
+    void turnDeviceScreenOff();
     void batteryDied();
 };
 #endif // MAINWINDOW_H

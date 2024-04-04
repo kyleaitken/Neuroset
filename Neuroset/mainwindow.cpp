@@ -128,7 +128,8 @@ void MainWindow::batteryDied()
     qInfo() << "Battery just died.";
     ui->battery->setPixmap(pixmap);
     this->battery->setOn(false);
-    turnDeviceOff();
+    this->poweredOn = false;
+    turnDeviceScreenOff();
 }
 
 void MainWindow::togglePower()
@@ -162,41 +163,46 @@ void MainWindow::on_chargeButton_clicked()
 
 void MainWindow::on_powerButton_clicked()
 {
-    if (poweredOn == false)
+    qInfo() << "Power button clicked. Previously" << (this->poweredOn ? "ON." : "OFF.");
+    if (battery->getBattery() > 0)
     {
-        ui->powerButton->setIcon(QIcon(":/images/images/PowerOn.png"));
-        ui->upButton->setEnabled(true);
-        ui->downButton->setEnabled(true);
-        ui->playButton->setEnabled(true);
-        ui->pauseButton->setEnabled(true);
-        ui->stopButton->setEnabled(true);
-        ui->selectButton->setEnabled(true);
+        if (poweredOn == false)
+        {
+            ui->powerButton->setIcon(QIcon(":/images/images/PowerOn.png"));
+            ui->upButton->setEnabled(true);
+            ui->downButton->setEnabled(true);
+            ui->playButton->setEnabled(true);
+            ui->pauseButton->setEnabled(true);
+            ui->stopButton->setEnabled(true);
+            ui->selectButton->setEnabled(true);
 
-        QStringList menuOptions;
-        menuOptions << "New Session"
-                    << "Session Logs"
-                    << "Time and Date";
+            QStringList menuOptions;
+            menuOptions << "New Session"
+                        << "Session Logs"
+                        << "Time and Date";
 
-        // Create a QStringListModel and set the menu options
-        QStringListModel *model = new QStringListModel(this);
-        model->setStringList(menuOptions);
+            // Create a QStringListModel and set the menu options
+            QStringListModel *model = new QStringListModel(this);
+            model->setStringList(menuOptions);
 
-        // Set the model on the QListView
-        ui->menuView->setModel(model);
+            // Set the model on the QListView
+            ui->menuView->setModel(model);
 
-        QModelIndex firstIndex = ui->menuView->model()->index(0, 0);
-        ui->menuView->setCurrentIndex(firstIndex);
+            QModelIndex firstIndex = ui->menuView->model()->index(0, 0);
+            ui->menuView->setCurrentIndex(firstIndex);
 
-        ui->menuView->setFocus();
-        togglePower();
-    }
-    else
-    {
-        turnDeviceOff();
+            ui->menuView->setFocus();
+            togglePower();
+        }
+        else
+        {
+            turnDeviceScreenOff();
+            togglePower();
+        }
     }
 }
 
-void MainWindow::turnDeviceOff()
+void MainWindow::turnDeviceScreenOff()
 {
     ui->powerButton->setIcon(QIcon(":/images/images/PowerOff.png"));
     auto *model = dynamic_cast<QStringListModel *>(ui->menuView->model());
@@ -211,8 +217,6 @@ void MainWindow::turnDeviceOff()
     ui->pauseButton->setEnabled(false);
     ui->stopButton->setEnabled(false);
     ui->selectButton->setEnabled(false);
-
-    togglePower();
 }
 
 void MainWindow::on_selectButton_clicked()
