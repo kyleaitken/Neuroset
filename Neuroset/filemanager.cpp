@@ -14,36 +14,46 @@ FileManager::FileManager() {}
 //     dataAsString.append(QString::number(value));
 // }
 
-// QString dirPath = ".";          // need to fig this out
-// QString fileName = "data1.txt"; // this will be incremented and manipulated for new write
+void FileManager::createFileWithData(const QDateTime &dateTime, const QVector<FrequencyData> &array)
+{
+    QString relativeDirPath = "Data Output";
+    QString fileName = generateFileName(dateTime); // generates file name
+    QStringList data;
+    for (const FrequencyData &dataVals : array)
+    {
+        data << dataVals.toString();
+    }
+    writeArrayToFile(relativeDirPath, fileName, data);
+}
 
-// QString FileManager::generateFileName()
-// {
-//     // get date time and return as string
-//     QString dateTime = "2/1/3"; // sessionlog.getDateTime();
-//                                 // check the files in data output directory and if theres one with matching datetime increment from 001 --> 002 etc.
-//     QString baseFileName = "Neuroset Data " + dateTime;
-//     QString fileName = baseFileName + ".txt";
+QString FileManager::generateFileName(const QDateTime &dateTime)
+{
+    // get date time and return as string
+    QString dateTime = dateTime.toString("yyyy-MM-dd");
+    // check the files in data output directory and if theres one with matching datetime increment from 001 --> 002 etc.
+    QString baseFileName = "Neuroset_Data_" + dateTime;
+    QString fileName = baseFileName + ".txt";
 
-//     QString dirPath = QDir::currentPath() + "\\Data Output";
-//     QDir directory(dirPath);
+    QString dirPath = QDir::currentPath() + "\\Data Output";
+    QDir directory(dirPath);
 
-//     int counter = 1;
-//     while (QFileInfo::exists(directory.absoluteFilePath(fileName)))
-//     {
-//         fileName = baseFileName + QString::number(counter) + ".txt";
-//         counter++;
-//     }
-//     return fileName;
-// }
+    int counter = 1;
+    while (QFileInfo::exists(directory.absoluteFilePath(fileName)))
+    {
+        fileName = baseFileName + QString::number(counter) + ".txt";
+        counter++;
+    }
+    return fileName;
+}
 
 void FileManager::writeArrayToFile(const QString &relativeDirPath, const QString &fileName, const QStringList &array)
 {
-    // QString fileName = generateFileName();
+    qInfo() << fileName;
     QString homePath = QDir::homePath();
     // QString dirPath = QDir::cleanPath(homePath + QDir::separator() + relativeDirPath);
-    QString dirPath = QDir::currentPath() + "\\Data Output";
-    // qInfo() << QDir::currentPath();
+    QString dirPath = QDir::currentPath() + "/Data Output/";
+    qInfo() << dirPath;
+    qInfo() << dirPath + fileName;
     QDir dir(dirPath); // hi
     if (!dir.exists())
     {
@@ -56,7 +66,7 @@ void FileManager::writeArrayToFile(const QString &relativeDirPath, const QString
         qWarning() << dirPath;
     }
 
-    QString filePath = QDir::cleanPath(dirPath + QDir::separator() + fileName);
+    QString filePath = QDir::cleanPath(dirPath + fileName);
     QFile file(filePath);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -97,20 +107,20 @@ QStringList FileManager::readFileToArray(const QString &filePath)
     return array;
 }
 
-int main()
-{
-    FileManager manager;
-    QStringList myArray = {"Line 1", "Line 2"};
-    QString relativeDirPath = "Data Output";
-    QString fileName = "Data1.txt";
+// int main()
+// {
+//     FileManager manager;
+//     QStringList myArray = {"Line 1", "Line 2"};
+//     QString relativeDirPath = "Data Output";
+//     QString fileName = "Data1.txt";
 
-    manager.writeArrayToFile(relativeDirPath, fileName, myArray);
-    // QStringList readArray = manager.readFileToArray(QDir::currentPath() + "\\Data Output\\" + fileName);
+//     manager.writeArrayToFile(relativeDirPath, fileName, myArray);
+//     // QStringList readArray = manager.readFileToArray(QDir::currentPath() + "\\Data Output\\" + fileName);
 
-    // for (const QString &line : readArray)
-    // {
-    //     qDebug() << line;
-    // }
+//     // for (const QString &line : readArray)
+//     // {
+//     //     qDebug() << line;
+//     // }
 
-    return 0;
-}
+//     return 0;
+// }

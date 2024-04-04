@@ -10,6 +10,8 @@
 #include <QListView>
 #include <QStringListModel>
 #include "pc.h"
+#include "battery.h"
+#include "batterythread.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -53,9 +55,11 @@ private:
     Ui::MainWindow *ui;
     QThread *controllerThread;
     Controller *controller;
+    battery *battery;
+    batterythread *batterythread;
     PC *pc; // external device to test Neuroset device with display window for graphing EEG
     bool poweredOn = false;
-    int curBattery = 100;
     void deviceBatteryDie();
+    void turnDeviceOff();
 };
 #endif // MAINWINDOW_H

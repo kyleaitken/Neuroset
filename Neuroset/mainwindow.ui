@@ -427,7 +427,6 @@
        <font>
         <family>Nimbus Mono L</family>
         <pointsize>25</pointsize>
-        <weight>75</weight>
         <bold>true</bold>
        </font>
       </property>
@@ -469,6 +468,19 @@
      <string>EEG Sample</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="debugButton">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>110</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>debug</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -476,7 +488,7 @@
      <x>0</x>
      <y>0</y>
      <width>1142</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

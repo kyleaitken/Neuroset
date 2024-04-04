@@ -9,6 +9,8 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    battery.cpp \
+    batterythread.cpp \
     controller.cpp \
     defs.cpp \
     electrode.cpp \
@@ -22,6 +24,8 @@ SOURCES += \
     source.cpp
 
 HEADERS += \
+    battery.h \
+    batterythread.h \
     controller.h \
     defs.h \
     electrode.h \

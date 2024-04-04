@@ -21,3 +21,6 @@ QVector<FrequencyData> SessionLog::getFrequencyData() const
 {
     return frequencyData;
 }
+
+// function here to send over data with this
+// filemanager::createFileFromData(getDateTime(), frequencyData);

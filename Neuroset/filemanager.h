@@ -9,11 +9,13 @@ class FileManager
 public:
     FileManager();
 
-    void writeArrayToFile(const QString &relativeDirPath, const QString &fileName, const QStringList &array);
+    void writeArrayToFile(const QString &relativeDirPath, const QStringList &array);
 
     QStringList readFileToArray(const QString &filePath);
 
-    QString generateFileName();
+    QString generateFileName(const QDateTime &dateTime);
+
+    void createFileWithData(const QDateTime &dateTime, const QVector<FrequencyData> &array)
 };
 
 #endif // FILEMANAGER_H

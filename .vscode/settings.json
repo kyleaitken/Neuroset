@@ -1,3 +1,4 @@
 {
-    "C_Cpp.errorSquiggles": "enabled"
+    "C_Cpp.errorSquiggles": "enabled",
+    "C_Cpp.default.compilerPath": "d:\\Games\\Qt5\\Tools\\mingw810_32\\bin\\mingw32-make.exe"
 }

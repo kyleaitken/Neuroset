@@ -63,6 +63,10 @@ MainWindow::MainWindow(QWidget *parent)
     /***************  PC  ******************/
 
     controllerThread->start();
+
+    this->battery = new battery();
+    this->batterythread = new batterythread(this->battery);
+    this->batteryThread->start();
 }
 
 MainWindow::~MainWindow()
@@ -95,6 +99,7 @@ void MainWindow::deviceBatteryDie()
 {
     QPixmap pixmap(":/images/images/0Battery.png");
     ui->battery->setPixmap(pixmap);
+    turnDeviceOff();
 }
 
 void MainWindow::togglePower()
@@ -111,8 +116,7 @@ void MainWindow::togglePower()
 
 void MainWindow::on_powerButton_clicked()
 {
-
-    if (poweredOn == false)
+    if (poweredOn == false && curBattery > 0)
     {
         ui->powerButton->setIcon(QIcon(":/images/images/PowerOn.png"));
         ui->upButton->setEnabled(true);
@@ -142,22 +146,27 @@ void MainWindow::on_powerButton_clicked()
     }
     else
     {
-        ui->powerButton->setIcon(QIcon(":/images/images/PowerOff.png"));
-        auto *model = dynamic_cast<QStringListModel *>(ui->menuView->model());
-        if (model)
-        {
-            model->setStringList(QStringList()); // Clear the model
-        }
-
-        ui->upButton->setEnabled(false);
-        ui->downButton->setEnabled(false);
-        ui->playButton->setEnabled(false);
-        ui->pauseButton->setEnabled(false);
-        ui->stopButton->setEnabled(false);
-        ui->selectButton->setEnabled(false);
-
-        togglePower();
+        turnDeviceOff();
     }
+}
+
+void MainWindow::turnDeviceOff()
+{
+    ui->powerButton->setIcon(QIcon(":/images/images/PowerOff.png"));
+    auto *model = dynamic_cast<QStringListModel *>(ui->menuView->model());
+    if (model)
+    {
+        model->setStringList(QStringList()); // Clear the model
+    }
+
+    ui->upButton->setEnabled(false);
+    ui->downButton->setEnabled(false);
+    ui->playButton->setEnabled(false);
+    ui->pauseButton->setEnabled(false);
+    ui->stopButton->setEnabled(false);
+    ui->selectButton->setEnabled(false);
+
+    togglePower();
 }
 
 void MainWindow::on_selectButton_clicked()
