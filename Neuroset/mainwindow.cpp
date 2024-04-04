@@ -57,10 +57,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopSession);
     connect(controller, &Controller::updateTimerAndProgressDisplay, this, &MainWindow::updateUITimerAndProgress);
 
-
     /***************  PC  ******************/
-    pc = new PC(this);    // external device to test Neuroset device with display window for graphing EEG   [ MEMORY ALLOC ]
-    connect(pc, SIGNAL(signalDisplayGraphData(QVector<double>)), this, SLOT(slotDisplayGraphData(QVector<double>)));    // connecting PC signal to MAINWINDOW slot for PC -> MAINWINDOW ui display event
+    pc = new PC(this);                                                                                               // external device to test Neuroset device with display window for graphing EEG   [ MEMORY ALLOC ]
+    connect(pc, SIGNAL(signalDisplayGraphData(QVector<double>)), this, SLOT(slotDisplayGraphData(QVector<double>))); // connecting PC signal to MAINWINDOW slot for PC -> MAINWINDOW ui display event
     /***************  PC  ******************/
 
     controllerThread->start();
@@ -90,6 +89,12 @@ void MainWindow::on_downButton_clicked()
     QModelIndex newIndex = ui->menuView->model()->index(nextRow, 0);
     ui->menuView->setCurrentIndex(newIndex);
     ui->menuView->setFocus();
+}
+
+void MainWindow::deviceBatteryDie()
+{
+    QPixmap pixmap(":/images/images/0Battery.png");
+    ui->battery->setPixmap(pixmap);
 }
 
 void MainWindow::togglePower()
@@ -207,7 +212,8 @@ void MainWindow::on_stopButton_clicked()
     emit stopButtonPressed();
 }
 
-void MainWindow::updateUITimerAndProgress(const QString& timeString, int progressPercentage) {
+void MainWindow::updateUITimerAndProgress(const QString &timeString, int progressPercentage)
+{
     ui->timerLabel->setText(timeString);
     ui->progressBar->setValue(progressPercentage);
 }
@@ -215,11 +221,11 @@ void MainWindow::updateUITimerAndProgress(const QString& timeString, int progres
 // on signal emission from PC this slot function is called for a PC->MainWindow display event to plot graph data to QCustomPlot::graphDisplayPC
 void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
 {
-    ui->graphDisplayPC->xAxis->setNumberFormat("g"); // use general formatting for tick labels
+    ui->graphDisplayPC->xAxis->setNumberFormat("g");  // use general formatting for tick labels
     ui->graphDisplayPC->xAxis->setNumberPrecision(6); // set the precision of tick labels
 
     // set the tick count and label spacing for the y-axis
-    ui->graphDisplayPC->yAxis->setNumberFormat("g"); // use general formatting for tick labels
+    ui->graphDisplayPC->yAxis->setNumberFormat("g");  // use general formatting for tick labels
     ui->graphDisplayPC->yAxis->setNumberPrecision(6); // set the precision of tick labels
 
     // set font size for the x-axis tick labels
@@ -232,11 +238,11 @@ void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
     yAxisFont.setPointSize(6); // Adjust the font size as needed
     ui->graphDisplayPC->yAxis->setTickLabelFont(yAxisFont);
 
-    ui->graphDisplayPC->yAxis->setLabel("SITE TITLE"); // set y-axis label
+    ui->graphDisplayPC->yAxis->setLabel("SITE TITLE");          // set y-axis label
     ui->graphDisplayPC->xAxis->setLabelFont(QFont("Arial", 4)); // set x-axis label font
     ui->graphDisplayPC->yAxis->setLabelFont(QFont("Arial", 8)); // set y-axis label font
-    ui->graphDisplayPC->xAxis->setLabelColor(Qt::black); // set x-axis label color
-    ui->graphDisplayPC->yAxis->setLabelColor(Qt::black); // set y-axis label color
+    ui->graphDisplayPC->xAxis->setLabelColor(Qt::black);        // set x-axis label color
+    ui->graphDisplayPC->yAxis->setLabelColor(Qt::black);        // set y-axis label color
 
     // following is adding the points to the graph and scalling the graph
     int numDataPoints = yPlot.size();
@@ -244,8 +250,8 @@ void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
     QVector<double> xPlot;
     for (int i = 0; i < numDataPoints; ++i)
     {
-       double x = i*SAMPLE_RATE + DATA_START;    // DATA_START  points <20 look have an inconsistent look
-       xPlot.push_back(x);
+        double x = i * SAMPLE_RATE + DATA_START; // DATA_START  points <20 look have an inconsistent look
+        xPlot.push_back(x);
     }
 
     // add a graph if one doesn't exist already
@@ -261,10 +267,7 @@ void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
     ui->graphDisplayPC->replot();
 }
 
-
 void MainWindow::on_EEGSampleButton_clicked()
 {
     pc->displayElectrodeEEG("Fp1");
 }
-
-

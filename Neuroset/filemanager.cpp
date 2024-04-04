@@ -3,6 +3,7 @@
 #include <QTextStream>
 #include <QDir>
 #include <QDebug>
+#include <QFileInfo>
 
 FileManager::FileManager() {}
 // QList<double> data = {1.2, 232.3, 34223.5}
@@ -14,10 +15,31 @@ FileManager::FileManager() {}
 // }
 
 // QString dirPath = ".";          // need to fig this out
-// QString fileName = "data1.txt"; // this will be incremented and manipulated for new writes
+// QString fileName = "data1.txt"; // this will be incremented and manipulated for new write
 
-void FileManager::writeArrayToFile(const QString &relativeDirPath, const QString &fileName, const QStringList &array)
+QString FileManager::generateFileName()
 {
+    // get date time and return as string
+    QString dateTime = "2/1/3"; // sessionlog.getDateTime();
+                                // check the files in data output directory and if theres one with matching datetime increment from 001 --> 002 etc.
+    QString baseFileName = "Neuroset Data " + dateTime;
+    QString fileName = baseFileName + ".txt";
+
+    QString dirPath = QDir::currentPath() + "\\Data Output";
+    QDir directory(dirPath);
+
+    int counter = 1;
+    while (QFileInfo::exists(directory.absoluteFilePath(fileName)))
+    {
+        fileName = baseFileName + QString::number(counter) + ".txt";
+        counter++;
+    }
+    return fileName;
+}
+
+void FileManager::writeArrayToFile(const QString &relativeDirPath, const QStringList &array)
+{
+    QString fileName = generateFileName();
     QString homePath = QDir::homePath();
     // QString dirPath = QDir::cleanPath(homePath + QDir::separator() + relativeDirPath);
     QString dirPath = QDir::currentPath() + "\\Data Output";
@@ -75,20 +97,20 @@ QStringList FileManager::readFileToArray(const QString &filePath)
     return array;
 }
 
-//int main()
-//{
-//    FileManager manager;
-//    QStringList myArray = {"Line 1", "Line 2"};
-//    QString relativeDirPath = "Data Output";
-//    QString fileName = "Data1.txt";
+int main()
+{
+    FileManager manager;
+    QStringList myArray = {"Line 1", "Line 2"};
+    QString relativeDirPath = "Data Output";
+    // QString fileName = "Data1.txt";
 
-//    manager.writeArrayToFile(relativeDirPath, fileName, myArray);
-//    QStringList readArray = manager.readFileToArray(QDir::currentPath() + "\\Data Output\\" + fileName);
+    manager.writeArrayToFile(relativeDirPath, myArray);
+    // QStringList readArray = manager.readFileToArray(QDir::currentPath() + "\\Data Output\\" + fileName);
 
-//    for (const QString &line : readArray)
-//    {
-//        qDebug() << line;
-//    }
+    for (const QString &line : readArray)
+    {
+        qDebug() << line;
+    }
 
-//    return 0;
-//}
+    return 0;
+}

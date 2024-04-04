@@ -44,16 +44,18 @@ private slots:
     void on_playButton_clicked();
     void on_pauseButton_clicked();
     void on_stopButton_clicked();
-    void updateUITimerAndProgress(const QString& timeString, int progressPercentage);
+    void updateUITimerAndProgress(const QString &timeString, int progressPercentage);
 
-    void slotDisplayGraphData(QVector<double> yPlot);                                   // signal event emmitted from PC as a result of a ui display request
+    void slotDisplayGraphData(QVector<double> yPlot); // signal event emmitted from PC as a result of a ui display request
     void on_EEGSampleButton_clicked();
 
 private:
     Ui::MainWindow *ui;
     QThread *controllerThread;
     Controller *controller;
-    PC* pc;                     // external device to test Neuroset device with display window for graphing EEG
+    PC *pc; // external device to test Neuroset device with display window for graphing EEG
     bool poweredOn = false;
+    int curBattery = 100;
+    void deviceBatteryDie();
 };
 #endif // MAINWINDOW_H
