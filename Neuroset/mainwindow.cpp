@@ -21,6 +21,10 @@ MainWindow::MainWindow(QWidget *parent)
     Controller *controller = new Controller();
     controller->moveToThread(controllerThread);
 
+    this->battery = new Battery();
+    this->batterythread = new BatteryThread(this->battery);
+    this->batterythread->start();
+
     // Setting up Menu settings + styling
     ui->menuView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->menuView->setStyleSheet(R"(
@@ -55,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::playButtonPressed, controller, &Controller::resumeTreatmentSession);
     connect(this, &MainWindow::pauseButtonPressed, controller, &Controller::pauseSession);
     connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopSession);
+    connect(batterythread, &BatteryThread::tellMainWindowBatteryPercentage, this, &MainWindow::receiveBatteryPercentage);
     connect(controller, &Controller::updateTimerAndProgressDisplay, this, &MainWindow::updateUITimerAndProgress);
 
     /***************  PC  ******************/
@@ -63,10 +68,6 @@ MainWindow::MainWindow(QWidget *parent)
     /***************  PC  ******************/
 
     controllerThread->start();
-
-    this->battery = new battery();
-    this->batterythread = new batterythread(this->battery);
-    this->batteryThread->start();
 }
 
 MainWindow::~MainWindow()
@@ -94,11 +95,39 @@ void MainWindow::on_downButton_clicked()
     ui->menuView->setCurrentIndex(newIndex);
     ui->menuView->setFocus();
 }
-
-void MainWindow::deviceBatteryDie()
+void MainWindow::receiveBatteryPercentage(int curBattery)
+{
+    if (curBattery == 0)
+    {
+        batteryDied();
+    }
+    else if (curBattery < 25)
+    {
+        QPixmap pixmap(":/images/images/1Battery.png");
+        ui->battery->setPixmap(pixmap);
+    }
+    else if (curBattery < 50)
+    {
+        QPixmap pixmap(":/images/images/2Battery.png");
+        ui->battery->setPixmap(pixmap);
+    }
+    else if (curBattery < 75)
+    {
+        QPixmap pixmap(":/images/images/3Battery.png");
+        ui->battery->setPixmap(pixmap);
+    }
+    else
+    {
+        QPixmap pixmap(":/images/images/4Battery.png");
+        ui->battery->setPixmap(pixmap);
+    }
+}
+void MainWindow::batteryDied()
 {
     QPixmap pixmap(":/images/images/0Battery.png");
+    qInfo() << "Battery just died.";
     ui->battery->setPixmap(pixmap);
+    this->battery->setOn(false);
     turnDeviceOff();
 }
 
@@ -107,16 +136,33 @@ void MainWindow::togglePower()
     if (this->poweredOn == false)
     {
         this->poweredOn = true;
+        this->battery->setOn(true);
     }
     else
     {
         this->poweredOn = false;
+        this->battery->setOn(false);
+    }
+}
+
+void MainWindow::on_chargeButton_clicked()
+{
+    qInfo() << "Charging button clicked";
+    if (this->battery->isCharging())
+    {
+        this->battery->setCharging(false);
+        ui->chargingBolt->setPixmap(QPixmap(":/images/images/empty.png"));
+    }
+    else
+    {
+        this->battery->setCharging(true);
+        ui->chargingBolt->setPixmap(QPixmap(":/images/images/charging.png"));
     }
 }
 
 void MainWindow::on_powerButton_clicked()
 {
-    if (poweredOn == false && curBattery > 0)
+    if (poweredOn == false)
     {
         ui->powerButton->setIcon(QIcon(":/images/images/PowerOn.png"));
         ui->upButton->setEnabled(true);

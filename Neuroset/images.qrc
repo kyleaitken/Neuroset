@@ -13,6 +13,8 @@
         <file>images/up.png</file>
         <file>images/Menu.png</file>
         <file>images/0Battery.png</file>
+        <file>images/charging.png</file>
+        <file>images/empty.png</file>
     </qresource>
     <qresource prefix="/">
         <file>images/Menu.png</file>

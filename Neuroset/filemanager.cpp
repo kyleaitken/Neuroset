@@ -3,6 +3,7 @@
 #include <QTextStream>
 #include <QDir>
 #include <QDebug>
+#include <QDateTime>
 #include <QFileInfo>
 
 FileManager::FileManager() {}
@@ -14,22 +15,23 @@ FileManager::FileManager() {}
 //     dataAsString.append(QString::number(value));
 // }
 
-void FileManager::createFileWithData(const QDateTime &dateTime, const QVector<FrequencyData> &array)
-{
-    QString relativeDirPath = "Data Output";
-    QString fileName = generateFileName(dateTime); // generates file name
-    QStringList data;
-    for (const FrequencyData &dataVals : array)
-    {
-        data << dataVals.toString();
-    }
-    writeArrayToFile(relativeDirPath, fileName, data);
-}
+// void FileManager::createFileWithData(const QDateTime &dateTime, const QVector<FrequencyData> &array)
+// {
+//     QString relativeDirPath = "Data Output";
+//     QString fileName = generateFileName(dateTime); // generates file name
+//     QStringList data;
+//     for (const FrequencyData &dataVals : array)
+//     {
+//         data << dataVals.toString();
+//     }
+//     writeArrayToFile(relativeDirPath, fileName, data);
+// }
 
-QString FileManager::generateFileName(const QDateTime &dateTime)
+QString FileManager::generateFileName() // const QDateTime &dateTime
 {
     // get date time and return as string
-    QString dateTime = dateTime.toString("yyyy-MM-dd");
+    // QString dateTime = dateTime.toString("yyyy-MM-dd");
+    QString dateTime = "1";
     // check the files in data output directory and if theres one with matching datetime increment from 001 --> 002 etc.
     QString baseFileName = "Neuroset_Data_" + dateTime;
     QString fileName = baseFileName + ".txt";

@@ -1,12 +1,13 @@
 #ifndef BATTERY_H
 #define BATTERY_H
 #include "defs.h"
-class battery
+class Battery
 {
 public:
-    battery();
+    Battery();
     int getBattery();
     void reduceBattery();
+    void increaseBattery();
     void setBattery(int battery);
 
     // getters

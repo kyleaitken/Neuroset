@@ -1,38 +1,45 @@
 #include "battery.h"
 
-battery::battery() {}
+Battery::Battery() {}
 
-void battery::reduceBattery()
+void Battery::reduceBattery()
 {
-    this->curBattery -= 1;
+    if (this->curBattery > 0)
+        this->curBattery -= 1;
 }
 
-void battery::setBattery(int battery)
+void Battery::setBattery(int battery)
 {
     this->curBattery = battery;
 }
 
-int battery::getBattery()
+void Battery::increaseBattery()
+{
+    if (this->curBattery < 100)
+        this->curBattery += 1;
+}
+
+int Battery::getBattery()
 {
     return this->curBattery;
 }
 
-bool battery::isCharging() const
+bool Battery::isCharging() const
 {
     return this->charging;
 }
 
-bool battery::isOn() const
+bool Battery::isOn() const
 {
     return this->on;
 }
 
-void battery::setCharging(bool charging)
+void Battery::setCharging(bool charging)
 {
     this->charging = charging;
 }
 
-void battery::setOn(bool on)
+void Battery::setOn(bool on)
 {
     this->on = on;
 }

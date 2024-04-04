@@ -1,19 +1,16 @@
 #ifndef BATTERYTHREAD_H
 #define BATTERYTHREAD_H
-
-#include <QThread>
 #include "battery.h"
-
-class batterythread : public QThread
+#include <QThread>
+class BatteryThread : public QThread
 {
     Q_OBJECT
-
 public:
-    explicit batterythread(battery *battery, QObject *parent = nullptr);
-    void run() override;
-
-private:
-    battery *battery;
+    explicit BatteryThread(Battery *battery, QObject *parent = nullptr);
+    void run();
+    Battery *battery;
+signals:
+    void tellMainWindowBatteryPercentage(int curBattery);
 };
 
 #endif // BATTERYTHREAD_H
