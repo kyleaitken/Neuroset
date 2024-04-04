@@ -1,6 +1,6 @@
 #include "sessionlog.h"
 
-SessionLog::SessionLog(QDateTime &sessionDateTime, QVector<FrequencyData> &freqData): sessionDateTime(sessionDateTime), frequencyData(freqData) {}
+SessionLog::SessionLog(QDateTime &sessionDateTime, QVector<FrequencyData> &freqData) : sessionDateTime(sessionDateTime), frequencyData(freqData) {}
 
 QDate SessionLog::getDate() const
 {
@@ -12,7 +12,8 @@ QTime SessionLog::getTime() const
     return sessionDateTime.time();
 }
 
-QDateTime SessionLog::getDateTime() const {
+QDateTime SessionLog::getDateTime() const
+{
     return sessionDateTime;
 }
 
