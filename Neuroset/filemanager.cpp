@@ -27,13 +27,16 @@ FileManager::FileManager() {}
 //     writeArrayToFile(relativeDirPath, fileName, data);
 // }
 
-QString FileManager::generateFileName() // const QDateTime &dateTime
+void FileManager::addSessionLog(SessionLog* log) {
+    QString fileName = generateFileName(log->getDate());
+    qInfo() << "filename: " << fileName;
+    writeSessionDataToFile(fileName, log->getFrequencyData());
+}
+
+QString FileManager::generateFileName(const QDate &date) // const QDateTime &dateTime
 {
-    // get date time and return as string
-    // QString dateTime = dateTime.toString("yyyy-MM-dd");
-    QString dateTime = "1";
     // check the files in data output directory and if theres one with matching datetime increment from 001 --> 002 etc.
-    QString baseFileName = "Neuroset_Data_" + dateTime;
+    QString baseFileName = "Neuroset_Data_" + date.toString("yyyy-MM-dd");
     QString fileName = baseFileName + ".txt";
 
     QString dirPath = QDir::currentPath() + "\\Data Output";
@@ -48,7 +51,7 @@ QString FileManager::generateFileName() // const QDateTime &dateTime
     return fileName;
 }
 
-void FileManager::writeArrayToFile(const QString &relativeDirPath, const QString &fileName, const QStringList &array)
+void FileManager::writeSessionDataToFile(const QString &fileName, const QVector<FrequencyData> &freqData)
 {
     qInfo() << fileName;
     QString homePath = QDir::homePath();
@@ -78,9 +81,9 @@ void FileManager::writeArrayToFile(const QString &relativeDirPath, const QString
 
     QTextStream out(&file);
 
-    for (const QString &element : array)
+    for (auto data : freqData)
     {
-        out << element << "\n";
+        out << data.getElectrodeSiteName() << ": " << data.getBefore() << ", " << data.getAfter() << "\n";
     }
 
     file.close();

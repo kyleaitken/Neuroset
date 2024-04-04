@@ -70,7 +70,7 @@ void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum){
     QMutexLocker locker(&mutex);
     electrodesFinishedFinalBaseline.insert(electrodeNum);
     if (checkFinalBaselineFinished()){
-        qInfo() << "Electrodes have finished final baseline";
+        qInfo() << "Electrodes have finished final baseline in thread ID: " << QThread::currentThreadId();
         recordSession();
     }
 }
@@ -82,7 +82,7 @@ bool Controller::checkInitialBaselineFinished(){
 
 
 bool Controller::checkFinalBaselineFinished(){
-    return static_cast<int>(electrodesFinishedInitialBaseline.size()) == numElectrodes;
+    return static_cast<int>(electrodesFinishedFinalBaseline.size()) == numElectrodes;
 }
 
 // Iterates through the electrodes and instructs them to perform their site specific eeg analysis and treatment
@@ -99,6 +99,7 @@ void Controller::recordSession() {
     }
     SessionLog* session = new SessionLog(sessionDateTime, electrodeData);
     qInfo() << "Completed session at " << session->getDateTime();
+    fileManager.addSessionLog(session);
     // send session log to file manager
 }
 

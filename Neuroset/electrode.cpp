@@ -15,7 +15,7 @@ void Electrode::getInitialBaselineFrequency() {
     qInfo() << "Electrode " << electrodeNum << " getting initial freq in thread: " << QThread::currentThreadId();
 
     // Simulate some work that can be broken up so we can check the pause requested state
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 2; i++) {
         QThread::msleep(2000);
         QCoreApplication::processEvents();
         if (stopRequested) {
@@ -43,7 +43,7 @@ void Electrode::getFinalBaselineFrequency(){
     qInfo() << "Electrode " << electrodeNum << " getting final freq in thread: " << QThread::currentThreadId();
 
     // Simulate some work that can be broken up so we can check the pause requested state
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 2; i++) {
         QThread::msleep(2000);
         QCoreApplication::processEvents();
         if (stopRequested) {
@@ -79,8 +79,8 @@ void Electrode::startTreatment()
     qInfo() << "Electrode " << electrodeNum << " performing treatment cycle";
 
     // Simulate some work that can be broken up so we can check the pause requested state
-    for (int i = 0; i < 5; i++) {
-        QThread::msleep(2000);
+    for (int i = 0; i < 2; i++) {
+        QThread::msleep(1000);
         QCoreApplication::processEvents();
         if (stopRequested) {
             qInfo() << "Electrode " << electrodeNum << " stop requested. Exiting treatment.";

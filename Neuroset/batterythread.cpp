@@ -1,5 +1,5 @@
 
-#include "BatteryThread.h"
+#include "batterythread.h"
 
 BatteryThread::BatteryThread(Battery *battery, QObject *parent)
     : QThread(parent), battery(battery)
@@ -12,7 +12,7 @@ void BatteryThread::run()
     {
         if (battery->isOn() && !battery->isCharging())
         {
-            QThread::sleep(1);
+            QThread::sleep(20);
             battery->reduceBattery();
             if (battery->getBattery() % 5 == 0)
                 qInfo() << "Device is ON and NOT charging. Battery is currently at " + QString::number(battery->getBattery());
@@ -20,7 +20,7 @@ void BatteryThread::run()
         }
         else if (battery->isOn() && battery->isCharging())
         {
-            QThread::sleep(1);
+            QThread::sleep(5);
             battery->increaseBattery();
             if (battery->getBattery() % 5 == 0)
                 qInfo() << "Device is ON and Charging. Battery is currently at " + QString::number(battery->getBattery());

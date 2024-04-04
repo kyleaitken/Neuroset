@@ -11,6 +11,7 @@
 #include <QMutexLocker>
 #include <defs.h>
 #include "sessionlog.h"
+#include "filemanager.h"
 
 class Controller : public QObject
 {
@@ -31,6 +32,7 @@ private:
     int remainingTime;
 
     // containees
+    FileManager fileManager;
     QVector<Electrode *> electrodes;
     QVector<QThread *> electrodeThreads;
     std::set<int> electrodesFinishedInitialBaseline;
