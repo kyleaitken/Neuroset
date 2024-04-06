@@ -4,8 +4,15 @@
 #include <QString>
 #include <QStringList>
 #include <QDateTime>
+#include <QRegularExpression>
+#include <QFile>
+#include <QTextStream>
+#include <QDir>
+#include <QDebug>
+#include <QFileInfo>
 #include "frequencydata.h"
 #include "sessionlog.h"
+
 
 class FileManager
 {
@@ -13,17 +20,16 @@ public:
     FileManager();
 
     void addSessionLog(SessionLog* log);
-
     void writeSessionDataToFile(const QString &fileName, const QVector<FrequencyData> &freqData);
+    QStringList getSessionDates();
+    QStringList getFileData(const QString& partialFileName);
 
-    QStringList readFileToArray(const QString &filePath);
-
-    QString generateFileName(const QDate &date);
-
-    // void createFileWithData(const QDateTime &dateTime, const QVector<FrequencyData> &array)
 
 private:
     QString relativeDirPath = "Data Output";
+
+    QString generateFileName(const QDate &date);
+
 
 };
 

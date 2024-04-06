@@ -427,6 +427,7 @@
        <font>
         <family>Nimbus Mono L</family>
         <pointsize>25</pointsize>
+        <weight>75</weight>
         <bold>true</bold>
        </font>
       </property>
@@ -458,8 +459,8 @@
    <widget class="QPushButton" name="EEGSampleButton">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>160</y>
+      <x>540</x>
+      <y>150</y>
       <width>83</width>
       <height>25</height>
      </rect>
@@ -516,6 +517,65 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QListView" name="prevSessionsList">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>210</y>
+      <width>121</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="uploadButton">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>170</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Upload Data to PC</string>
+    </property>
+   </widget>
+   <widget class="QListView" name="sessionLogView">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>210</y>
+      <width>171</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>190</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Previous Sessions</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>190</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Session Data</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -523,7 +583,7 @@
      <x>0</x>
      <y>0</y>
      <width>1142</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

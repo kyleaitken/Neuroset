@@ -163,3 +163,13 @@ void Controller::updateSessionTimerAndProgress() {
          sessionTimer->stop();
      }
 }
+
+void Controller::getPreviousSessionDates() {
+    QStringList sessionDates = fileManager.getSessionDates();
+    emit sessionDatesRetrieved(sessionDates);
+}
+
+void Controller::getSessionLogData(const QString& sessionFileName) {
+    QStringList sessionLogData = fileManager.getFileData(sessionFileName);
+    emit sessionLogDataRetrieved(sessionLogData);
+}

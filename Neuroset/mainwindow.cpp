@@ -45,6 +45,12 @@ MainWindow::MainWindow(QWidget *parent)
     )");
     ui->menuView->setSelectionMode(QAbstractItemView::NoSelection);
 
+    ui->prevSessionsList->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->prevSessionsList->setSelectionBehavior(QAbstractItemView::SelectItems);
+    connect(ui->prevSessionsList, &QListView::doubleClicked, this, [this](const QModelIndex &index) {
+        this->onSessionDoubleClicked(index);
+    });
+
     ui->upButton->setEnabled(false);
     ui->downButton->setEnabled(false);
     ui->playButton->setEnabled(false);
@@ -59,8 +65,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::playButtonPressed, controller, &Controller::resumeTreatmentSession);
     connect(this, &MainWindow::pauseButtonPressed, controller, &Controller::pauseSession);
     connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopSession);
+    connect(this, &MainWindow::getPreviousSessionDates, controller, &Controller::getPreviousSessionDates);
+    connect(this, &MainWindow::getSessionLogData, controller, &Controller::getSessionLogData);
     connect(batterythread, &BatteryThread::tellMainWindowBatteryPercentage, this, &MainWindow::receiveBatteryPercentage);
     connect(controller, &Controller::updateTimerAndProgressDisplay, this, &MainWindow::updateUITimerAndProgress);
+    connect(controller, &Controller::sessionDatesRetrieved, this, &MainWindow::slotDisplaySessionDates);
+    connect(controller, &Controller::sessionLogDataRetrieved, this, &MainWindow::slotDisplaySessionLogData);
 
     /***************  PC  ******************/
     pc = new PC(this);                                                                                               // external device to test Neuroset device with display window for graphing EEG   [ MEMORY ALLOC ]
@@ -329,4 +339,28 @@ void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
 void MainWindow::on_EEGSampleButton_clicked()
 {
     pc->displayElectrodeEEG("Fp1");
+}
+
+void MainWindow::on_uploadButton_clicked() {
+    emit getPreviousSessionDates();
+}
+
+void MainWindow::slotDisplaySessionDates(QStringList sessionDates) {
+    if (!sessionDates.isEmpty()) {
+        QStringListModel* model = new QStringListModel(sessionDates, this);
+        ui->prevSessionsList->setModel(model);
+    } else {
+        ui->prevSessionsList->setModel(new QStringListModel(this));
+    }
+}
+
+void MainWindow::onSessionDoubleClicked(const QModelIndex &index) {
+    QString sessionFileName = index.data(Qt::DisplayRole).toString();
+    qDebug() << "Double-clicked on item:" << sessionFileName;
+    emit getSessionLogData(sessionFileName);
+}
+
+void MainWindow::slotDisplaySessionLogData(QStringList sessionLogData) {
+    QStringListModel* model = new QStringListModel(sessionLogData, this);
+    ui->sessionLogView->setModel(model);
 }

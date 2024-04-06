@@ -37,6 +37,8 @@ signals:
     void playButtonPressed();
     void pauseButtonPressed();
     void stopButtonPressed();
+    void getPreviousSessionDates();
+    void getSessionLogData(const QString &sessionFileName);
 
 private slots:
     void on_chargeButton_clicked();
@@ -47,11 +49,16 @@ private slots:
     void on_playButton_clicked();
     void on_pauseButton_clicked();
     void on_stopButton_clicked();
+    void on_uploadButton_clicked();
+    void onSessionDoubleClicked(const QModelIndex &index);
+
     void updateUITimerAndProgress(const QString &timeString, int progressPercentage);
     void receiveBatteryPercentage(int curBattery);
 
     void slotDisplayGraphData(QVector<double> yPlot); // signal event emmitted from PC as a result of a ui display request
     void on_EEGSampleButton_clicked();
+    void slotDisplaySessionDates(QStringList sessionDates);
+    void slotDisplaySessionLogData(QStringList sessionLogData);
 
 private:
     Ui::MainWindow *ui;

@@ -16,7 +16,7 @@ void Electrode::getInitialBaselineFrequency() {
 
     // Simulate some work that can be broken up so we can check the pause requested state
     for (int i = 0; i < 2; i++) {
-        QThread::msleep(2000);
+        QThread::msleep(1000);
         QCoreApplication::processEvents();
         if (stopRequested) {
             qInfo() << "Electrode " << electrodeNum << " stop requested. Exiting initial baseline frequency gathering.";
@@ -44,7 +44,7 @@ void Electrode::getFinalBaselineFrequency(){
 
     // Simulate some work that can be broken up so we can check the pause requested state
     for (int i = 0; i < 2; i++) {
-        QThread::msleep(2000);
+        QThread::msleep(1000);
         QCoreApplication::processEvents();
         if (stopRequested) {
             qInfo() << "Electrode " << electrodeNum << " stop requested. Exiting final baseline frequency gathering.";
