@@ -20,6 +20,7 @@ class Controller : public QObject
 public:
     Controller(QObject *parent = nullptr);
     bool electrodesConnected();
+    void setPatientState(const QString& newState);
 
 private:
     // attributes
@@ -34,7 +35,7 @@ private:
     bool sessionActive = false;
     QTimer *sessionTimer;
     int remainingTime;
-    PatientState currentState = PatientState::Resting;
+    PatientState currentPatientState = PatientState::Resting;
 
     // containees
     FileManager fileManager;
@@ -50,6 +51,7 @@ private:
     bool checkFinalBaselineFinished();
     void startIndividualElectrodeTreatment(int electrodeNum);
     void recordSession();
+    void resetState();
 
 public slots:
     // Session control
@@ -68,12 +70,11 @@ public slots:
     void setElectrodeContactSecured();
 
     // Session logging
-    void sessionLog();
     void getSessionLogData(const QString &sessionName);
+    void getPreviousSessionDates();
 
     void updateTimeAndDate();
     void updateSessionTimerAndProgress();
-    void getPreviousSessionDates();
     void slotGetElectrodeEEGWave(const QString& eName);
 
 signals:
@@ -88,6 +89,8 @@ signals:
     void sessionDatesRetrieved(QStringList sessionDates);
     void sessionLogDataRetrieved(QStringList sessionLogData);
     void signalDisplayElectrodeWave(const Wave& wave);
+    void signalTreatmentSessionComplete();
+    void signalUpdatedPatientState(PatientState newState);
 
 };
 

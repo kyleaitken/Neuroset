@@ -62,7 +62,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     // MainWindow Signals to Controller Slots
     connect(this, &MainWindow::signalNewSession, controller, &Controller::startNewSession);
-    connect(this, &MainWindow::signalSessionLog, controller, &Controller::sessionLog);
     connect(this, &MainWindow::signalTimeAndDate, controller, &Controller::updateTimeAndDate);
     connect(this, &MainWindow::playButtonPressed, controller, &Controller::resumeTreatmentSession);
     connect(this, &MainWindow::pauseButtonPressed, controller, &Controller::pauseSession);
@@ -84,6 +83,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(controller, &Controller::sessionDatesRetrieved, this, &MainWindow::slotDisplaySessionDates);
     connect(controller, &Controller::sessionLogDataRetrieved, this, &MainWindow::slotDisplaySessionLogData);
     connect(controller, &Controller::signalDisplayElectrodeWave, this, &MainWindow::slotDisplayGraphData);
+    connect(controller, &Controller::signalTreatmentSessionComplete, this, &MainWindow::slotTreatmentSessionComplete);
+    connect(controller, &Controller::startElectrodeTreatment, this, &MainWindow::slotTreatmentApplicationStarted);
+    connect(controller, &Controller::startElectrodeFinalBaseline, this, &MainWindow::slotTreatmentApplicationFinished);
 
     controllerThread->start();
 }
@@ -266,19 +268,10 @@ void MainWindow::on_selectButton_clicked()
             ui->timerLabel->setText("");
             ui->progressBar->setValue(0);
             ui->screenStack->setCurrentIndex(1);
+            ui->patientStateComboBox->setDisabled(true);
             emit signalNewSession();
         } else {
-            ui->screenStack->setCurrentIndex(2);
-            ui->warningLabel->setWordWrap(true);
-            ui->warningLabel->setText("Unable to start session: Electrode connection is not secure");
-
-            // Display warning for 3 seconds
-            QTimer *timer = new QTimer(this);
-            timer->setSingleShot(true);
-            connect(timer, &QTimer::timeout, [this]() {
-                ui->screenStack->setCurrentIndex(0);
-            });
-            timer->start(3000);
+            displayMessage("Unable to start session: Electrode connection is not secure");
         }
         break;
     case 1:
@@ -293,6 +286,20 @@ void MainWindow::on_selectButton_clicked()
     }
 }
 
+void MainWindow::displayMessage(const QString& message) {
+    ui->screenStack->setCurrentIndex(2);
+    ui->warningLabel->setWordWrap(true);
+    ui->warningLabel->setText(message);
+
+    // Display warning for 3 seconds
+    QTimer *timer = new QTimer(this);
+    timer->setSingleShot(true);
+    connect(timer, &QTimer::timeout, [this]() {
+        ui->screenStack->setCurrentIndex(0);
+    });
+    timer->start(3000);
+}
+
 void MainWindow::on_playButton_clicked()
 {
     // TODO: check state of controller first, should be in paused state (if using a select button)
@@ -305,6 +312,7 @@ void MainWindow::on_pauseButton_clicked()
     // TODO: check state of controller, should be in an active session
     emit pauseButtonPressed();
 }
+
 
 void MainWindow::on_stopButton_clicked()
 {
@@ -402,6 +410,7 @@ void MainWindow::on_electrodeDisconnect_clicked()
 {
     ui->ContactSecureIndicator->setStyleSheet("background-color: grey;");
     ui->ContactLostIndicator->setStyleSheet("background-color: red;");
+    ui->TreatmentIndicator->setStyleSheet("background-color: grey");
     emit electrodeContactLost();
 }
 
@@ -411,3 +420,30 @@ void MainWindow::on_electrodeReconnect_clicked()
     ui->ContactLostIndicator->setStyleSheet("background-color: grey;");
     emit electrodeContactRegained();
 }
+
+void MainWindow::slotTreatmentSessionComplete()
+{
+    ui->patientStateComboBox->setDisabled(false);
+    displayMessage("Treatment Session Complete");
+}
+
+void MainWindow::on_patientStateComboBox_currentIndexChanged() {
+    qInfo() << ui->patientStateComboBox->currentText();
+    controller->setPatientState(ui->patientStateComboBox->currentText());
+}
+
+void MainWindow::slotTreatmentApplicationStarted() {
+    ui->TreatmentIndicator->setStyleSheet("background-color: grey");
+
+    QTimer *timer = new QTimer(this);
+    timer->setSingleShot(true);
+    connect(timer, &QTimer::timeout, [this]() {
+        ui->TreatmentIndicator->setStyleSheet("background-color: green");
+    });
+    timer->start(500);
+}
+
+void MainWindow::slotTreatmentApplicationFinished() {
+    ui->TreatmentIndicator->setStyleSheet("background-color: grey");
+}
+

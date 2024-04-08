@@ -16,8 +16,9 @@ void Electrode::getInitialBaselineFrequency() {
     QVector<EEGSourceData> EEGData = source.getSourceData(patientState);
 
     double dominantFrequency = calculateDominantFrequency(EEGData);
-    freqData.setBefore(dominantFrequency);
-    qInfo() << "Dom freq: " << dominantFrequency;
+    double roundedFrequency = std::round(dominantFrequency * 10) / 10;
+
+    freqData.setBefore(roundedFrequency);
 
     generateWaveData(EEGData);
 
@@ -29,7 +30,7 @@ void Electrode::generateWaveData(const QVector<EEGSourceData>& EEGData) {
     double samplingRate = 200.0;
 
     for (int i = 0; i < 5; i++) {
-        QThread::msleep(1000);
+        QThread::msleep(1200);
         QCoreApplication::processEvents();
         if (stopRequested) {
             qInfo() << "Electrode " << electrodeNum << " stop requested. Exiting initial baseline frequency gathering.";
@@ -80,7 +81,7 @@ void Electrode::getFinalBaselineFrequency(){
     qInfo() << "Electrode " << electrodeNum << " getting final freq in thread: " << QThread::currentThreadId();
 
     for (int i = 0; i < 5; i++) {
-        QThread::msleep(1000);
+        QThread::msleep(1200);
         QCoreApplication::processEvents();
         if (stopRequested) {
             qInfo() << "Electrode " << electrodeNum << " stop requested. Exiting final baseline frequency gathering.";
@@ -100,7 +101,9 @@ void Electrode::getFinalBaselineFrequency(){
 
     // generate randome % between 0.7 and 0.85 to model a lowered dominant frequency from treatment
     double scaleFactor = QRandomGenerator::global()->generateDouble() * (0.85 - 0.7) + 0.7;
-    freqData.setAfter(freqData.getBefore() * scaleFactor);
+    double finalFrequency = std::round(freqData.getBefore() * scaleFactor * 10) / 10;
+
+    freqData.setAfter(finalFrequency);
     emit finalBaselineFinished(electrodeNum);
 }
 
@@ -120,7 +123,7 @@ void Electrode::startTreatment()
     // Simulate some work that can be broken up so we can check the pause requested state
     for (int i = 0; i < 4; i++) {
         qInfo() << "Applying " << offset << "Hz offset to dominant frequency of " << freqData.getBefore();
-        QThread::msleep(1000);
+        QThread::msleep(1200);
         QCoreApplication::processEvents();
         if (stopRequested) {
             qInfo() << "Electrode " << electrodeNum << " stop requested. Exiting treatment.";
@@ -165,8 +168,11 @@ void Electrode::resume() {
 
 
 void Electrode::stop() {
-    qInfo() << "Stop requested in electrode thread " << QThread::currentThreadId();
     QMutexLocker locker(&mutex);
     stopRequested = true;
     pauseRequested = false;
+}
+
+void Electrode::slotUpdatePatientState(PatientState newState) {
+    patientState = newState;
 }

@@ -6,6 +6,20 @@ Controller::Controller(QObject *parent) : QObject(parent){
     connect(sessionTimer, &QTimer::timeout, this, &Controller::updateSessionTimerAndProgress);
 }
 
+void Controller::setPatientState(const QString &newState) {
+    if (newState == "Active Task") {
+        currentPatientState = PatientState::ActiveTask;
+    } else if (newState == "Sleeping") {
+        currentPatientState = PatientState::Sleeping;
+    } else if (newState == "Stressful Task") {
+        currentPatientState = PatientState::StressfulTask;
+    } else {
+        currentPatientState = PatientState::Resting;
+    }
+
+    emit signalUpdatedPatientState(currentPatientState);
+}
+
 // Initializes electrode threads, sets up signals/slots
 void Controller::setupElectrodes(){
     for (int i = 0; i < numElectrodes; i++)
@@ -27,6 +41,9 @@ void Controller::setupElectrodes(){
         connect(this, &Controller::pauseElectrodes, electrode, &Electrode::handlePauseRequested);
         connect(this, &Controller::resumeSession, electrode, &Electrode::resume);
         connect(this, &Controller::stopElectrodes, electrode, &Electrode::stop);
+
+        // state updates
+        connect(this, &Controller::signalUpdatedPatientState, electrode, &Electrode::slotUpdatePatientState);
 
         // slots to keep track of electrodes that have finished their initial/final baselines
         connect(electrode, &Electrode::initialBaselineFinished, this, &Controller::setElectrodeFinishedInitialBaseline);
@@ -102,8 +119,9 @@ void Controller::recordSession() {
     }
     SessionLog* session = new SessionLog(sessionDateTime, electrodeData);
     qInfo() << "Completed session at " << session->getDateTime();
+    emit signalTreatmentSessionComplete();
+    resetState();
     fileManager.addSessionLog(session);
-    // send session log to file manager
 }
 
 
@@ -127,13 +145,6 @@ void Controller::setElectrodeFinishedTreatment(int electrodeNum) {
     }
 }
 
-void Controller::sessionLog(){
-    qDebug() << "Session Log";
-    //Handle session log
-
-    //will emit to update MainWindow menu as appropriate
-}
-
 void Controller::updateTimeAndDate(){
     qDebug() << "Time and Date";
     //Handle time and date
@@ -145,9 +156,11 @@ void Controller::updateTimeAndDate(){
 void Controller::stopSession(){
     sessionActive = false;
     emit stopElectrodes();
-
     sessionTimer->stop();
+    resetState();
+}
 
+void Controller::resetState() {
     electrodesFinishedInitialBaseline.clear();
     electrodesFinishedFinalBaseline.clear();
     electrodesFinishedTreatment.clear();

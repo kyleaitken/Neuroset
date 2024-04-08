@@ -56,6 +56,7 @@ public slots:
     void handlePauseRequested();
     void resume();
     void stop();
+    void slotUpdatePatientState(PatientState newState);
 };
 
 #endif // ELECTRODE_H
