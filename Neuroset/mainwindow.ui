@@ -14,64 +14,58 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="Contact">
+   <widget class="QPushButton" name="ContactSecureIndicator">
     <property name="enabled">
      <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>50</y>
+      <x>10</x>
+      <y>60</y>
       <width>16</width>
       <height>31</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton {
-	background-color: blue;
-}</string>
+     <string notr="true">background-color: gray;</string>
     </property>
     <property name="text">
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="TreatmentSignal">
+   <widget class="QPushButton" name="TreatmentIndicator">
     <property name="enabled">
      <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>50</y>
+      <x>40</x>
+      <y>60</y>
       <width>16</width>
       <height>31</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton {
-	background-color: green;
-}</string>
+     <string notr="true">background-color: gray;</string>
     </property>
     <property name="text">
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="ContactLost">
+   <widget class="QPushButton" name="ContactLostIndicator">
     <property name="enabled">
      <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>50</y>
+      <x>70</x>
+      <y>60</y>
       <width>16</width>
       <height>31</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton {
-	background-color: red;
-}</string>
+     <string notr="true">background-color: gray;</string>
     </property>
     <property name="text">
      <string/>
@@ -80,8 +74,8 @@
    <widget class="QPushButton" name="powerButton">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>50</y>
+      <x>320</x>
+      <y>60</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -97,8 +91,8 @@
    <widget class="QPushButton" name="pauseButton">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>370</y>
+      <x>90</x>
+      <y>340</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -117,8 +111,8 @@
    <widget class="QPushButton" name="playButton">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>370</y>
+      <x>140</x>
+      <y>340</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -137,8 +131,8 @@
    <widget class="QPushButton" name="stopButton">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>370</y>
+      <x>190</x>
+      <y>340</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -180,9 +174,9 @@
     <property name="geometry">
      <rect>
       <x>370</x>
-      <y>50</y>
+      <y>0</y>
       <width>20</width>
-      <height>351</height>
+      <height>441</height>
      </rect>
     </property>
     <property name="orientation">
@@ -193,7 +187,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>20</y>
+      <y>10</y>
       <width>371</width>
       <height>31</height>
      </rect>
@@ -235,9 +229,9 @@
     <property name="geometry">
      <rect>
       <x>760</x>
-      <y>60</y>
+      <y>-10</y>
       <width>20</width>
-      <height>341</height>
+      <height>461</height>
      </rect>
     </property>
     <property name="orientation">
@@ -269,26 +263,26 @@
     <property name="geometry">
      <rect>
       <x>810</x>
-      <y>60</y>
+      <y>120</y>
       <width>151</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Electrode disconnect</string>
+     <string>Electrode Disconnect</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="electrodeDisconnect_2">
+   <widget class="QPushButton" name="DonHeadset">
     <property name="geometry">
      <rect>
-      <x>820</x>
-      <y>90</y>
-      <width>131</width>
+      <x>900</x>
+      <y>80</y>
+      <width>151</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>User puts on headset</string>
+     <string>User Dons Headset</string>
     </property>
    </widget>
    <widget class="QPushButton" name="upButton">
@@ -345,10 +339,10 @@
    <widget class="QCustomPlot" name="graphDisplayPC" native="true">
     <property name="geometry">
      <rect>
-      <x>800</x>
-      <y>320</y>
-      <width>331</width>
-      <height>81</height>
+      <x>780</x>
+      <y>350</y>
+      <width>361</width>
+      <height>71</height>
      </rect>
     </property>
    </widget>
@@ -418,7 +412,7 @@
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>40</y>
+        <y>60</y>
         <width>151</width>
         <height>51</height>
        </rect>
@@ -454,13 +448,55 @@
        <number>0</number>
       </property>
      </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>81</x>
+        <y>40</y>
+        <width>121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Time Remaining:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="warningPage">
+     <property name="styleSheet">
+      <string notr="true">background-color: white;</string>
+     </property>
+     <widget class="QLabel" name="warningLabel">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>40</y>
+        <width>221</width>
+        <height>111</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Warning</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QPushButton" name="EEGSampleButton">
     <property name="geometry">
      <rect>
-      <x>810</x>
-      <y>260</y>
+      <x>800</x>
+      <y>300</y>
       <width>151</width>
       <height>25</height>
      </rect>
@@ -472,8 +508,8 @@
    <widget class="QPushButton" name="debugButton">
     <property name="geometry">
      <rect>
-      <x>890</x>
-      <y>110</y>
+      <x>910</x>
+      <y>160</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -485,8 +521,8 @@
    <widget class="QPushButton" name="chargeButton">
     <property name="geometry">
      <rect>
-      <x>890</x>
-      <y>140</y>
+      <x>910</x>
+      <y>200</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -521,8 +557,8 @@
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>70</y>
-      <width>111</width>
+      <y>140</y>
+      <width>141</width>
       <height>192</height>
      </rect>
     </property>
@@ -530,8 +566,8 @@
    <widget class="QPushButton" name="uploadButton">
     <property name="geometry">
      <rect>
-      <x>890</x>
-      <y>170</y>
+      <x>510</x>
+      <y>70</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -543,9 +579,9 @@
    <widget class="QListView" name="sessionLogView">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>70</y>
-      <width>181</width>
+      <x>600</x>
+      <y>140</y>
+      <width>141</width>
       <height>192</height>
      </rect>
     </property>
@@ -553,8 +589,8 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>50</y>
+      <x>420</x>
+      <y>110</y>
       <width>121</width>
       <height>17</height>
      </rect>
@@ -566,8 +602,8 @@
    <widget class="QComboBox" name="electrodeComboBox">
     <property name="geometry">
      <rect>
-      <x>1000</x>
-      <y>260</y>
+      <x>1020</x>
+      <y>300</y>
       <width>86</width>
       <height>25</height>
      </rect>
@@ -611,14 +647,53 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>990</x>
-      <y>240</y>
+      <x>1000</x>
+      <y>280</y>
       <width>121</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
      <string>Choose Electrode</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>40</y>
+      <width>1161</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>110</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Session Log</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="electrodeReconnect">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>120</y>
+      <width>151</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Electrode Reconnect</string>
     </property>
    </widget>
   </widget>

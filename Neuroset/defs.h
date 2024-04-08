@@ -6,7 +6,7 @@
 #include <QDebug>
 #include <QMap>
 
-constexpr float TREATMENT_TIME_SECONDS = 1380; // 23 minutes
+constexpr float TREATMENT_TIME_SECONDS = 50;
 extern const QVector<QString> eegSiteNames;
 extern const QMap<QString, int> electrodeSiteNameToNum;
 

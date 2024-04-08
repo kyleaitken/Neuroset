@@ -29,18 +29,30 @@ public:
     void togglePower();
 
 signals:
-    void togglePowerStatus();
+    // Session playout control
     void signalNewSession();
-    void signalSessionLog();
-    void signalTimeAndDate();
     void playButtonPressed();
     void pauseButtonPressed();
     void stopButtonPressed();
+
+    // Electrode Contact
+    void donHeadset();
+    void electrodeContactLost();
+    void electrodeContactRegained();
+
+    void togglePowerStatus();
+    void signalSessionLog();
+    void signalTimeAndDate();
+
+    // Session logging
     void getPreviousSessionDates();
     void getSessionLogData(const QString &sessionFileName);
+
+    // EEG Graphing
     void signalGetElectrodeEEGWave(const QString& eName);
 
 private slots:
+    // Button handlers
     void on_chargeButton_clicked();
     void on_upButton_clicked();
     void on_downButton_clicked();
@@ -51,12 +63,15 @@ private slots:
     void on_stopButton_clicked();
     void on_uploadButton_clicked();
     void onSessionDoubleClicked(const QModelIndex &index);
+    void on_EEGSampleButton_clicked();
+    void on_DonHeadset_clicked();
+    void on_electrodeDisconnect_clicked();
+    void on_electrodeReconnect_clicked();
 
+    // UI Updates
     void updateUITimerAndProgress(const QString &timeString, int progressPercentage);
     void receiveBatteryPercentage(int curBattery);
-
     void slotDisplayGraphData(const Wave& waveData); // signal event emmitted from PC as a result of a ui display request
-    void on_EEGSampleButton_clicked();
     void slotDisplaySessionDates(QStringList sessionDates);
     void slotDisplaySessionLogData(QStringList sessionLogData);
 

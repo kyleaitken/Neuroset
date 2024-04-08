@@ -39,9 +39,12 @@ void Controller::setupElectrodes(){
 
 
 void Controller::startNewSession(){
-    remainingTime = TREATMENT_TIME_SECONDS;
-    sessionTimer->start(1000);
-    emit startElectrodeInitialBaseline();
+    if (electrodesHaveContact) {
+        sessionActive = true;
+        remainingTime = TREATMENT_TIME_SECONDS;
+        sessionTimer->start(1000);
+        emit startElectrodeInitialBaseline();
+    }
 }
 
 void Controller::resumeTreatmentSession() {
@@ -131,7 +134,7 @@ void Controller::sessionLog(){
     //will emit to update MainWindow menu as appropriate
 }
 
-void Controller::timeAndDate(){
+void Controller::updateTimeAndDate(){
     qDebug() << "Time and Date";
     //Handle time and date
 
@@ -140,7 +143,7 @@ void Controller::timeAndDate(){
 
 
 void Controller::stopSession(){
-    qDebug() << "Stop Button";
+    sessionActive = false;
     emit stopElectrodes();
 
     sessionTimer->stop();
@@ -185,4 +188,26 @@ void Controller::slotGetElectrodeEEGWave(const QString& eName) {
         }
     }
 
+}
+
+void Controller::setElectrodeContactLost(){
+    if (sessionActive && electrodesHaveContact) {
+        electrodesHaveContact = false;
+        pauseSession();
+    } else {
+        electrodesHaveContact = false;
+    }
+}
+
+void Controller::setElectrodeContactSecured(){
+    if (sessionActive && !electrodesHaveContact) {
+        electrodesHaveContact = true;
+        resumeTreatmentSession();
+    } else {
+        electrodesHaveContact = true;
+    }
+}
+
+bool Controller::electrodesConnected() {
+    return electrodesHaveContact;
 }
