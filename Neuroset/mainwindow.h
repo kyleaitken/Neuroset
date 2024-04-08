@@ -9,7 +9,6 @@
 #include <QThread>
 #include <QListView>
 #include <QStringListModel>
-#include "pc.h"
 #include "battery.h"
 #include "batterythread.h"
 
@@ -67,7 +66,6 @@ private:
     Controller *controller;
     Battery *battery;
     BatteryThread *batterythread;
-    PC *pc; // external device to test Neuroset device with display window for graphing EEG
     bool poweredOn = false;
     void turnDeviceScreenOff();
     void batteryDied();

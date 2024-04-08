@@ -18,10 +18,8 @@ SOURCES += \
     frequencydata.cpp \
     main.cpp \
     mainwindow.cpp \
-    pc.cpp \
     qcustomplot.cpp \
     sessionlog.cpp \
-    source.cpp \
     sourcedata.cpp
 
 HEADERS += \
@@ -33,10 +31,8 @@ HEADERS += \
     filemanager.h \
     frequencydata.h \
     mainwindow.h \
-    pc.h \
     qcustomplot.h \
     sessionlog.h \
-    source.h \
     sourcedata.h
 
 FORMS += \

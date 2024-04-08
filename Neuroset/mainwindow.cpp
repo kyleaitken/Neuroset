@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     )");
     ui->menuView->setSelectionMode(QAbstractItemView::NoSelection);
 
+    // Set up previous sessions list
     ui->prevSessionsList->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->prevSessionsList->setSelectionBehavior(QAbstractItemView::SelectItems);
     connect(ui->prevSessionsList, &QListView::doubleClicked, this, [this](const QModelIndex &index) {
@@ -58,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->stopButton->setEnabled(false);
     ui->selectButton->setEnabled(false);
 
-    // signals to handle each menu selection
+    // MainWindow Signals to Controller Slots
     connect(this, &MainWindow::signalNewSession, controller, &Controller::startNewSession);
     connect(this, &MainWindow::signalSessionLog, controller, &Controller::sessionLog);
     connect(this, &MainWindow::signalTimeAndDate, controller, &Controller::timeAndDate);
@@ -69,16 +70,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::getSessionLogData, controller, &Controller::getSessionLogData);
     connect(this, &MainWindow::signalGetElectrodeEEGWave, controller, &Controller::slotGetElectrodeEEGWave);
 
+    // Battery Signals to MainWindow Slots
     connect(batterythread, &BatteryThread::tellMainWindowBatteryPercentage, this, &MainWindow::receiveBatteryPercentage);
+
+    // Controller Signals to MainWindow Slots
     connect(controller, &Controller::updateTimerAndProgressDisplay, this, &MainWindow::updateUITimerAndProgress);
     connect(controller, &Controller::sessionDatesRetrieved, this, &MainWindow::slotDisplaySessionDates);
     connect(controller, &Controller::sessionLogDataRetrieved, this, &MainWindow::slotDisplaySessionLogData);
     connect(controller, &Controller::signalDisplayElectrodeWave, this, &MainWindow::slotDisplayGraphData);
-
-    /***************  PC  ******************/
-    pc = new PC(this);                                                                                               // external device to test Neuroset device with display window for graphing EEG   [ MEMORY ALLOC ]
-//    connect(pc, SIGNAL(signalDisplayGraphData(QVector<double>)), this, SLOT(slotDisplayGraphData(QVector<double>))); // connecting PC signal to MAINWINDOW slot for PC -> MAINWINDOW ui display event
-    /***************  PC  ******************/
 
     controllerThread->start();
 }
@@ -108,6 +107,7 @@ void MainWindow::on_downButton_clicked()
     ui->menuView->setCurrentIndex(newIndex);
     ui->menuView->setFocus();
 }
+
 void MainWindow::receiveBatteryPercentage(int curBattery)
 {
     if (curBattery == 0)
