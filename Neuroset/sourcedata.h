@@ -26,8 +26,8 @@
 // amplitude scaling for dominant/non-dominant bands
 #define DOMINANT_AMP_LOW 1.5
 #define DOMINANT_AMP_HIGH 2
-#define NON_DOM_AMP_LOW 0.2
-#define NON_DOM_AMP_HIGH 0.5
+#define NON_DOM_AMP_LOW 0.1
+#define NON_DOM_AMP_HIGH 0.3
 
 
 class SourceData

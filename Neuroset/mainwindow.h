@@ -67,6 +67,7 @@ private slots:
     void on_DonHeadset_clicked();
     void on_electrodeDisconnect_clicked();
     void on_electrodeReconnect_clicked();
+    void on_patientStateComboBox_currentIndexChanged();
 
     // UI Updates
     void updateUITimerAndProgress(const QString &timeString, int progressPercentage);
@@ -74,6 +75,9 @@ private slots:
     void slotDisplayGraphData(const Wave& waveData); // signal event emmitted from PC as a result of a ui display request
     void slotDisplaySessionDates(QStringList sessionDates);
     void slotDisplaySessionLogData(QStringList sessionLogData);
+    void slotTreatmentSessionComplete();
+    void slotTreatmentApplicationStarted();
+    void slotTreatmentApplicationFinished();
 
 private:
     Ui::MainWindow *ui;
@@ -82,7 +86,9 @@ private:
     Battery *battery;
     BatteryThread *batterythread;
     bool poweredOn = false;
+
     void turnDeviceScreenOff();
     void batteryDied();
+    void displayMessage(const QString& message);
 };
 #endif // MAINWINDOW_H
