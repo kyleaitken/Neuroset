@@ -331,8 +331,9 @@ void MainWindow::slotDisplayGraphData(const Wave& waveData)
 
 void MainWindow::on_EEGSampleButton_clicked()
 {
-    // default will be FP1 electrode
-    emit signalGetElectrodeEEGWave("Fp1");
+    // get electrode name from drop down
+    QString electrodeSite = ui->electrodeComboBox->currentText();
+    emit signalGetElectrodeEEGWave(electrodeSite);
 }
 
 void MainWindow::on_uploadButton_clicked() {

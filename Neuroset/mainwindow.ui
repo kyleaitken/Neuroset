@@ -268,9 +268,9 @@
    <widget class="QPushButton" name="electrodeDisconnect">
     <property name="geometry">
      <rect>
-      <x>890</x>
-      <y>50</y>
-      <width>131</width>
+      <x>810</x>
+      <y>60</y>
+      <width>151</width>
       <height>21</height>
      </rect>
     </property>
@@ -281,8 +281,8 @@
    <widget class="QPushButton" name="electrodeDisconnect_2">
     <property name="geometry">
      <rect>
-      <x>890</x>
-      <y>80</y>
+      <x>820</x>
+      <y>90</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -345,8 +345,8 @@
    <widget class="QCustomPlot" name="graphDisplayPC" native="true">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>300</y>
+      <x>800</x>
+      <y>320</y>
       <width>331</width>
       <height>81</height>
      </rect>
@@ -459,14 +459,14 @@
    <widget class="QPushButton" name="EEGSampleButton">
     <property name="geometry">
      <rect>
-      <x>910</x>
-      <y>230</y>
-      <width>83</width>
+      <x>810</x>
+      <y>260</y>
+      <width>151</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
-     <string>EEG Sample</string>
+     <string>View EEG Sample</string>
     </property>
    </widget>
    <widget class="QPushButton" name="debugButton">
@@ -563,53 +563,63 @@
      <string>Previous Sessions</string>
     </property>
    </widget>
-   <widget class="QTabWidget" name="tabWidget">
+   <widget class="QComboBox" name="electrodeComboBox">
     <property name="geometry">
      <rect>
-      <x>790</x>
-      <y>280</y>
-      <width>341</width>
-      <height>131</height>
+      <x>1000</x>
+      <y>260</y>
+      <width>86</width>
+      <height>25</height>
      </rect>
     </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="Fp1">
-     <attribute name="title">
+    <item>
+     <property name="text">
       <string>Fp1</string>
-     </attribute>
-    </widget>
-    <widget class="QWidget" name="Fp2">
-     <attribute name="title">
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>Fp2</string>
-     </attribute>
-    </widget>
-    <widget class="QWidget" name="F7">
-     <attribute name="title">
-      <string>F7</string>
-     </attribute>
-    </widget>
-    <widget class="QWidget" name="F3">
-     <attribute name="title">
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>F3</string>
-     </attribute>
-    </widget>
-    <widget class="QWidget" name="FZ">
-     <attribute name="title">
-      <string>FZ</string>
-     </attribute>
-    </widget>
-    <widget class="QWidget" name="F4">
-     <attribute name="title">
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>F4</string>
-     </attribute>
-    </widget>
-    <widget class="QWidget" name="F8">
-     <attribute name="title">
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>F7</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>F8</string>
-     </attribute>
-    </widget>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Fz</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>240</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Choose Electrode</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
