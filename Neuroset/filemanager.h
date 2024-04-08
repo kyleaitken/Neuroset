@@ -3,15 +3,34 @@
 
 #include <QString>
 #include <QStringList>
+#include <QDateTime>
+#include <QRegularExpression>
+#include <QFile>
+#include <QTextStream>
+#include <QDir>
+#include <QDebug>
+#include <QFileInfo>
+#include "frequencydata.h"
+#include "sessionlog.h"
+
 
 class FileManager
 {
 public:
     FileManager();
 
-    void writeArrayToFile(const QString &relativeDirPath, const QString &fileName, const QStringList &array);
+    void addSessionLog(SessionLog* log);
+    void writeSessionDataToFile(const QString &fileName, const QVector<FrequencyData> &freqData);
+    QStringList getSessionDates();
+    QStringList getFileData(const QString& partialFileName);
 
-    QStringList readFileToArray(const QString &filePath);
+
+private:
+    QString relativeDirPath = "Data Output";
+
+    QString generateFileName(const QDate &date);
+
+
 };
 
 #endif // FILEMANAGER_H

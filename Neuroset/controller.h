@@ -11,6 +11,7 @@
 #include <QMutexLocker>
 #include <defs.h>
 #include "sessionlog.h"
+#include "filemanager.h"
 
 class Controller : public QObject
 {
@@ -20,7 +21,7 @@ public:
     Controller(QObject *parent = nullptr);
 private:
     // attributes
-    int numElectrodes = 21;
+    int numElectrodes = 7;
     QDateTime customDateTime; // set when user specifies a date/time on the device
     QDateTime referenceDateTime; // initialize when user sets a custom date/time for time stamp calculations
 
@@ -29,8 +30,10 @@ private:
     bool paused = false;
     QTimer *sessionTimer;
     int remainingTime;
+    PatientState currentState = PatientState::Resting;
 
     // containees
+    FileManager fileManager;
     QVector<Electrode *> electrodes;
     QVector<QThread *> electrodeThreads;
     std::set<int> electrodesFinishedInitialBaseline;
@@ -55,7 +58,9 @@ public slots:
     void timeAndDate();
     void stopSession();
     void updateSessionTimerAndProgress();
-
+    void getPreviousSessionDates();
+    void getSessionLogData(const QString &sessionName);
+    void slotGetElectrodeEEGWave(const QString& eName);
 
 signals:
     void startElectrodeInitialBaseline(); // tells all electrodes to get their initial baseline
@@ -66,7 +71,9 @@ signals:
     void stopElectrodes();
     void powerStateChanged(bool newState);
     void updateTimerAndProgressDisplay(const QString& timer, int progressPercentage);
-
+    void sessionDatesRetrieved(QStringList sessionDates);
+    void sessionLogDataRetrieved(QStringList sessionLogData);
+    void signalDisplayElectrodeWave(const Wave& wave);
 
 };
 

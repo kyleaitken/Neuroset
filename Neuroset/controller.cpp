@@ -70,7 +70,7 @@ void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum){
     QMutexLocker locker(&mutex);
     electrodesFinishedFinalBaseline.insert(electrodeNum);
     if (checkFinalBaselineFinished()){
-        qInfo() << "Electrodes have finished final baseline";
+        qInfo() << "Electrodes have finished final baseline in thread ID: " << QThread::currentThreadId();
         recordSession();
     }
 }
@@ -82,7 +82,7 @@ bool Controller::checkInitialBaselineFinished(){
 
 
 bool Controller::checkFinalBaselineFinished(){
-    return static_cast<int>(electrodesFinishedInitialBaseline.size()) == numElectrodes;
+    return static_cast<int>(electrodesFinishedFinalBaseline.size()) == numElectrodes;
 }
 
 // Iterates through the electrodes and instructs them to perform their site specific eeg analysis and treatment
@@ -99,6 +99,7 @@ void Controller::recordSession() {
     }
     SessionLog* session = new SessionLog(sessionDateTime, electrodeData);
     qInfo() << "Completed session at " << session->getDateTime();
+    fileManager.addSessionLog(session);
     // send session log to file manager
 }
 
@@ -161,4 +162,27 @@ void Controller::updateSessionTimerAndProgress() {
      } else {
          sessionTimer->stop();
      }
+}
+
+void Controller::getPreviousSessionDates() {
+    QStringList sessionDates = fileManager.getSessionDates();
+    emit sessionDatesRetrieved(sessionDates);
+}
+
+void Controller::getSessionLogData(const QString& sessionFileName) {
+    QStringList sessionLogData = fileManager.getFileData(sessionFileName);
+    emit sessionLogDataRetrieved(sessionLogData);
+}
+
+void Controller::slotGetElectrodeEEGWave(const QString& eName) {
+    qInfo() << "Get eeg data from " << eName;
+    int electrodeNum = electrodeSiteNameToNum.value(eName, -1);
+    if (electrodeNum != -1) {
+        qDebug() << "Site" << eName << "is electrode number" << electrodeNum;
+        const Wave& electrodeWave = electrodes[electrodeNum]->getWaveData();
+        if (electrodeWave.xPlot.length() > 0) {
+            emit signalDisplayElectrodeWave(electrodeWave);
+        }
+    }
+
 }

@@ -1,28 +1,38 @@
 #include "filemanager.h"
-#include <QFile>
-#include <QTextStream>
-#include <QDir>
-#include <QDebug>
 
 FileManager::FileManager() {}
-// QList<double> data = {1.2, 232.3, 34223.5}
 
-// QStringList dataAsStringList;
-// for (double value : data)
-// {
-//     dataAsString.append(QString::number(value));
-// }
+void FileManager::addSessionLog(SessionLog* log) {
+    QString fileName = generateFileName(log->getDate());
+    qInfo() << "filename: " << fileName;
+    writeSessionDataToFile(fileName, log->getFrequencyData());
+}
 
-// QString dirPath = ".";          // need to fig this out
-// QString fileName = "data1.txt"; // this will be incremented and manipulated for new writes
+QString FileManager::generateFileName(const QDate &date) // const QDateTime &dateTime
+{
+    // check the files in data output directory and if theres one with matching datetime increment from 001 --> 002 etc.
+    QString baseFileName = "Neuroset_Data_" + date.toString("yyyy-MM-dd");
+    QString fileName = baseFileName + ".txt";
 
-void FileManager::writeArrayToFile(const QString &relativeDirPath, const QString &fileName, const QStringList &array)
+    QString dirPath = QDir::currentPath() + "/Data Output";
+    QDir directory(dirPath);
+
+    int counter = 1;
+    while (QFileInfo::exists(directory.absoluteFilePath(fileName)))
+    {
+        qInfo() << "file exists";
+        fileName = baseFileName + "_" + QString::number(counter) + ".txt";
+        counter++;
+    }
+    return fileName;
+}
+
+void FileManager::writeSessionDataToFile(const QString &fileName, const QVector<FrequencyData> &freqData)
 {
     QString homePath = QDir::homePath();
-    // QString dirPath = QDir::cleanPath(homePath + QDir::separator() + relativeDirPath);
-    QString dirPath = QDir::currentPath() + "\\Data Output";
-    // qInfo() << QDir::currentPath();
-    QDir dir(dirPath); // hi
+    QString dirPath = QDir::currentPath() + "/Data Output/";
+
+    QDir dir(dirPath);
     if (!dir.exists())
     {
         bool created = dir.mkpath(dirPath);
@@ -34,7 +44,7 @@ void FileManager::writeArrayToFile(const QString &relativeDirPath, const QString
         qWarning() << dirPath;
     }
 
-    QString filePath = QDir::cleanPath(dirPath + QDir::separator() + fileName);
+    QString filePath = QDir::cleanPath(dirPath + fileName);
     QFile file(filePath);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -44,51 +54,55 @@ void FileManager::writeArrayToFile(const QString &relativeDirPath, const QString
 
     QTextStream out(&file);
 
-    for (const QString &element : array)
+    for (auto data : freqData)
     {
-        out << element << "\n";
+        out << data.getElectrodeSiteName() << ": " << data.getBefore() << ", " << data.getAfter() << "\n";
     }
 
     file.close();
 }
 
-QStringList FileManager::readFileToArray(const QString &filePath)
-{
-    QFile file(filePath);
-    QStringList array;
+QStringList FileManager::getFileData(const QString &partialFileName) {
+    QString filePath = QDir::currentPath() + "/" + relativeDirPath + "/Neuroset_Data_" + partialFileName + ".txt";
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        return array;
-    } // same deal with clutter
+    QFile file(filePath);
+    QStringList fileContent;
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "Could not open file for reading:" << filePath;
+        return fileContent;
+    }
 
     QTextStream in(&file);
-
-    while (!in.atEnd())
-    {
+    while (!in.atEnd()) {
         QString line = in.readLine();
-        array.append(line);
+        fileContent.append(line);
     }
 
     file.close();
-
-    return array;
+    return fileContent;
 }
 
-//int main()
-//{
-//    FileManager manager;
-//    QStringList myArray = {"Line 1", "Line 2"};
-//    QString relativeDirPath = "Data Output";
-//    QString fileName = "Data1.txt";
 
-//    manager.writeArrayToFile(relativeDirPath, fileName, myArray);
-//    QStringList readArray = manager.readFileToArray(QDir::currentPath() + "\\Data Output\\" + fileName);
+QStringList FileManager::getSessionDates() {
+    QString dirPath = QDir::currentPath() + "/Data Output";
+    QDir directory(dirPath);
 
-//    for (const QString &line : readArray)
-//    {
-//        qDebug() << line;
-//    }
+    QStringList dateStrings;
+    QRegularExpression regex("Neuroset_Data_(\\d{4}-\\d{2}-\\d{2}(?:_\\d+)?)\\.txt");
 
-//    return 0;
-//}
+    QStringList files = directory.entryList(QStringList() << "*.txt", QDir::Files);
+    foreach (const QString &file, files) {
+        QRegularExpressionMatch match = regex.match(file);
+        if (match.hasMatch()) {
+            QString dateString = match.captured(1);
+            dateStrings << dateString;
+        }
+    }
+
+    for (auto s : dateStrings) {
+        qInfo() << "file date: " << s;
+    }
+
+    return dateStrings;
+}

@@ -9,7 +9,8 @@
 #include <QThread>
 #include <QListView>
 #include <QStringListModel>
-#include "pc.h"
+#include "battery.h"
+#include "batterythread.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -35,8 +36,12 @@ signals:
     void playButtonPressed();
     void pauseButtonPressed();
     void stopButtonPressed();
+    void getPreviousSessionDates();
+    void getSessionLogData(const QString &sessionFileName);
+    void signalGetElectrodeEEGWave(const QString& eName);
 
 private slots:
+    void on_chargeButton_clicked();
     void on_upButton_clicked();
     void on_downButton_clicked();
     void on_powerButton_clicked();
@@ -44,16 +49,25 @@ private slots:
     void on_playButton_clicked();
     void on_pauseButton_clicked();
     void on_stopButton_clicked();
-    void updateUITimerAndProgress(const QString& timeString, int progressPercentage);
+    void on_uploadButton_clicked();
+    void onSessionDoubleClicked(const QModelIndex &index);
 
-    void slotDisplayGraphData(QVector<double> yPlot);                                   // signal event emmitted from PC as a result of a ui display request
+    void updateUITimerAndProgress(const QString &timeString, int progressPercentage);
+    void receiveBatteryPercentage(int curBattery);
+
+    void slotDisplayGraphData(const Wave& waveData); // signal event emmitted from PC as a result of a ui display request
     void on_EEGSampleButton_clicked();
+    void slotDisplaySessionDates(QStringList sessionDates);
+    void slotDisplaySessionLogData(QStringList sessionLogData);
 
 private:
     Ui::MainWindow *ui;
     QThread *controllerThread;
     Controller *controller;
-    PC* pc;                     // external device to test Neuroset device with display window for graphing EEG
+    Battery *battery;
+    BatteryThread *batterythread;
     bool poweredOn = false;
+    void turnDeviceScreenOff();
+    void batteryDied();
 };
 #endif // MAINWINDOW_H

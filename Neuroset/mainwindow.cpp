@@ -21,6 +21,10 @@ MainWindow::MainWindow(QWidget *parent)
     Controller *controller = new Controller();
     controller->moveToThread(controllerThread);
 
+    this->battery = new Battery();
+    this->batterythread = new BatteryThread(this->battery);
+    this->batterythread->start();
+
     // Setting up Menu settings + styling
     ui->menuView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->menuView->setStyleSheet(R"(
@@ -41,6 +45,13 @@ MainWindow::MainWindow(QWidget *parent)
     )");
     ui->menuView->setSelectionMode(QAbstractItemView::NoSelection);
 
+    // Set up previous sessions list
+    ui->prevSessionsList->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->prevSessionsList->setSelectionBehavior(QAbstractItemView::SelectItems);
+    connect(ui->prevSessionsList, &QListView::doubleClicked, this, [this](const QModelIndex &index) {
+        this->onSessionDoubleClicked(index);
+    });
+
     ui->upButton->setEnabled(false);
     ui->downButton->setEnabled(false);
     ui->playButton->setEnabled(false);
@@ -48,20 +59,25 @@ MainWindow::MainWindow(QWidget *parent)
     ui->stopButton->setEnabled(false);
     ui->selectButton->setEnabled(false);
 
-    // signals to handle each menu selection
+    // MainWindow Signals to Controller Slots
     connect(this, &MainWindow::signalNewSession, controller, &Controller::startNewSession);
     connect(this, &MainWindow::signalSessionLog, controller, &Controller::sessionLog);
     connect(this, &MainWindow::signalTimeAndDate, controller, &Controller::timeAndDate);
     connect(this, &MainWindow::playButtonPressed, controller, &Controller::resumeTreatmentSession);
     connect(this, &MainWindow::pauseButtonPressed, controller, &Controller::pauseSession);
     connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopSession);
+    connect(this, &MainWindow::getPreviousSessionDates, controller, &Controller::getPreviousSessionDates);
+    connect(this, &MainWindow::getSessionLogData, controller, &Controller::getSessionLogData);
+    connect(this, &MainWindow::signalGetElectrodeEEGWave, controller, &Controller::slotGetElectrodeEEGWave);
+
+    // Battery Signals to MainWindow Slots
+    connect(batterythread, &BatteryThread::tellMainWindowBatteryPercentage, this, &MainWindow::receiveBatteryPercentage);
+
+    // Controller Signals to MainWindow Slots
     connect(controller, &Controller::updateTimerAndProgressDisplay, this, &MainWindow::updateUITimerAndProgress);
-
-
-    /***************  PC  ******************/
-    pc = new PC(this);    // external device to test Neuroset device with display window for graphing EEG   [ MEMORY ALLOC ]
-    connect(pc, SIGNAL(signalDisplayGraphData(QVector<double>)), this, SLOT(slotDisplayGraphData(QVector<double>)));    // connecting PC signal to MAINWINDOW slot for PC -> MAINWINDOW ui display event
-    /***************  PC  ******************/
+    connect(controller, &Controller::sessionDatesRetrieved, this, &MainWindow::slotDisplaySessionDates);
+    connect(controller, &Controller::sessionLogDataRetrieved, this, &MainWindow::slotDisplaySessionLogData);
+    connect(controller, &Controller::signalDisplayElectrodeWave, this, &MainWindow::slotDisplayGraphData);
 
     controllerThread->start();
 }
@@ -92,67 +108,128 @@ void MainWindow::on_downButton_clicked()
     ui->menuView->setFocus();
 }
 
+void MainWindow::receiveBatteryPercentage(int curBattery)
+{
+    if (curBattery == 0)
+    {
+        batteryDied();
+    }
+    else if (curBattery < 25)
+    {
+        QPixmap pixmap(":/images/images/1Battery.png");
+        ui->battery->setPixmap(pixmap);
+    }
+    else if (curBattery < 50)
+    {
+        QPixmap pixmap(":/images/images/2Battery.png");
+        ui->battery->setPixmap(pixmap);
+    }
+    else if (curBattery < 75)
+    {
+        QPixmap pixmap(":/images/images/3Battery.png");
+        ui->battery->setPixmap(pixmap);
+    }
+    else
+    {
+        QPixmap pixmap(":/images/images/4Battery.png");
+        ui->battery->setPixmap(pixmap);
+    }
+}
+void MainWindow::batteryDied()
+{
+    QPixmap pixmap(":/images/images/0Battery.png");
+    qInfo() << "Battery just died.";
+    ui->battery->setPixmap(pixmap);
+    this->battery->setOn(false);
+    this->poweredOn = false;
+    turnDeviceScreenOff();
+}
+
 void MainWindow::togglePower()
 {
     if (this->poweredOn == false)
     {
         this->poweredOn = true;
+        this->battery->setOn(true);
     }
     else
     {
         this->poweredOn = false;
+        this->battery->setOn(false);
+    }
+}
+
+void MainWindow::on_chargeButton_clicked()
+{
+    qInfo() << "Charging button clicked";
+    if (this->battery->isCharging())
+    {
+        this->battery->setCharging(false);
+        ui->chargingBolt->setPixmap(QPixmap(":/images/images/empty.png"));
+    }
+    else
+    {
+        this->battery->setCharging(true);
+        ui->chargingBolt->setPixmap(QPixmap(":/images/images/charging.png"));
     }
 }
 
 void MainWindow::on_powerButton_clicked()
 {
-
-    if (poweredOn == false)
+    qInfo() << "Power button clicked. Previously" << (this->poweredOn ? "ON." : "OFF.");
+    if (battery->getBattery() > 0)
     {
-        ui->powerButton->setIcon(QIcon(":/images/images/PowerOn.png"));
-        ui->upButton->setEnabled(true);
-        ui->downButton->setEnabled(true);
-        ui->playButton->setEnabled(true);
-        ui->pauseButton->setEnabled(true);
-        ui->stopButton->setEnabled(true);
-        ui->selectButton->setEnabled(true);
-
-        QStringList menuOptions;
-        menuOptions << "New Session"
-                    << "Session Logs"
-                    << "Time and Date";
-
-        // Create a QStringListModel and set the menu options
-        QStringListModel *model = new QStringListModel(this);
-        model->setStringList(menuOptions);
-
-        // Set the model on the QListView
-        ui->menuView->setModel(model);
-
-        QModelIndex firstIndex = ui->menuView->model()->index(0, 0);
-        ui->menuView->setCurrentIndex(firstIndex);
-
-        ui->menuView->setFocus();
-        togglePower();
-    }
-    else
-    {
-        ui->powerButton->setIcon(QIcon(":/images/images/PowerOff.png"));
-        auto *model = dynamic_cast<QStringListModel *>(ui->menuView->model());
-        if (model)
+        if (poweredOn == false)
         {
-            model->setStringList(QStringList()); // Clear the model
+            ui->powerButton->setIcon(QIcon(":/images/images/PowerOn.png"));
+            ui->upButton->setEnabled(true);
+            ui->downButton->setEnabled(true);
+            ui->playButton->setEnabled(true);
+            ui->pauseButton->setEnabled(true);
+            ui->stopButton->setEnabled(true);
+            ui->selectButton->setEnabled(true);
+
+            QStringList menuOptions;
+            menuOptions << "New Session"
+                        << "Session Logs"
+                        << "Time and Date";
+
+            // Create a QStringListModel and set the menu options
+            QStringListModel *model = new QStringListModel(this);
+            model->setStringList(menuOptions);
+
+            // Set the model on the QListView
+            ui->menuView->setModel(model);
+
+            QModelIndex firstIndex = ui->menuView->model()->index(0, 0);
+            ui->menuView->setCurrentIndex(firstIndex);
+
+            ui->menuView->setFocus();
+            togglePower();
         }
-
-        ui->upButton->setEnabled(false);
-        ui->downButton->setEnabled(false);
-        ui->playButton->setEnabled(false);
-        ui->pauseButton->setEnabled(false);
-        ui->stopButton->setEnabled(false);
-        ui->selectButton->setEnabled(false);
-
-        togglePower();
+        else
+        {
+            turnDeviceScreenOff();
+            togglePower();
+        }
     }
+}
+
+void MainWindow::turnDeviceScreenOff()
+{
+    ui->powerButton->setIcon(QIcon(":/images/images/PowerOff.png"));
+    auto *model = dynamic_cast<QStringListModel *>(ui->menuView->model());
+    if (model)
+    {
+        model->setStringList(QStringList()); // Clear the model
+    }
+
+    ui->upButton->setEnabled(false);
+    ui->downButton->setEnabled(false);
+    ui->playButton->setEnabled(false);
+    ui->pauseButton->setEnabled(false);
+    ui->stopButton->setEnabled(false);
+    ui->selectButton->setEnabled(false);
 }
 
 void MainWindow::on_selectButton_clicked()
@@ -207,13 +284,14 @@ void MainWindow::on_stopButton_clicked()
     emit stopButtonPressed();
 }
 
-void MainWindow::updateUITimerAndProgress(const QString& timeString, int progressPercentage) {
+void MainWindow::updateUITimerAndProgress(const QString &timeString, int progressPercentage)
+{
     ui->timerLabel->setText(timeString);
     ui->progressBar->setValue(progressPercentage);
 }
 
 // on signal emission from PC this slot function is called for a PC->MainWindow display event to plot graph data to QCustomPlot::graphDisplayPC
-void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
+void MainWindow::slotDisplayGraphData(const Wave& waveData)
 {
     ui->graphDisplayPC->xAxis->setNumberFormat("g"); // use general formatting for tick labels
     ui->graphDisplayPC->xAxis->setNumberPrecision(6); // set the precision of tick labels
@@ -232,39 +310,51 @@ void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
     yAxisFont.setPointSize(6); // Adjust the font size as needed
     ui->graphDisplayPC->yAxis->setTickLabelFont(yAxisFont);
 
-    ui->graphDisplayPC->yAxis->setLabel("SITE TITLE"); // set y-axis label
+    ui->graphDisplayPC->yAxis->setLabel("EEG"); // set y-axis label
     ui->graphDisplayPC->xAxis->setLabelFont(QFont("Arial", 4)); // set x-axis label font
     ui->graphDisplayPC->yAxis->setLabelFont(QFont("Arial", 8)); // set y-axis label font
     ui->graphDisplayPC->xAxis->setLabelColor(Qt::black); // set x-axis label color
     ui->graphDisplayPC->yAxis->setLabelColor(Qt::black); // set y-axis label color
-
-    // following is adding the points to the graph and scalling the graph
-    int numDataPoints = yPlot.size();
-
-    QVector<double> xPlot;
-    for (int i = 0; i < numDataPoints; ++i)
-    {
-       double x = i*SAMPLE_RATE + DATA_START;    // DATA_START  points <20 look have an inconsistent look
-       xPlot.push_back(x);
-    }
 
     // add a graph if one doesn't exist already
     if (ui->graphDisplayPC->graphCount() == 0)
     {
         ui->graphDisplayPC->addGraph();
     }
-    ui->graphDisplayPC->graph(0)->setData(xPlot, yPlot);              // set data to the first graph
-    ui->graphDisplayPC->xAxis->setRange(xPlot.first(), xPlot.last()); // set the range of the x-axis based on the calculated x values
+    ui->graphDisplayPC->graph(0)->setData(waveData.xPlot, waveData.yPlot);              // set data to the first graph
+    ui->graphDisplayPC->xAxis->setRange(waveData.xPlot.first(), waveData.xPlot.last()); // set the range of the x-axis based on the calculated x values
     ui->graphDisplayPC->rescaleAxes(true);                            // rescale the axes to ensure all data points are visible
 
     // replot the graph
     ui->graphDisplayPC->replot();
 }
 
-
 void MainWindow::on_EEGSampleButton_clicked()
 {
-    pc->displayElectrodeEEG("Fp1");
+    // default will be FP1 electrode
+    emit signalGetElectrodeEEGWave("Fp1");
 }
 
+void MainWindow::on_uploadButton_clicked() {
+    emit getPreviousSessionDates();
+}
 
+void MainWindow::slotDisplaySessionDates(QStringList sessionDates) {
+    if (!sessionDates.isEmpty()) {
+        QStringListModel* model = new QStringListModel(sessionDates, this);
+        ui->prevSessionsList->setModel(model);
+    } else {
+        ui->prevSessionsList->setModel(new QStringListModel(this));
+    }
+}
+
+void MainWindow::onSessionDoubleClicked(const QModelIndex &index) {
+    QString sessionFileName = index.data(Qt::DisplayRole).toString();
+    qDebug() << "Double-clicked on item:" << sessionFileName;
+    emit getSessionLogData(sessionFileName);
+}
+
+void MainWindow::slotDisplaySessionLogData(QStringList sessionLogData) {
+    QStringListModel* model = new QStringListModel(sessionLogData, this);
+    ui->sessionLogView->setModel(model);
+}
