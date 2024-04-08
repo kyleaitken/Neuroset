@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->battery->setPixmap(pixmap);
 
     QThread *controllerThread = new QThread(this);
-    Controller *controller = new Controller();
+    controller = new Controller();
     controller->moveToThread(controllerThread);
 
     this->battery = new Battery();
@@ -59,16 +59,22 @@ MainWindow::MainWindow(QWidget *parent)
     ui->stopButton->setEnabled(false);
     ui->selectButton->setEnabled(false);
 
+
     // MainWindow Signals to Controller Slots
     connect(this, &MainWindow::signalNewSession, controller, &Controller::startNewSession);
     connect(this, &MainWindow::signalSessionLog, controller, &Controller::sessionLog);
-    connect(this, &MainWindow::signalTimeAndDate, controller, &Controller::timeAndDate);
+    connect(this, &MainWindow::signalTimeAndDate, controller, &Controller::updateTimeAndDate);
     connect(this, &MainWindow::playButtonPressed, controller, &Controller::resumeTreatmentSession);
     connect(this, &MainWindow::pauseButtonPressed, controller, &Controller::pauseSession);
     connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopSession);
     connect(this, &MainWindow::getPreviousSessionDates, controller, &Controller::getPreviousSessionDates);
     connect(this, &MainWindow::getSessionLogData, controller, &Controller::getSessionLogData);
     connect(this, &MainWindow::signalGetElectrodeEEGWave, controller, &Controller::slotGetElectrodeEEGWave);
+
+    // Electrode Contact
+    connect(this, &MainWindow::donHeadset, controller, &Controller::setElectrodeContactSecured);
+    connect(this, &MainWindow::electrodeContactLost, controller, &Controller::setElectrodeContactLost);
+    connect(this, &MainWindow::electrodeContactRegained, controller, &Controller::setElectrodeContactSecured);
 
     // Battery Signals to MainWindow Slots
     connect(batterythread, &BatteryThread::tellMainWindowBatteryPercentage, this, &MainWindow::receiveBatteryPercentage);
@@ -188,6 +194,7 @@ void MainWindow::on_powerButton_clicked()
             ui->pauseButton->setEnabled(true);
             ui->stopButton->setEnabled(true);
             ui->selectButton->setEnabled(true);
+            ui->ContactLostIndicator->setStyleSheet("background-color: red;");
 
             QStringList menuOptions;
             menuOptions << "New Session"
@@ -209,6 +216,7 @@ void MainWindow::on_powerButton_clicked()
         }
         else
         {
+            ui->screenStack->setCurrentIndex(0);
             turnDeviceScreenOff();
             togglePower();
         }
@@ -230,6 +238,13 @@ void MainWindow::turnDeviceScreenOff()
     ui->pauseButton->setEnabled(false);
     ui->stopButton->setEnabled(false);
     ui->selectButton->setEnabled(false);
+    ui->ContactLostIndicator->setStyleSheet("background-color: grey;");
+    ui->ContactSecureIndicator->setStyleSheet("background-color: grey;");
+    ui->TreatmentIndicator->setStyleSheet("background-color: grey;");
+
+     // stop session if running
+     emit electrodeContactLost();
+     emit stopButtonPressed();
 }
 
 void MainWindow::on_selectButton_clicked()
@@ -247,8 +262,24 @@ void MainWindow::on_selectButton_clicked()
     switch (selectedRow)
     {
     case 0:
-        emit signalNewSession();
-        ui->screenStack->setCurrentIndex(1);
+        if (controller->electrodesConnected()) {
+            ui->timerLabel->setText("");
+            ui->progressBar->setValue(0);
+            ui->screenStack->setCurrentIndex(1);
+            emit signalNewSession();
+        } else {
+            ui->screenStack->setCurrentIndex(2);
+            ui->warningLabel->setWordWrap(true);
+            ui->warningLabel->setText("Unable to start session: Electrode connection is not secure");
+
+            // Display warning for 3 seconds
+            QTimer *timer = new QTimer(this);
+            timer->setSingleShot(true);
+            connect(timer, &QTimer::timeout, [this]() {
+                ui->screenStack->setCurrentIndex(0);
+            });
+            timer->start(3000);
+        }
         break;
     case 1:
         emit signalSessionLog();
@@ -331,8 +362,9 @@ void MainWindow::slotDisplayGraphData(const Wave& waveData)
 
 void MainWindow::on_EEGSampleButton_clicked()
 {
-    // default will be FP1 electrode
-    emit signalGetElectrodeEEGWave("Fp1");
+    // get electrode name from drop down
+    QString electrodeSite = ui->electrodeComboBox->currentText();
+    emit signalGetElectrodeEEGWave(electrodeSite);
 }
 
 void MainWindow::on_uploadButton_clicked() {
@@ -357,4 +389,25 @@ void MainWindow::onSessionDoubleClicked(const QModelIndex &index) {
 void MainWindow::slotDisplaySessionLogData(QStringList sessionLogData) {
     QStringListModel* model = new QStringListModel(sessionLogData, this);
     ui->sessionLogView->setModel(model);
+}
+
+void MainWindow::on_DonHeadset_clicked()
+{
+    ui->ContactSecureIndicator->setStyleSheet("background-color: blue;");
+    ui->ContactLostIndicator->setStyleSheet("background-color: grey;");
+    emit donHeadset();
+}
+
+void MainWindow::on_electrodeDisconnect_clicked()
+{
+    ui->ContactSecureIndicator->setStyleSheet("background-color: grey;");
+    ui->ContactLostIndicator->setStyleSheet("background-color: red;");
+    emit electrodeContactLost();
+}
+
+void MainWindow::on_electrodeReconnect_clicked()
+{
+    ui->ContactSecureIndicator->setStyleSheet("background-color: blue;");
+    ui->ContactLostIndicator->setStyleSheet("background-color: grey;");
+    emit electrodeContactRegained();
 }

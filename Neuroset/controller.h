@@ -19,6 +19,8 @@ class Controller : public QObject
 
 public:
     Controller(QObject *parent = nullptr);
+    bool electrodesConnected();
+
 private:
     // attributes
     int numElectrodes = 7;
@@ -28,6 +30,8 @@ private:
     // state
     mutable QMutex mutex;
     bool paused = false;
+    bool electrodesHaveContact = false;
+    bool sessionActive = false;
     QTimer *sessionTimer;
     int remainingTime;
     PatientState currentState = PatientState::Resting;
@@ -48,18 +52,28 @@ private:
     void recordSession();
 
 public slots:
+    // Session control
     void startNewSession(); // starts a new treatment session
+    void pauseSession();
+    void resumeTreatmentSession();
+    void stopSession();
+
+    // Electrode session progress
     void setElectrodeFinishedInitialBaseline(int electrodeNum);
     void setElectrodeFinishedFinalBaseline(int electrodeNum);
     void setElectrodeFinishedTreatment(int electrodeNum);
-    void pauseSession();
-    void resumeTreatmentSession();
+
+    // Electrode contact
+    void setElectrodeContactLost();
+    void setElectrodeContactSecured();
+
+    // Session logging
     void sessionLog();
-    void timeAndDate();
-    void stopSession();
+    void getSessionLogData(const QString &sessionName);
+
+    void updateTimeAndDate();
     void updateSessionTimerAndProgress();
     void getPreviousSessionDates();
-    void getSessionLogData(const QString &sessionName);
     void slotGetElectrodeEEGWave(const QString& eName);
 
 signals:
