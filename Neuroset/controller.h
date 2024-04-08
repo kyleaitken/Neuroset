@@ -30,6 +30,7 @@ private:
     bool paused = false;
     QTimer *sessionTimer;
     int remainingTime;
+    PatientState currentState = PatientState::Resting;
 
     // containees
     FileManager fileManager;
@@ -59,6 +60,7 @@ public slots:
     void updateSessionTimerAndProgress();
     void getPreviousSessionDates();
     void getSessionLogData(const QString &sessionName);
+    void slotGetElectrodeEEGWave(const QString& eName);
 
 signals:
     void startElectrodeInitialBaseline(); // tells all electrodes to get their initial baseline
@@ -71,6 +73,7 @@ signals:
     void updateTimerAndProgressDisplay(const QString& timer, int progressPercentage);
     void sessionDatesRetrieved(QStringList sessionDates);
     void sessionLogDataRetrieved(QStringList sessionLogData);
+    void signalDisplayElectrodeWave(const Wave& wave);
 
 };
 

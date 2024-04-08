@@ -12,10 +12,23 @@ void Electrode::startSession() {
 
 
 void Electrode::getInitialBaselineFrequency() {
-    qInfo() << "Electrode " << electrodeNum << " getting initial freq in thread: " << QThread::currentThreadId();
+    qInfo() << "Electrode " << electrodeNum << " Calculating Dominant Frequency... ";
+    QVector<EEGSourceData> EEGData = source.getSourceData(patientState);
 
-    // Simulate some work that can be broken up so we can check the pause requested state
-    for (int i = 0; i < 2; i++) {
+    double dominantFrequency = calculateDominantFrequency(EEGData);
+    freqData.setBefore(dominantFrequency);
+    qInfo() << "Dom freq: " << dominantFrequency;
+
+    generateWaveData(EEGData);
+
+}
+
+
+void Electrode::generateWaveData(const QVector<EEGSourceData>& EEGData) {
+    int dataPointsPerStep = 200;
+    double samplingRate = 200.0;
+
+    for (int i = 0; i < 5; i++) {
         QThread::msleep(1000);
         QCoreApplication::processEvents();
         if (stopRequested) {
@@ -32,18 +45,41 @@ void Electrode::getInitialBaselineFrequency() {
             }
             qInfo() << "Electrode " << electrodeNum << " resumed";
         }
+
+        for (int j = 0; j < dataPointsPerStep; j++) {
+            double time = (i * dataPointsPerStep + j) / samplingRate; // Correct time calculation
+            EEGWaveData.xPlot.append(time);
+
+            double yValue = 0.0;
+            for (const EEGSourceData& data : EEGData) {
+                yValue += data.amplitude * std::sin(2 * M_PI * data.frequency * time + data.offset);
+            }
+            EEGWaveData.yPlot.append(yValue);
+        }
     }
 
-    freqData.setBefore(30); // hard coded example
     emit initialBaselineFinished(electrodeNum);
+}
+
+
+
+double Electrode::calculateDominantFrequency(const QVector<EEGSourceData> &EEGData) {
+    double numerator = 0.0;
+    double denominator = 0.0;
+
+    for (const EEGSourceData& data : EEGData) {
+        numerator += data.frequency * std::pow(data.amplitude, 2);
+        denominator += std::pow(data.amplitude, 2);
+    }
+
+    return numerator / denominator;
 }
 
 
 void Electrode::getFinalBaselineFrequency(){
     qInfo() << "Electrode " << electrodeNum << " getting final freq in thread: " << QThread::currentThreadId();
 
-    // Simulate some work that can be broken up so we can check the pause requested state
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 5; i++) {
         QThread::msleep(1000);
         QCoreApplication::processEvents();
         if (stopRequested) {
@@ -62,7 +98,9 @@ void Electrode::getFinalBaselineFrequency(){
         }
     }
 
-    freqData.setAfter(15); // hard coded example
+    // generate randome % between 0.7 and 0.85 to model a lowered dominant frequency from treatment
+    double scaleFactor = QRandomGenerator::global()->generateDouble() * (0.85 - 0.7) + 0.7;
+    freqData.setAfter(freqData.getBefore() * scaleFactor);
     emit finalBaselineFinished(electrodeNum);
 }
 
@@ -76,10 +114,12 @@ void Electrode::startTreatmentListener(int electrodeNum) {
 
 void Electrode::startTreatment()
 {
-    qInfo() << "Electrode " << electrodeNum << " performing treatment cycle";
+    qInfo() << "Electrode " << electrodeNum << " performing treatment.";
+    int offset = 5;
 
     // Simulate some work that can be broken up so we can check the pause requested state
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 4; i++) {
+        qInfo() << "Applying " << offset << "Hz offset to dominant frequency of " << freqData.getBefore();
         QThread::msleep(1000);
         QCoreApplication::processEvents();
         if (stopRequested) {
@@ -96,6 +136,7 @@ void Electrode::startTreatment()
             }
             qInfo() << "Electrode " << electrodeNum << " resumed";
         }
+        offset += 5;
     }
 
     emit treatmentFinished(electrodeNum);
@@ -105,6 +146,10 @@ void Electrode::startTreatment()
 FrequencyData Electrode::getFrequencyData() const
 {
     return freqData;
+}
+
+const Wave& Electrode::getWaveData() const {
+    return EEGWaveData;
 }
 
 void Electrode::handlePauseRequested() {

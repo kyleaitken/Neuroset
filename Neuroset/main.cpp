@@ -1,10 +1,12 @@
 #include "mainwindow.h"
 #include "filemanager.h"
 #include <QApplication>
+#include <QMetaType>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    qRegisterMetaType<Wave>("Wave");
     MainWindow w;
     w.show();
 

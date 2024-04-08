@@ -173,3 +173,16 @@ void Controller::getSessionLogData(const QString& sessionFileName) {
     QStringList sessionLogData = fileManager.getFileData(sessionFileName);
     emit sessionLogDataRetrieved(sessionLogData);
 }
+
+void Controller::slotGetElectrodeEEGWave(const QString& eName) {
+    qInfo() << "Get eeg data from " << eName;
+    int electrodeNum = electrodeSiteNameToNum.value(eName, -1);
+    if (electrodeNum != -1) {
+        qDebug() << "Site" << eName << "is electrode number" << electrodeNum;
+        const Wave& electrodeWave = electrodes[electrodeNum]->getWaveData();
+        if (electrodeWave.xPlot.length() > 0) {
+            emit signalDisplayElectrodeWave(electrodeWave);
+        }
+    }
+
+}

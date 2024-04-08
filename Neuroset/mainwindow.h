@@ -39,6 +39,7 @@ signals:
     void stopButtonPressed();
     void getPreviousSessionDates();
     void getSessionLogData(const QString &sessionFileName);
+    void signalGetElectrodeEEGWave(const QString& eName);
 
 private slots:
     void on_chargeButton_clicked();
@@ -55,7 +56,7 @@ private slots:
     void updateUITimerAndProgress(const QString &timeString, int progressPercentage);
     void receiveBatteryPercentage(int curBattery);
 
-    void slotDisplayGraphData(QVector<double> yPlot); // signal event emmitted from PC as a result of a ui display request
+    void slotDisplayGraphData(const Wave& waveData); // signal event emmitted from PC as a result of a ui display request
     void on_EEGSampleButton_clicked();
     void slotDisplaySessionDates(QStringList sessionDates);
     void slotDisplaySessionLogData(QStringList sessionLogData);

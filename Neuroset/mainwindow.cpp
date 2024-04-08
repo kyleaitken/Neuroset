@@ -67,14 +67,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopSession);
     connect(this, &MainWindow::getPreviousSessionDates, controller, &Controller::getPreviousSessionDates);
     connect(this, &MainWindow::getSessionLogData, controller, &Controller::getSessionLogData);
+    connect(this, &MainWindow::signalGetElectrodeEEGWave, controller, &Controller::slotGetElectrodeEEGWave);
+
     connect(batterythread, &BatteryThread::tellMainWindowBatteryPercentage, this, &MainWindow::receiveBatteryPercentage);
     connect(controller, &Controller::updateTimerAndProgressDisplay, this, &MainWindow::updateUITimerAndProgress);
     connect(controller, &Controller::sessionDatesRetrieved, this, &MainWindow::slotDisplaySessionDates);
     connect(controller, &Controller::sessionLogDataRetrieved, this, &MainWindow::slotDisplaySessionLogData);
+    connect(controller, &Controller::signalDisplayElectrodeWave, this, &MainWindow::slotDisplayGraphData);
 
     /***************  PC  ******************/
     pc = new PC(this);                                                                                               // external device to test Neuroset device with display window for graphing EEG   [ MEMORY ALLOC ]
-    connect(pc, SIGNAL(signalDisplayGraphData(QVector<double>)), this, SLOT(slotDisplayGraphData(QVector<double>))); // connecting PC signal to MAINWINDOW slot for PC -> MAINWINDOW ui display event
+//    connect(pc, SIGNAL(signalDisplayGraphData(QVector<double>)), this, SLOT(slotDisplayGraphData(QVector<double>))); // connecting PC signal to MAINWINDOW slot for PC -> MAINWINDOW ui display event
     /***************  PC  ******************/
 
     controllerThread->start();
@@ -288,13 +291,13 @@ void MainWindow::updateUITimerAndProgress(const QString &timeString, int progres
 }
 
 // on signal emission from PC this slot function is called for a PC->MainWindow display event to plot graph data to QCustomPlot::graphDisplayPC
-void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
+void MainWindow::slotDisplayGraphData(const Wave& waveData)
 {
-    ui->graphDisplayPC->xAxis->setNumberFormat("g");  // use general formatting for tick labels
+    ui->graphDisplayPC->xAxis->setNumberFormat("g"); // use general formatting for tick labels
     ui->graphDisplayPC->xAxis->setNumberPrecision(6); // set the precision of tick labels
 
     // set the tick count and label spacing for the y-axis
-    ui->graphDisplayPC->yAxis->setNumberFormat("g");  // use general formatting for tick labels
+    ui->graphDisplayPC->yAxis->setNumberFormat("g"); // use general formatting for tick labels
     ui->graphDisplayPC->yAxis->setNumberPrecision(6); // set the precision of tick labels
 
     // set font size for the x-axis tick labels
@@ -307,29 +310,19 @@ void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
     yAxisFont.setPointSize(6); // Adjust the font size as needed
     ui->graphDisplayPC->yAxis->setTickLabelFont(yAxisFont);
 
-    ui->graphDisplayPC->yAxis->setLabel("SITE TITLE");          // set y-axis label
+    ui->graphDisplayPC->yAxis->setLabel("EEG"); // set y-axis label
     ui->graphDisplayPC->xAxis->setLabelFont(QFont("Arial", 4)); // set x-axis label font
     ui->graphDisplayPC->yAxis->setLabelFont(QFont("Arial", 8)); // set y-axis label font
-    ui->graphDisplayPC->xAxis->setLabelColor(Qt::black);        // set x-axis label color
-    ui->graphDisplayPC->yAxis->setLabelColor(Qt::black);        // set y-axis label color
-
-    // following is adding the points to the graph and scalling the graph
-    int numDataPoints = yPlot.size();
-
-    QVector<double> xPlot;
-    for (int i = 0; i < numDataPoints; ++i)
-    {
-        double x = i * SAMPLE_RATE + DATA_START; // DATA_START  points <20 look have an inconsistent look
-        xPlot.push_back(x);
-    }
+    ui->graphDisplayPC->xAxis->setLabelColor(Qt::black); // set x-axis label color
+    ui->graphDisplayPC->yAxis->setLabelColor(Qt::black); // set y-axis label color
 
     // add a graph if one doesn't exist already
     if (ui->graphDisplayPC->graphCount() == 0)
     {
         ui->graphDisplayPC->addGraph();
     }
-    ui->graphDisplayPC->graph(0)->setData(xPlot, yPlot);              // set data to the first graph
-    ui->graphDisplayPC->xAxis->setRange(xPlot.first(), xPlot.last()); // set the range of the x-axis based on the calculated x values
+    ui->graphDisplayPC->graph(0)->setData(waveData.xPlot, waveData.yPlot);              // set data to the first graph
+    ui->graphDisplayPC->xAxis->setRange(waveData.xPlot.first(), waveData.xPlot.last()); // set the range of the x-axis based on the calculated x values
     ui->graphDisplayPC->rescaleAxes(true);                            // rescale the axes to ensure all data points are visible
 
     // replot the graph
@@ -338,7 +331,8 @@ void MainWindow::slotDisplayGraphData(QVector<double> yPlot)
 
 void MainWindow::on_EEGSampleButton_clicked()
 {
-    pc->displayElectrodeEEG("Fp1");
+    // default will be FP1 electrode
+    emit signalGetElectrodeEEGWave("Fp1");
 }
 
 void MainWindow::on_uploadButton_clicked() {

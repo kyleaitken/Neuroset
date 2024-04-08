@@ -21,7 +21,8 @@ SOURCES += \
     pc.cpp \
     qcustomplot.cpp \
     sessionlog.cpp \
-    source.cpp
+    source.cpp \
+    sourcedata.cpp
 
 HEADERS += \
     battery.h \
@@ -35,7 +36,8 @@ HEADERS += \
     pc.h \
     qcustomplot.h \
     sessionlog.h \
-    source.h
+    source.h \
+    sourcedata.h
 
 FORMS += \
     mainwindow.ui

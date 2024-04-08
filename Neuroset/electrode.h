@@ -11,6 +11,10 @@
 #include <QCoreApplication>
 #include <QMutexLocker>
 #include "frequencydata.h"
+#include "defs.h"
+#include "sourcedata.h"
+#include <cmath>
+
 
 class Electrode : public QObject
 {
@@ -19,6 +23,7 @@ class Electrode : public QObject
 public:
     Electrode(int electrodeNum, const QString &electrodeSiteName);
     FrequencyData getFrequencyData() const;
+    const Wave& getWaveData() const;
 
 private:
     // members
@@ -28,9 +33,15 @@ private:
     QWaitCondition pauseCondition;
     bool pauseRequested = false;
     bool stopRequested = false;
+    PatientState patientState = PatientState::Resting;
+    SourceData source;
+    Wave EEGWaveData;
+
 
     // methods
     void startTreatment();
+    double calculateDominantFrequency(const QVector<EEGSourceData>& EEGData);
+    void generateWaveData(const QVector<EEGSourceData>& EEGData);
 
 signals:
     void initialBaselineFinished(int electrodeNum); // signals to controller that this electrode has finished gathering its initial freq

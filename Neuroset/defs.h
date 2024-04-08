@@ -4,9 +4,11 @@
 #include <QVector>
 #include <QString>
 #include <QDebug>
+#include <QMap>
 
 constexpr float TREATMENT_TIME_SECONDS = 1380; // 23 minutes
-extern QVector<QString> eegSiteNames;
+extern const QVector<QString> eegSiteNames;
+extern const QMap<QString, int> electrodeSiteNameToNum;
 
 using namespace std;
 
@@ -22,5 +24,23 @@ using namespace std;
 #define DATA_START 0.0                          // shift the data to start at a different x value (issues with sine waves approaching 0)
 #define DATA_POINTS (SAMPLE_TIME / SAMPLE_RATE) // number of plot samples
 #define TREATMENT_RESPONSE_FACTOR 0.5           // [Hz] the max value in which the offset in patient producing brain waves MAY change based on each treatment
+
+enum class PatientState {
+    Sleeping,
+    Resting,
+    ActiveTask,
+    StressfulTask
+};
+
+struct EEGSourceData {
+    double amplitude;
+    int frequency;
+    double offset;
+};
+
+struct Wave
+{
+    QVector<double> yPlot,xPlot;
+};
 
 #endif
