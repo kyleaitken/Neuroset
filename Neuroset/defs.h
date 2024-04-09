@@ -12,6 +12,11 @@ extern const QMap<QString, int> electrodeSiteNameToNum;
 
 using namespace std;
 
+// Device display screen stack frames
+#define MENU_SCREEN 0
+#define TREATMENT_SCREEN 1
+#define WARNING_MESSAGE_SCREEN 2
+
 // the following is used for the brain wave generation. it is global to be used in main window and the patient entity Source
 #define DELTA 0        // code to distinguish wave types
 #define THETA 1        // code to distinguish wave types

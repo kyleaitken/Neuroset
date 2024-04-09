@@ -12,7 +12,7 @@ void BatteryThread::run()
     {
         if (battery->isOn() && !battery->isCharging())
         {
-            QThread::sleep(20);
+            QThread::msleep(1500);
             battery->reduceBattery();
             if (battery->getBattery() % 5 == 0)
                 qInfo() << "Device is ON and NOT charging. Battery is currently at " + QString::number(battery->getBattery());
