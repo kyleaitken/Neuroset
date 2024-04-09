@@ -5,6 +5,11 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
 
+    powerOffTimer = new QTimer(this);
+    powerOffTimer->setSingleShot(true);
+    connect(powerOffTimer, &QTimer::timeout, this, &MainWindow::turnDeviceScreenOff);
+    connect(powerOffTimer, &QTimer::timeout, this, &MainWindow::togglePower);
+
     // Setting up UI icons
     ui->setupUi(this);
     ui->powerButton->setIcon(QIcon(":/images/images/PowerOff.png"));
@@ -58,6 +63,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pauseButton->setEnabled(false);
     ui->stopButton->setEnabled(false);
     ui->selectButton->setEnabled(false);
+    ui->DonHeadset->setEnabled(false);
+    ui->electrodeDisconnect->setEnabled(false);
+    ui->electrodeReconnect->setEnabled(false);
 
 
     // MainWindow Signals to Controller Slots
@@ -121,6 +129,10 @@ void MainWindow::receiveBatteryPercentage(int curBattery)
     if (curBattery == 0)
     {
         batteryDied();
+    }
+    else if (curBattery == 5 && !battery->isCharging()) {
+        int currScreenStack = controller->isSessionActive() || controller->isSessionPaused() ? TREATMENT_SCREEN : MENU_SCREEN;
+        displayMessage("Battery Critically Low: Please Charge", currScreenStack);
     }
     else if (curBattery < 25)
     {
@@ -196,6 +208,9 @@ void MainWindow::on_powerButton_clicked()
             ui->pauseButton->setEnabled(true);
             ui->stopButton->setEnabled(true);
             ui->selectButton->setEnabled(true);
+            ui->DonHeadset->setEnabled(true);
+            ui->electrodeDisconnect->setEnabled(true);
+            ui->electrodeReconnect->setEnabled(true);
             ui->ContactLostIndicator->setStyleSheet("background-color: red;");
 
             QStringList menuOptions;
@@ -218,7 +233,6 @@ void MainWindow::on_powerButton_clicked()
         }
         else
         {
-            ui->screenStack->setCurrentIndex(0);
             turnDeviceScreenOff();
             togglePower();
         }
@@ -227,6 +241,9 @@ void MainWindow::on_powerButton_clicked()
 
 void MainWindow::turnDeviceScreenOff()
 {
+    emit stopButtonPressed();
+
+    ui->screenStack->setCurrentIndex(MENU_SCREEN);
     ui->powerButton->setIcon(QIcon(":/images/images/PowerOff.png"));
     auto *model = dynamic_cast<QStringListModel *>(ui->menuView->model());
     if (model)
@@ -245,8 +262,7 @@ void MainWindow::turnDeviceScreenOff()
     ui->TreatmentIndicator->setStyleSheet("background-color: grey;");
 
      // stop session if running
-     emit electrodeContactLost();
-     emit stopButtonPressed();
+//     emit electrodeContactLost();
 }
 
 void MainWindow::on_selectButton_clicked()
@@ -267,11 +283,11 @@ void MainWindow::on_selectButton_clicked()
         if (controller->electrodesConnected()) {
             ui->timerLabel->setText("");
             ui->progressBar->setValue(0);
-            ui->screenStack->setCurrentIndex(1);
+            ui->screenStack->setCurrentIndex(TREATMENT_SCREEN);
             ui->patientStateComboBox->setDisabled(true);
             emit signalNewSession();
         } else {
-            displayMessage("Unable to start session: Electrode connection is not secure");
+            displayMessage("Unable to start session: Electrode connection is not secure", MENU_SCREEN);
         }
         break;
     case 1:
@@ -286,41 +302,50 @@ void MainWindow::on_selectButton_clicked()
     }
 }
 
-void MainWindow::displayMessage(const QString& message) {
-    ui->screenStack->setCurrentIndex(2);
+void MainWindow::displayMessage(const QString& message, int returnScreen) {
+    ui->screenStack->setCurrentIndex(WARNING_MESSAGE_SCREEN);
     ui->warningLabel->setWordWrap(true);
     ui->warningLabel->setText(message);
 
     // Display warning for 3 seconds
     QTimer *timer = new QTimer(this);
     timer->setSingleShot(true);
-    connect(timer, &QTimer::timeout, [this]() {
-        ui->screenStack->setCurrentIndex(0);
+    connect(timer, &QTimer::timeout, [this, returnScreen]() {
+        ui->screenStack->setCurrentIndex(returnScreen);
     });
     timer->start(3000);
 }
 
 void MainWindow::on_playButton_clicked()
 {
-    // TODO: check state of controller first, should be in paused state (if using a select button)
-    qInfo() << "Play button clicked";
-    emit playButtonPressed();
+    if (controller->isSessionPaused() && controller->electrodesConnected()) {
+        emit playButtonPressed();
+        if (powerOffTimer->isActive()) {
+                  powerOffTimer->stop();
+        }
+    }
 }
 
 void MainWindow::on_pauseButton_clicked()
 {
-    // TODO: check state of controller, should be in an active session
-    emit pauseButtonPressed();
+    if (controller->isSessionActive()) {
+        emit pauseButtonPressed();
+        ui->TreatmentIndicator->setStyleSheet("background-color: grey;");
+        displayMessage("Treatment Session Paused", TREATMENT_SCREEN);
+        powerOffTimer->start(10000); // 20 seconds timeout
+    }
 }
 
 
 void MainWindow::on_stopButton_clicked()
 {
-    // TODO: check state of controller first, should be in an active session
-    ui->screenStack->setCurrentIndex(0);
-    ui->timerLabel->setText("23:00");
-    ui->progressBar->setValue(0);
-    emit stopButtonPressed();
+    if (controller->isSessionActive()) {
+        ui->timerLabel->setText("");
+        ui->progressBar->setValue(0);
+        ui->TreatmentIndicator->setStyleSheet("background-color: grey;");
+        emit stopButtonPressed();
+        displayMessage("Treatment Session Stopped", MENU_SCREEN);
+    }
 }
 
 void MainWindow::updateUITimerAndProgress(const QString &timeString, int progressPercentage)
@@ -412,19 +437,30 @@ void MainWindow::on_electrodeDisconnect_clicked()
     ui->ContactLostIndicator->setStyleSheet("background-color: red;");
     ui->TreatmentIndicator->setStyleSheet("background-color: grey");
     emit electrodeContactLost();
+    if (controller->isSessionActive() || controller->isSessionPaused()) {
+        displayMessage("Electrode Contact Lost, Please Reconnect", TREATMENT_SCREEN);
+        powerOffTimer->start(10000);
+    }
 }
 
 void MainWindow::on_electrodeReconnect_clicked()
 {
     ui->ContactSecureIndicator->setStyleSheet("background-color: blue;");
     ui->ContactLostIndicator->setStyleSheet("background-color: grey;");
-    emit electrodeContactRegained();
+    if (controller->isSessionPaused()) {
+        controller->setElectrodeContactRestored();
+    } else {
+        emit electrodeContactRegained();
+    }
+    if (powerOffTimer->isActive()) {
+        powerOffTimer->stop();
+    }
 }
 
 void MainWindow::slotTreatmentSessionComplete()
 {
     ui->patientStateComboBox->setDisabled(false);
-    displayMessage("Treatment Session Complete");
+    displayMessage("Treatment Session Complete", MENU_SCREEN);
 }
 
 void MainWindow::on_patientStateComboBox_currentIndexChanged() {

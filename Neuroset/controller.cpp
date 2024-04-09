@@ -224,3 +224,19 @@ void Controller::setElectrodeContactSecured(){
 bool Controller::electrodesConnected() {
     return electrodesHaveContact;
 }
+
+bool Controller::isSessionActive() {
+    return sessionActive;
+}
+
+bool Controller::isSessionPaused() {
+    return paused;
+}
+
+bool Controller::getElectrodesAreConnected() {
+    return electrodesHaveContact;
+}
+
+void Controller::setElectrodeContactRestored() {
+    electrodesHaveContact = true;
+}

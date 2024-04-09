@@ -21,6 +21,10 @@ public:
     Controller(QObject *parent = nullptr);
     bool electrodesConnected();
     void setPatientState(const QString& newState);
+    bool isSessionActive();
+    bool isSessionPaused();
+    bool getElectrodesAreConnected();
+    void setElectrodeContactRestored();
 
 private:
     // attributes

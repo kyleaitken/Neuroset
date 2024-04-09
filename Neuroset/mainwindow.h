@@ -86,9 +86,11 @@ private:
     Battery *battery;
     BatteryThread *batterythread;
     bool poweredOn = false;
+    int currScreenStack;
+    QTimer *powerOffTimer;
 
     void turnDeviceScreenOff();
     void batteryDied();
-    void displayMessage(const QString& message);
+    void displayMessage(const QString& message, int returnScreen);
 };
 #endif // MAINWINDOW_H
