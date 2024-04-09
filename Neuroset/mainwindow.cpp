@@ -491,10 +491,13 @@ void MainWindow::slotTreatmentApplicationFinished() {
     ui->TreatmentIndicator->setStyleSheet("background-color: grey");
 }
 
-void MainWindow::on_saveDateTime_clicked() {
-    customDateTime = ui->dateTimeEdit->dateTime();
-    referenceDateTime = QDateTime::currentDateTime();
-    ui->screenStack->setCurrentIndex(MENU_SCREEN);
-    emit signalTimeAndDate(customDateTime, referenceDateTime);
+
+void MainWindow::on_menuButton_clicked() {
+    if (ui->screenStack->currentIndex() == SET_DATETIME_SCREEN) {
+        customDateTime = ui->dateTimeEdit->dateTime();
+        referenceDateTime = QDateTime::currentDateTime();
+        ui->screenStack->setCurrentIndex(MENU_SCREEN);
+        emit signalTimeAndDate(customDateTime, referenceDateTime);
+    }
 }
 

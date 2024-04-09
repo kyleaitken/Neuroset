@@ -53,6 +53,7 @@ signals:
 
 private slots:
     // Button handlers
+    void on_menuButton_clicked();
     void on_chargeButton_clicked();
     void on_upButton_clicked();
     void on_downButton_clicked();
@@ -68,7 +69,6 @@ private slots:
     void on_electrodeDisconnect_clicked();
     void on_electrodeReconnect_clicked();
     void on_patientStateComboBox_currentIndexChanged();
-    void on_saveDateTime_clicked();
 
     // UI Updates
     void updateUITimerAndProgress(const QString &timeString, int progressPercentage);
