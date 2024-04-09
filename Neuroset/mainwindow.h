@@ -42,7 +42,7 @@ signals:
 
     void togglePowerStatus();
     void signalSessionLog();
-    void signalTimeAndDate();
+    void signalTimeAndDate(QDateTime customTime, QDateTime referenceTime);
 
     // Session logging
     void getPreviousSessionDates();
@@ -68,6 +68,7 @@ private slots:
     void on_electrodeDisconnect_clicked();
     void on_electrodeReconnect_clicked();
     void on_patientStateComboBox_currentIndexChanged();
+    void on_saveDateTime_clicked();
 
     // UI Updates
     void updateUITimerAndProgress(const QString &timeString, int progressPercentage);
@@ -88,6 +89,8 @@ private:
     bool poweredOn = false;
     int currScreenStack;
     QTimer *powerOffTimer;
+    QDateTime customDateTime = QDateTime::currentDateTime();
+    QDateTime referenceDateTime;
 
     void turnDeviceScreenOff();
     void batteryDied();

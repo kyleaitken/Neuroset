@@ -77,7 +77,7 @@ public slots:
     void getSessionLogData(const QString &sessionName);
     void getPreviousSessionDates();
 
-    void updateTimeAndDate();
+    void updateTimeAndDate(QDateTime customDateTime, QDateTime referenceDateTime);
     void updateSessionTimerAndProgress();
     void slotGetElectrodeEEGWave(const QString& eName);
 
