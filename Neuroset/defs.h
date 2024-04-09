@@ -16,6 +16,7 @@ using namespace std;
 #define MENU_SCREEN 0
 #define TREATMENT_SCREEN 1
 #define WARNING_MESSAGE_SCREEN 2
+#define SET_DATETIME_SCREEN 3
 
 // the following is used for the brain wave generation. it is global to be used in main window and the patient entity Source
 #define DELTA 0        // code to distinguish wave types

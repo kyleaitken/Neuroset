@@ -211,7 +211,14 @@ void MainWindow::on_powerButton_clicked()
             ui->DonHeadset->setEnabled(true);
             ui->electrodeDisconnect->setEnabled(true);
             ui->electrodeReconnect->setEnabled(true);
-            ui->ContactLostIndicator->setStyleSheet("background-color: red;");
+            ui->ContactLostIndicator->setStyleSheet("background-color: red;");            
+            if (referenceDateTime.isNull()) {
+                ui->dateTimeEdit->setDateTime(customDateTime);
+            } else {
+                QDateTime currentDateTime = QDateTime::currentDateTime();
+                qint64 elapsed = referenceDateTime.msecsTo(currentDateTime);
+                ui->dateTimeEdit->setDateTime(customDateTime.addMSecs(elapsed));
+            }
 
             QStringList menuOptions;
             menuOptions << "New Session"
@@ -294,7 +301,8 @@ void MainWindow::on_selectButton_clicked()
         emit signalSessionLog();
         break;
     case 2:
-        emit signalTimeAndDate();
+//        emit signalTimeAndDate();
+        ui->screenStack->setCurrentIndex(SET_DATETIME_SCREEN);
         break;
     // Handle other cases as needed
     default:
@@ -481,5 +489,12 @@ void MainWindow::slotTreatmentApplicationStarted() {
 
 void MainWindow::slotTreatmentApplicationFinished() {
     ui->TreatmentIndicator->setStyleSheet("background-color: grey");
+}
+
+void MainWindow::on_saveDateTime_clicked() {
+    customDateTime = ui->dateTimeEdit->dateTime();
+    referenceDateTime = QDateTime::currentDateTime();
+    ui->screenStack->setCurrentIndex(MENU_SCREEN);
+    emit signalTimeAndDate(customDateTime, referenceDateTime);
 }
 

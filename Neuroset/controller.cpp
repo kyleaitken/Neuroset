@@ -112,12 +112,21 @@ void Controller::startIndividualElectrodeTreatment(int electrodeNum) {
 
 
 void Controller::recordSession() {
-    QDateTime sessionDateTime = QDateTime::currentDateTime(); // use current date/time for now until we handle custom user date/time
+    QDateTime sessionDateTime;
+    if (referenceDateTime.isNull()) {
+        sessionDateTime = QDateTime::currentDateTime();
+    } else {
+        QDateTime currentDateTime = QDateTime::currentDateTime();
+        qint64 elapsed = referenceDateTime.msecsTo(currentDateTime);
+        sessionDateTime = customDateTime.addMSecs(elapsed);
+    }
+
     QVector<FrequencyData> electrodeData;
     for (auto e : electrodes) {
         electrodeData.push_back(e->getFrequencyData());
     }
     SessionLog* session = new SessionLog(sessionDateTime, electrodeData);
+
     qInfo() << "Completed session at " << session->getDateTime();
     emit signalTreatmentSessionComplete();
     resetState();
@@ -145,11 +154,9 @@ void Controller::setElectrodeFinishedTreatment(int electrodeNum) {
     }
 }
 
-void Controller::updateTimeAndDate(){
-    qDebug() << "Time and Date";
-    //Handle time and date
-
-    //will emit to update MainWindow menu as appropriate
+void Controller::updateTimeAndDate(QDateTime customDateTime, QDateTime referenceDateTime){
+    this->customDateTime = customDateTime;
+    this->referenceDateTime = referenceDateTime;
 }
 
 
