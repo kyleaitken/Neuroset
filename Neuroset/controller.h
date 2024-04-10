@@ -19,6 +19,7 @@ class Controller : public QObject
 
 public:
     Controller(QObject *parent = nullptr);
+    ~Controller();
     bool electrodesConnected();
     void setPatientState(const QString& newState);
     bool isSessionActive();

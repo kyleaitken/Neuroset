@@ -29,6 +29,11 @@ void Electrode::generateWaveData(const QVector<EEGSourceData>& EEGData) {
     int dataPointsPerStep = 200;
     double samplingRate = 200.0;
 
+    // RESET WAVE DATA BEFORE GENERATION
+    EEGWaveData.xPlot.clear();
+    EEGWaveData.yPlot.clear();
+
+    // WAVE GENERATION
     for (int i = 0; i < 5; i++) {
         QThread::msleep(1200);
         QCoreApplication::processEvents();

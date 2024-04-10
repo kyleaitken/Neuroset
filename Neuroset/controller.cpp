@@ -1,10 +1,30 @@
 #include "controller.h"
+#include <iostream>
 
 Controller::Controller(QObject *parent) : QObject(parent){
     setupElectrodes();
     sessionTimer = new QTimer(this);
     connect(sessionTimer, &QTimer::timeout, this, &Controller::updateSessionTimerAndProgress);
 }
+
+Controller::~Controller()
+{
+    delete sessionTimer;
+    for (int i = numElectrodes-1; i >= 0; i--)
+    {
+//        Electrode *electrode = electrodes[i]; dont need to deallocate electrode ptr done in electrode threads by qt
+        electrodes.pop_back();
+
+        QThread *thread = electrodeThreads[i];
+        electrodeThreads.pop_back();
+
+        thread->quit();
+        thread->wait();
+
+        if(thread) delete thread;
+    }
+}
+
 
 void Controller::setPatientState(const QString &newState) {
     if (newState == "Active Task") {
@@ -60,6 +80,7 @@ void Controller::startNewSession(){
         sessionActive = true;
         remainingTime = TREATMENT_TIME_SECONDS;
         sessionTimer->start(1000);
+        cout << "********************* STARTING TREATMENT SESSION *********************" << endl;
         emit startElectrodeInitialBaseline();
     }
 }
@@ -91,6 +112,7 @@ void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum){
     electrodesFinishedFinalBaseline.insert(electrodeNum);
     if (checkFinalBaselineFinished()){
         qInfo() << "Electrodes have finished final baseline in thread ID: " << QThread::currentThreadId();
+        cout << "********************* FINISHED TREATMENT SESSION *********************" << endl;
         recordSession();
     }
 }
@@ -165,6 +187,7 @@ void Controller::stopSession(){
     emit stopElectrodes();
     sessionTimer->stop();
     resetState();
+    cout << "********************* TREATMENT SESSION STOPPED *********************" << endl;
 }
 
 void Controller::resetState() {

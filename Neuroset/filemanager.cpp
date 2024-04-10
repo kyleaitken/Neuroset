@@ -1,4 +1,5 @@
 #include "filemanager.h"
+#include <iostream>
 
 FileManager::FileManager() {}
 
@@ -18,12 +19,15 @@ QString FileManager::generateFileName(const QDate &date) // const QDateTime &dat
     QDir directory(dirPath);
 
     int counter = 1;
+    cout << "Saving session file to database ";
     while (QFileInfo::exists(directory.absoluteFilePath(fileName)))
     {
-        qInfo() << "file exists";
+        cout << "."; // previously file exists printout
         fileName = baseFileName + "_" + QString::number(counter) + ".txt";
         counter++;
+        cout.flush();
     }
+    cout << endl;
     return fileName;
 }
 

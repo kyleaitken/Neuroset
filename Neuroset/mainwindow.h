@@ -12,6 +12,11 @@
 #include "battery.h"
 #include "batterythread.h"
 
+// the following are code events for device selection options in device main menu
+#define SELECT_NEW_SESSION      0 // new session event MACRO - MainWindow.h
+#define SELECT_SESSION_LOGS     1 // session logs event MACRO - MainWindow.h
+#define SELECT_TIME_AND_DATE    2 // time + date event MACRO - MainWindow.h
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {

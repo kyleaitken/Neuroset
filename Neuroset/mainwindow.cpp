@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <iostream>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -22,7 +24,9 @@ MainWindow::MainWindow(QWidget *parent)
     QPixmap pixmap(":/images/images/4Battery.png");
     ui->battery->setPixmap(pixmap);
 
-    QThread *controllerThread = new QThread(this);
+//    QThread *controllerThread = new QThread(this);
+    this->controllerThread = new QThread(this);
+
     controller = new Controller();
     controller->moveToThread(controllerThread);
 
@@ -100,7 +104,34 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    cout << " EXITING NEUROSET SIMULATION ";
+    batteryDied();  // included battery died to safely stop every event
+
+    cout << ".";
+    powerOffTimer->stop();
+
+    cout << ".";
+    controllerThread->quit();
+    controllerThread->wait();
+
+    cout << ".";
+    delete controllerThread;
+
+    cout << ".";
+    batterythread->requestInterruption();
+    batterythread->wait();
+
+    cout << ".";
+    delete batterythread;
+
+    delete powerOffTimer;
+
+    delete controller;
+
+    delete battery;
+
     delete ui;
+    cout << "." << endl;
 }
 
 void MainWindow::on_upButton_clicked()
@@ -211,7 +242,7 @@ void MainWindow::on_powerButton_clicked()
             ui->DonHeadset->setEnabled(true);
             ui->electrodeDisconnect->setEnabled(true);
             ui->electrodeReconnect->setEnabled(true);
-            ui->ContactLostIndicator->setStyleSheet("background-color: red;");            
+            ui->ContactLostIndicator->setStyleSheet("background-color: red;");
             if (referenceDateTime.isNull()) {
                 ui->dateTimeEdit->setDateTime(customDateTime);
             } else {
@@ -286,8 +317,13 @@ void MainWindow::on_selectButton_clicked()
     int selectedRow = currentIndex.row(); // Get the selected row number
     switch (selectedRow)
     {
-    case 0:
-        if (controller->electrodesConnected()) {
+    case SELECT_NEW_SESSION:
+        // USER REQUESTS NEW SESSION EVENT
+        if(ui->screenStack->currentIndex() == WARNING_MESSAGE_SCREEN)
+        {
+            qDebug() << "Unable to start session: Warning message is being displayed";
+        }
+        else if (controller->electrodesConnected()) {
             ui->timerLabel->setText("");
             ui->progressBar->setValue(0);
             ui->screenStack->setCurrentIndex(TREATMENT_SCREEN);
@@ -297,10 +333,12 @@ void MainWindow::on_selectButton_clicked()
             displayMessage("Unable to start session: Electrode connection is not secure", MENU_SCREEN);
         }
         break;
-    case 1:
+    case SELECT_SESSION_LOGS:
+        // USER REQUESTS SESSION LOG DISPLAY EVENT
         emit signalSessionLog();
         break;
-    case 2:
+    case SELECT_TIME_AND_DATE:
+        // USER REQUESTS UPDATE DEVICE TIME AND DATE EVENT
 //        emit signalTimeAndDate();
         ui->screenStack->setCurrentIndex(SET_DATETIME_SCREEN);
         break;
@@ -392,6 +430,10 @@ void MainWindow::slotDisplayGraphData(const Wave& waveData)
     if (ui->graphDisplayPC->graphCount() == 0)
     {
         ui->graphDisplayPC->addGraph();
+    }
+    else
+    {
+        ui->graphDisplayPC->graph(0)->data()->clear(); // clear existing display
     }
     ui->graphDisplayPC->graph(0)->setData(waveData.xPlot, waveData.yPlot);              // set data to the first graph
     ui->graphDisplayPC->xAxis->setRange(waveData.xPlot.first(), waveData.xPlot.last()); // set the range of the x-axis based on the calculated x values
