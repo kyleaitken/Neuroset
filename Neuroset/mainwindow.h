@@ -12,6 +12,11 @@
 #include "battery.h"
 #include "batterythread.h"
 
+// the following are code events for device selection options in device main menu
+#define SELECT_NEW_SESSION      0 // new session event MACRO - MainWindow.h
+#define SELECT_SESSION_LOGS     1 // session logs event MACRO - MainWindow.h
+#define SELECT_TIME_AND_DATE    2 // time + date event MACRO - MainWindow.h
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -36,7 +41,6 @@ signals:
     void stopButtonPressed();
 
     // Electrode Contact
-    void donHeadset();
     void electrodeContactLost();
     void electrodeContactRegained();
 
@@ -65,7 +69,6 @@ private slots:
     void on_uploadButton_clicked();
     void onSessionDoubleClicked(const QModelIndex &index);
     void on_EEGSampleButton_clicked();
-    void on_DonHeadset_clicked();
     void on_electrodeDisconnect_clicked();
     void on_electrodeReconnect_clicked();
     void on_patientStateComboBox_currentIndexChanged();

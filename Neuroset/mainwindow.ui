@@ -262,27 +262,14 @@
    <widget class="QPushButton" name="electrodeDisconnect">
     <property name="geometry">
      <rect>
-      <x>810</x>
-      <y>90</y>
-      <width>151</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Electrode Disconnect</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="DonHeadset">
-    <property name="geometry">
-     <rect>
-      <x>900</x>
+      <x>970</x>
       <y>60</y>
       <width>151</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>User Dons Headset</string>
+     <string>Disconnect Electrodes</string>
     </property>
    </widget>
    <widget class="QPushButton" name="upButton">
@@ -537,7 +524,7 @@
     <property name="geometry">
      <rect>
       <x>900</x>
-      <y>130</y>
+      <y>100</y>
       <width>151</width>
       <height>21</height>
      </rect>
@@ -550,7 +537,7 @@
     <property name="geometry">
      <rect>
       <x>900</x>
-      <y>160</y>
+      <y>140</y>
       <width>151</width>
       <height>21</height>
      </rect>
@@ -714,14 +701,14 @@
    <widget class="QPushButton" name="electrodeReconnect">
     <property name="geometry">
      <rect>
-      <x>980</x>
-      <y>90</y>
+      <x>800</x>
+      <y>60</y>
       <width>151</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Electrode Reconnect</string>
+     <string>Connect Electrodes</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
