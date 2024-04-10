@@ -41,7 +41,6 @@ signals:
     void stopButtonPressed();
 
     // Electrode Contact
-    void donHeadset();
     void electrodeContactLost();
     void electrodeContactRegained();
 
@@ -70,7 +69,6 @@ private slots:
     void on_uploadButton_clicked();
     void onSessionDoubleClicked(const QModelIndex &index);
     void on_EEGSampleButton_clicked();
-    void on_DonHeadset_clicked();
     void on_electrodeDisconnect_clicked();
     void on_electrodeReconnect_clicked();
     void on_patientStateComboBox_currentIndexChanged();

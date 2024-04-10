@@ -183,7 +183,6 @@ void Controller::updateTimeAndDate(QDateTime customDateTime, QDateTime reference
 
 
 void Controller::stopSession(){
-    sessionActive = false;
     emit stopElectrodes();
     sessionTimer->stop();
     resetState();
@@ -191,6 +190,7 @@ void Controller::stopSession(){
 }
 
 void Controller::resetState() {
+    sessionActive = false;
     electrodesFinishedInitialBaseline.clear();
     electrodesFinishedFinalBaseline.clear();
     electrodesFinishedTreatment.clear();
@@ -243,7 +243,7 @@ void Controller::setElectrodeContactLost(){
 }
 
 void Controller::setElectrodeContactSecured(){
-    if (sessionActive && !electrodesHaveContact) {
+    if (isSessionPaused() && !electrodesHaveContact) {
         electrodesHaveContact = true;
         resumeTreatmentSession();
     } else {
