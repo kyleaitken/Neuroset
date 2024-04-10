@@ -104,24 +104,20 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    cout << " EXITING NEUROSET SIMULATION ";
     batteryDied();  // included battery died to safely stop every event
 
-    cout << ".";
+    cout << " EXITING NEUROSET SIMULATION .... " << endl;
+
     powerOffTimer->stop();
 
-    cout << ".";
     controllerThread->quit();
     controllerThread->wait();
 
-    cout << ".";
     delete controllerThread;
 
-    cout << ".";
     batterythread->requestInterruption();
     batterythread->wait();
 
-    cout << ".";
     delete batterythread;
 
     delete powerOffTimer;
@@ -131,7 +127,6 @@ MainWindow::~MainWindow()
     delete battery;
 
     delete ui;
-    cout << "." << endl;
 }
 
 void MainWindow::on_upButton_clicked()

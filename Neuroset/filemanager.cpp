@@ -23,9 +23,9 @@ QString FileManager::generateFileName(const QDate &date) // const QDateTime &dat
     while (QFileInfo::exists(directory.absoluteFilePath(fileName)))
     {
         cout << "."; // previously file exists printout
+        cout.flush();
         fileName = baseFileName + "_" + QString::number(counter) + ".txt";
         counter++;
-        cout.flush();
     }
     cout << endl;
     return fileName;
