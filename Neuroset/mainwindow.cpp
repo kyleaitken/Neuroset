@@ -129,6 +129,11 @@ void MainWindow::on_upButton_clicked()
 {
     if (ui->screenStack->currentIndex() == TREATMENT_SCREEN) return;
 
+    if (ui->screenStack->currentIndex() == SET_DATETIME_SCREEN) {
+        ui->dateTimeEdit->stepUp();
+        return;
+    }
+
     int currentRow = ui->menuView->currentIndex().row();
     int previousRow = currentRow > 0 ? currentRow - 1 : 0;
     QModelIndex newIndex = ui->menuView->model()->index(previousRow, 0);
@@ -139,6 +144,11 @@ void MainWindow::on_upButton_clicked()
 void MainWindow::on_downButton_clicked()
 {
     if (ui->screenStack->currentIndex() == TREATMENT_SCREEN) return;
+
+    if (ui->screenStack->currentIndex() == SET_DATETIME_SCREEN) {
+        ui->dateTimeEdit->stepDown();
+        return;
+    }
 
     int currentRow = ui->menuView->currentIndex().row();
     int rows = ui->menuView->model()->rowCount();
@@ -298,6 +308,32 @@ void MainWindow::turnDeviceScreenOff()
 void MainWindow::on_selectButton_clicked()
 {
     if (ui->screenStack->currentIndex() == TREATMENT_SCREEN) return;
+
+    // Select button is used to move through the date/time setting
+    if (ui->screenStack->currentIndex() == SET_DATETIME_SCREEN) {
+        QDateTimeEdit::Section currentSection = ui->dateTimeEdit->currentSection();
+        QDateTimeEdit::Section nextSection;
+        switch (currentSection) {
+            case QDateTimeEdit::MonthSection:
+                nextSection = QDateTimeEdit::DaySection;
+                break;
+            case QDateTimeEdit::DaySection:
+                nextSection = QDateTimeEdit::YearSection;
+                break;
+            case QDateTimeEdit::YearSection:
+                nextSection = QDateTimeEdit::HourSection;
+                break;
+            case QDateTimeEdit::HourSection:
+                nextSection = QDateTimeEdit::MinuteSection;
+                break;
+            default:
+                nextSection = QDateTimeEdit::MonthSection;
+                break;
+        }
+
+        ui->dateTimeEdit->setSelectedSection(nextSection);
+        return;
+    }
 
     QModelIndex currentIndex = ui->menuView->currentIndex();
 
@@ -524,6 +560,7 @@ void MainWindow::on_menuButton_clicked() {
         customDateTime = ui->dateTimeEdit->dateTime();
         referenceDateTime = QDateTime::currentDateTime();
         ui->screenStack->setCurrentIndex(MENU_SCREEN);
+        ui->menuView->setFocus();
         emit signalTimeAndDate(customDateTime, referenceDateTime);
     }
 }
