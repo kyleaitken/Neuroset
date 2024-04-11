@@ -28,7 +28,7 @@ public:
 private:
     QString relativeDirPath = "Data Output";
 
-    QString generateFileName(const QDate &date);
+    QString generateFileName(const QDateTime &date);
 
 
 };
