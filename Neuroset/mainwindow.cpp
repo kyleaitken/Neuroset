@@ -75,7 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::playButtonPressed, controller, &Controller::resumeTreatmentSession);
     connect(this, &MainWindow::pauseButtonPressed, controller, &Controller::pauseSession);
     connect(this, &MainWindow::stopButtonPressed, controller, &Controller::stopSession);
-    connect(this, &MainWindow::getPreviousSessionDates, controller, &Controller::getPreviousSessionDates);
+    connect(this, &MainWindow::getPreviousSessionDates, controller, &Controller::getPreviousSessionDatesForPC);
+    connect(this, &MainWindow::getPreviousSessionDatesForDevice, controller, &Controller::getPreviousSessionDatesForDevice);
     connect(this, &MainWindow::getSessionLogData, controller, &Controller::getSessionLogData);
     connect(this, &MainWindow::signalGetElectrodeEEGWave, controller, &Controller::slotGetElectrodeEEGWave);
 
@@ -88,7 +89,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Controller Signals to MainWindow Slots
     connect(controller, &Controller::updateTimerAndProgressDisplay, this, &MainWindow::updateUITimerAndProgress);
-    connect(controller, &Controller::sessionDatesRetrieved, this, &MainWindow::slotDisplaySessionDates);
+    connect(controller, &Controller::sessionDatesRetrieved, this, &MainWindow::slotDisplaySessionDatesOnPC);
+    connect(controller, &Controller::sessionDatesRetrievedForDevice, this, &MainWindow::slotDisplaySessionDatesOnDevice);
     connect(controller, &Controller::sessionLogDataRetrieved, this, &MainWindow::slotDisplaySessionLogData);
     connect(controller, &Controller::signalDisplayElectrodeWave, this, &MainWindow::slotDisplayGraphData);
     connect(controller, &Controller::signalTreatmentSessionComplete, this, &MainWindow::slotTreatmentSessionComplete);
@@ -127,35 +129,75 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_upButton_clicked()
 {
-    if (ui->screenStack->currentIndex() == TREATMENT_SCREEN) return;
+    int currentIndex = ui->screenStack->currentIndex();
 
-    if (ui->screenStack->currentIndex() == SET_DATETIME_SCREEN) {
-        ui->dateTimeEdit->stepUp();
-        return;
+    switch (currentIndex) {
+
+        case MENU_SCREEN: {
+            int currentRow = ui->menuView->currentIndex().row();
+            int totalRows = ui->menuView->model()->rowCount();
+            int previousRow = currentRow > 0 ? currentRow - 1 : totalRows - 1;
+            QModelIndex newIndex = ui->menuView->model()->index(previousRow, 0);
+            ui->menuView->setCurrentIndex(newIndex);
+            ui->menuView->setFocus();
+            break;
+        }
+
+        case SET_DATETIME_SCREEN:
+            ui->dateTimeEdit->stepUp();
+            break;
+
+        case SESSION_LOG_SCREEN: {
+            int currentRow = ui->deviceSessionList->currentIndex().row();
+            int totalRows = ui->deviceSessionList->model()->rowCount();
+            int previousRow = currentRow > 0 ? currentRow - 1 : totalRows - 1;
+            QModelIndex newIndex = ui->deviceSessionList->model()->index(previousRow, 0);
+            ui->deviceSessionList->setCurrentIndex(newIndex);
+            ui->deviceSessionList->setFocus();
+            break;
+        }
+
+        default:
+            return;
+
     }
-
-    int currentRow = ui->menuView->currentIndex().row();
-    int previousRow = currentRow > 0 ? currentRow - 1 : 0;
-    QModelIndex newIndex = ui->menuView->model()->index(previousRow, 0);
-    ui->menuView->setCurrentIndex(newIndex);
-    ui->menuView->setFocus();
 }
 
 void MainWindow::on_downButton_clicked()
 {
-    if (ui->screenStack->currentIndex() == TREATMENT_SCREEN) return;
+    int currentIndex = ui->screenStack->currentIndex();
 
-    if (ui->screenStack->currentIndex() == SET_DATETIME_SCREEN) {
-        ui->dateTimeEdit->stepDown();
-        return;
+    switch (currentIndex) {
+
+        case MENU_SCREEN: {
+            int currentRow = ui->menuView->currentIndex().row();
+            int rows = ui->menuView->model()->rowCount();
+            int nextRow = currentRow < rows - 1 ? currentRow + 1 : rows - 1;
+            QModelIndex newIndex = ui->menuView->model()->index(nextRow, 0);
+            ui->menuView->setCurrentIndex(newIndex);
+            ui->menuView->setFocus();
+            break;
+        }
+
+        case SET_DATETIME_SCREEN:
+            ui->dateTimeEdit->stepDown();
+            break;
+
+        case SESSION_LOG_SCREEN: {
+            int currentRow = ui->deviceSessionList->currentIndex().row();
+            int totalRows = ui->deviceSessionList->model()->rowCount();
+            int nextRow = currentRow < totalRows - 1 ? currentRow + 1 : 0;
+            QModelIndex newIndex = ui->deviceSessionList->model()->index(nextRow, 0);
+            ui->deviceSessionList->setCurrentIndex(newIndex);
+            ui->deviceSessionList->setFocus();
+            break;
+        }
+
+        default:
+            return;
+
     }
 
-    int currentRow = ui->menuView->currentIndex().row();
-    int rows = ui->menuView->model()->rowCount();
-    int nextRow = currentRow < rows - 1 ? currentRow + 1 : rows - 1;
-    QModelIndex newIndex = ui->menuView->model()->index(nextRow, 0);
-    ui->menuView->setCurrentIndex(newIndex);
-    ui->menuView->setFocus();
 }
 
 void MainWindow::receiveBatteryPercentage(int curBattery)
@@ -360,13 +402,13 @@ void MainWindow::on_selectButton_clicked()
         break;
     case SELECT_SESSION_LOGS:
         // USER REQUESTS SESSION LOG DISPLAY EVENT
-        emit signalSessionLog();
+        ui->screenStack->setCurrentIndex(SESSION_LOG_SCREEN);
+        emit getPreviousSessionDatesForDevice();
         break;
     case SELECT_TIME_AND_DATE:
         // USER REQUESTS UPDATE DEVICE TIME AND DATE EVENT
         ui->screenStack->setCurrentIndex(SET_DATETIME_SCREEN);
         break;
-    // Handle other cases as needed
     default:
         qDebug() << "Selected option is not handled.";
     }
@@ -480,12 +522,20 @@ void MainWindow::on_uploadButton_clicked() {
     emit getPreviousSessionDates();
 }
 
-void MainWindow::slotDisplaySessionDates(QStringList sessionDates) {
+void MainWindow::slotDisplaySessionDatesOnPC(QStringList sessionDates) {
     if (!sessionDates.isEmpty()) {
         QStringListModel* model = new QStringListModel(sessionDates, this);
         ui->prevSessionsList->setModel(model);
-    } else {
-        ui->prevSessionsList->setModel(new QStringListModel(this));
+    }
+}
+
+void MainWindow::slotDisplaySessionDatesOnDevice(QStringList sessionDates) {
+    if (!sessionDates.isEmpty()) {
+        QStringListModel* model = new QStringListModel(sessionDates, this);
+         ui->deviceSessionList->setModel(model);
+         QModelIndex firstIndex = ui->deviceSessionList->model()->index(0, 0);
+         ui->deviceSessionList->setCurrentIndex(firstIndex);
+         ui->deviceSessionList->setFocus();
     }
 }
 
@@ -554,14 +604,24 @@ void MainWindow::slotTreatmentApplicationFinished() {
 
 
 void MainWindow::on_menuButton_clicked() {
-    if (ui->screenStack->currentIndex() == TREATMENT_SCREEN) return;
+    int currentScreen = ui->screenStack->currentIndex();
 
-    if (ui->screenStack->currentIndex() == SET_DATETIME_SCREEN) {
-        customDateTime = ui->dateTimeEdit->dateTime();
-        referenceDateTime = QDateTime::currentDateTime();
-        ui->screenStack->setCurrentIndex(MENU_SCREEN);
-        ui->menuView->setFocus();
-        emit signalTimeAndDate(customDateTime, referenceDateTime);
+    switch (currentScreen) {
+        case SESSION_LOG_SCREEN:
+            ui->screenStack->setCurrentIndex(MENU_SCREEN);
+            ui->menuView->setFocus();
+            break;
+
+        case SET_DATETIME_SCREEN:
+            customDateTime = ui->dateTimeEdit->dateTime();
+            referenceDateTime = QDateTime::currentDateTime();
+            ui->screenStack->setCurrentIndex(MENU_SCREEN);
+            ui->menuView->setFocus();
+            emit signalTimeAndDate(customDateTime, referenceDateTime);
+            break;
+
+        default:
+            return;
     }
 }
 

@@ -50,6 +50,7 @@ signals:
 
     // Session logging
     void getPreviousSessionDates();
+    void getPreviousSessionDatesForDevice();
     void getSessionLogData(const QString &sessionFileName);
 
     // EEG Graphing
@@ -77,7 +78,8 @@ private slots:
     void updateUITimerAndProgress(const QString &timeString, int progressPercentage);
     void receiveBatteryPercentage(int curBattery);
     void slotDisplayGraphData(const Wave& waveData); // signal event emmitted from PC as a result of a ui display request
-    void slotDisplaySessionDates(QStringList sessionDates);
+    void slotDisplaySessionDatesOnPC(QStringList sessionDates);
+    void slotDisplaySessionDatesOnDevice(QStringList sessionDates);
     void slotDisplaySessionLogData(QStringList sessionLogData);
     void slotTreatmentSessionComplete();
     void slotTreatmentApplicationStarted();

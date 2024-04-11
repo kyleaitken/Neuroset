@@ -77,7 +77,8 @@ public slots:
 
     // Session logging
     void getSessionLogData(const QString &sessionName);
-    void getPreviousSessionDates();
+    void getPreviousSessionDatesForPC();
+    void getPreviousSessionDatesForDevice();
 
     void updateTimeAndDate(QDateTime customDateTime, QDateTime referenceDateTime);
     void updateSessionTimerAndProgress();
@@ -93,6 +94,7 @@ signals:
     void powerStateChanged(bool newState);
     void updateTimerAndProgressDisplay(const QString& timer, int progressPercentage);
     void sessionDatesRetrieved(QStringList sessionDates);
+    void sessionDatesRetrievedForDevice(QStringList sessionDates);
     void sessionLogDataRetrieved(QStringList sessionLogData);
     void signalDisplayElectrodeWave(const Wave& wave);
     void signalTreatmentSessionComplete();

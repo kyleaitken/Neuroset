@@ -206,9 +206,14 @@ void Controller::updateSessionTimerAndProgress() {
      }
 }
 
-void Controller::getPreviousSessionDates() {
+void Controller::getPreviousSessionDatesForPC() {
     QStringList sessionDates = fileManager.getSessionDates();
     emit sessionDatesRetrieved(sessionDates);
+}
+
+void Controller::getPreviousSessionDatesForDevice() {
+    QStringList sessionDates = fileManager.getSessionDates();
+    emit sessionDatesRetrievedForDevice(sessionDates);
 }
 
 void Controller::getSessionLogData(const QString& sessionFileName) {
