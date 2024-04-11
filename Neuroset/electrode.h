@@ -14,6 +14,7 @@
 #include "defs.h"
 #include "sourcedata.h"
 #include <cmath>
+#include <iostream>
 
 
 class Electrode : public QObject
@@ -28,12 +29,13 @@ public:
 private:
     // members
     int electrodeNum;
-    FrequencyData freqData;
+    QString electrodeName;
     mutable QMutex mutex;
-    QWaitCondition pauseCondition;
     bool pauseRequested = false;
     bool stopRequested = false;
     PatientState patientState = PatientState::Resting;
+
+    FrequencyData freqData;
     SourceData source;
     Wave EEGWaveData;
 

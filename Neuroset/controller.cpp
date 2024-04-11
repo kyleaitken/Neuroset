@@ -1,5 +1,4 @@
 #include "controller.h"
-#include <iostream>
 
 Controller::Controller(QObject *parent) : QObject(parent){
     setupElectrodes();
@@ -12,7 +11,6 @@ Controller::~Controller()
     delete sessionTimer;
     for (int i = numElectrodes-1; i >= 0; i--)
     {
-//        Electrode *electrode = electrodes[i]; dont need to deallocate electrode ptr done in electrode threads by qt
         electrodes.pop_back();
 
         QThread *thread = electrodeThreads[i];
@@ -86,7 +84,6 @@ void Controller::startNewSession(){
 }
 
 void Controller::resumeTreatmentSession() {
-    qInfo() << "Restarting electrodes";
     emit resumeSession();
     if (remainingTime > 0) {
         sessionTimer->start();
@@ -94,24 +91,20 @@ void Controller::resumeTreatmentSession() {
     paused = false;
 }
 
-// When the controller receives a signal from an electrode it's finished, adds it to the list of finished electrodes and
-// then checks if they're all done. If they are, then it proceeds with individual electrode treatments
+// Checks if all the elctrodes are done and if so, proceeds to individual electrode treatments
 void Controller::setElectrodeFinishedInitialBaseline(int electrodeNum){
     QMutexLocker locker(&mutex);
     electrodesFinishedInitialBaseline.insert(electrodeNum);
     if (checkInitialBaselineFinished()){
-        qInfo() << "all electrodes finished initial baseline";
         startIndividualElectrodeTreatment(0);
     }
 }
 
-// When the controller receives a signal from an electrode it's finished, adds it to the list of finished electrodes and
-// then checks if they're all done. If they are, then it gathers data to send to the file manager
+// Checks if all electrodes done and if so, gathers data to send to the file manager
 void Controller::setElectrodeFinishedFinalBaseline(int electrodeNum){
     QMutexLocker locker(&mutex);
     electrodesFinishedFinalBaseline.insert(electrodeNum);
     if (checkFinalBaselineFinished()){
-        qInfo() << "Electrodes have finished final baseline in thread ID: " << QThread::currentThreadId();
         cout << "********************* FINISHED TREATMENT SESSION *********************" << endl;
         recordSession();
     }
@@ -135,6 +128,7 @@ void Controller::startIndividualElectrodeTreatment(int electrodeNum) {
 
 void Controller::recordSession() {
     QDateTime sessionDateTime;
+
     if (referenceDateTime.isNull()) {
         sessionDateTime = QDateTime::currentDateTime();
     } else {
@@ -147,9 +141,9 @@ void Controller::recordSession() {
     for (auto e : electrodes) {
         electrodeData.push_back(e->getFrequencyData());
     }
+
     SessionLog* session = new SessionLog(sessionDateTime, electrodeData);
 
-    qInfo() << "Completed session at " << session->getDateTime();
     emit signalTreatmentSessionComplete();
     resetState();
     fileManager.addSessionLog(session);
@@ -165,7 +159,6 @@ void Controller::pauseSession() {
 
 
 void Controller::setElectrodeFinishedTreatment(int electrodeNum) {
-    qInfo() << "setting electrode " << electrodeNum << " finished treatment";
     QMutexLocker locker(&mutex);
     electrodesFinishedTreatment.insert(electrodeNum);
     int numElectrodesFinished = static_cast<int>(electrodesFinishedTreatment.size());
@@ -201,10 +194,13 @@ void Controller::updateSessionTimerAndProgress() {
          remainingTime--;
          int minutes = remainingTime / 60;
          int seconds = remainingTime % 60;
+
          QString timeString = QString("%1:%2").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
          float progressPercentage = (1.0f - static_cast<float>(remainingTime) / static_cast<float>(TREATMENT_TIME_SECONDS)) * 100;
          int percentageAsInt = static_cast<int>(progressPercentage);
+
          emit updateTimerAndProgressDisplay(timeString, percentageAsInt);
+
      } else {
          sessionTimer->stop();
      }
@@ -221,10 +217,8 @@ void Controller::getSessionLogData(const QString& sessionFileName) {
 }
 
 void Controller::slotGetElectrodeEEGWave(const QString& eName) {
-    qInfo() << "Get eeg data from " << eName;
     int electrodeNum = electrodeSiteNameToNum.value(eName, -1);
     if (electrodeNum != -1) {
-        qDebug() << "Site" << eName << "is electrode number" << electrodeNum;
         const Wave& electrodeWave = electrodes[electrodeNum]->getWaveData();
         if (electrodeWave.xPlot.length() > 0) {
             emit signalDisplayElectrodeWave(electrodeWave);

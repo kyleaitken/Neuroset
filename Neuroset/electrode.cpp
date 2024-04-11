@@ -2,6 +2,7 @@
 
 Electrode::Electrode(int electrodeNum, const QString &electrodeSiteName) : electrodeNum(electrodeNum)
 {
+    electrodeName = electrodeSiteName;
     freqData.setElectrodeSiteName(electrodeSiteName);
 }
 
@@ -12,7 +13,7 @@ void Electrode::startSession() {
 
 
 void Electrode::getInitialBaselineFrequency() {
-    qInfo() << "Electrode " << electrodeNum << " Calculating Dominant Frequency... ";
+    qInfo() << "Electrode " << electrodeName << " Calculating Dominant Frequency... ";
     QVector<EEGSourceData> EEGData = source.getSourceData(patientState);
 
     double dominantFrequency = calculateDominantFrequency(EEGData);
@@ -38,22 +39,19 @@ void Electrode::generateWaveData(const QVector<EEGSourceData>& EEGData) {
         QThread::msleep(1200);
         QCoreApplication::processEvents();
         if (stopRequested) {
-            qInfo() << "Electrode " << electrodeNum << " stop requested. Exiting initial baseline frequency gathering.";
             freqData.reset();
             stopRequested = false;
             return;
         }
         if (pauseRequested) {
-            qInfo() << "Electrode " << electrodeNum << " paused";
             while (pauseRequested) {
                 QThread::msleep(100);
                 QCoreApplication::processEvents();
             }
-            qInfo() << "Electrode " << electrodeNum << " resumed";
         }
 
         for (int j = 0; j < dataPointsPerStep; j++) {
-            double time = (i * dataPointsPerStep + j) / samplingRate; // Correct time calculation
+            double time = (i * dataPointsPerStep + j) / samplingRate;
             EEGWaveData.xPlot.append(time);
 
             double yValue = 0.0;
@@ -83,24 +81,21 @@ double Electrode::calculateDominantFrequency(const QVector<EEGSourceData> &EEGDa
 
 
 void Electrode::getFinalBaselineFrequency(){
-    qInfo() << "Electrode " << electrodeNum << " getting final freq in thread: " << QThread::currentThreadId();
-
     for (int i = 0; i < 5; i++) {
         QThread::msleep(1200);
         QCoreApplication::processEvents();
+
         if (stopRequested) {
-            qInfo() << "Electrode " << electrodeNum << " stop requested. Exiting final baseline frequency gathering.";
             freqData.reset();
             stopRequested = false;
             return;
         }
+
         if (pauseRequested) {
-            qInfo() << "Electrode " << electrodeNum << " paused";
             while (pauseRequested) {
                 QThread::msleep(100);
                 QCoreApplication::processEvents();
             }
-            qInfo() << "Electrode " << electrodeNum << " resumed";
         }
     }
 
@@ -122,27 +117,26 @@ void Electrode::startTreatmentListener(int electrodeNum) {
 
 void Electrode::startTreatment()
 {
-    qInfo() << "Electrode " << electrodeNum << " performing treatment.";
+    qInfo() << "ELECTRODE " << electrodeName << " EMITTING TREATMENT";
     int offset = 5;
 
     // Simulate some work that can be broken up so we can check the pause requested state
     for (int i = 0; i < 4; i++) {
-        qInfo() << "Applying " << offset << "Hz offset to dominant frequency of " << freqData.getBefore();
+        qInfo() << "Applying " << offset << "Hz Offset To Dominant Frequency: " << freqData.getBefore();
         QThread::msleep(1200);
         QCoreApplication::processEvents();
+
         if (stopRequested) {
-            qInfo() << "Electrode " << electrodeNum << " stop requested. Exiting treatment.";
             freqData.reset();
             stopRequested = false;
             return;
         }
+
         if (pauseRequested) {
-            qInfo() << "Electrode " << electrodeNum << " paused";
             while (pauseRequested) {
                 QThread::msleep(100);
                 QCoreApplication::processEvents();
             }
-            qInfo() << "Electrode " << electrodeNum << " resumed";
         }
         offset += 5;
     }
@@ -151,8 +145,7 @@ void Electrode::startTreatment()
 }
 
 
-FrequencyData Electrode::getFrequencyData() const
-{
+FrequencyData Electrode::getFrequencyData() const{
     return freqData;
 }
 

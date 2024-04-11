@@ -24,9 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     QPixmap pixmap(":/images/images/4Battery.png");
     ui->battery->setPixmap(pixmap);
 
-//    QThread *controllerThread = new QThread(this);
-    this->controllerThread = new QThread(this);
-
+    controllerThread = new QThread(this);
     controller = new Controller();
     controller->moveToThread(controllerThread);
 
@@ -129,7 +127,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_upButton_clicked()
 {
-    // TODO: check state first, should not be in an active session
+    if (ui->screenStack->currentIndex() == TREATMENT_SCREEN) return;
+
     int currentRow = ui->menuView->currentIndex().row();
     int previousRow = currentRow > 0 ? currentRow - 1 : 0;
     QModelIndex newIndex = ui->menuView->model()->index(previousRow, 0);
@@ -139,7 +138,8 @@ void MainWindow::on_upButton_clicked()
 
 void MainWindow::on_downButton_clicked()
 {
-    // TODO: check state first, should not be in an active session
+    if (ui->screenStack->currentIndex() == TREATMENT_SCREEN) return;
+
     int currentRow = ui->menuView->currentIndex().row();
     int rows = ui->menuView->model()->rowCount();
     int nextRow = currentRow < rows - 1 ? currentRow + 1 : rows - 1;
@@ -182,7 +182,7 @@ void MainWindow::receiveBatteryPercentage(int curBattery)
 void MainWindow::batteryDied()
 {
     QPixmap pixmap(":/images/images/0Battery.png");
-    qInfo() << "Battery just died.";
+//    qInfo() << "Battery just died.";
     ui->battery->setPixmap(pixmap);
     this->battery->setOn(false);
     this->poweredOn = false;
@@ -205,7 +205,7 @@ void MainWindow::togglePower()
 
 void MainWindow::on_chargeButton_clicked()
 {
-    qInfo() << "Charging button clicked";
+//    qInfo() << "Charging button clicked";
     if (this->battery->isCharging())
     {
         this->battery->setCharging(false);
@@ -220,7 +220,7 @@ void MainWindow::on_chargeButton_clicked()
 
 void MainWindow::on_powerButton_clicked()
 {
-    qInfo() << "Power button clicked. Previously" << (this->poweredOn ? "ON." : "OFF.");
+//    qInfo() << "Power button clicked. Previously" << (this->poweredOn ? "ON." : "OFF.");
     if (battery->getBattery() > 0)
     {
         if (poweredOn == false)
@@ -297,7 +297,8 @@ void MainWindow::turnDeviceScreenOff()
 
 void MainWindow::on_selectButton_clicked()
 {
-    // TODO: check state first, should not be a current session active
+    if (ui->screenStack->currentIndex() == TREATMENT_SCREEN) return;
+
     QModelIndex currentIndex = ui->menuView->currentIndex();
 
     if (!currentIndex.isValid())
@@ -311,11 +312,7 @@ void MainWindow::on_selectButton_clicked()
     {
     case SELECT_NEW_SESSION:
         // USER REQUESTS NEW SESSION EVENT
-        if(ui->screenStack->currentIndex() == WARNING_MESSAGE_SCREEN)
-        {
-            qDebug() << "Unable to start session: Warning message is being displayed";
-        }
-        else if (controller->electrodesConnected()) {
+        if (ui->screenStack->currentIndex() == MENU_SCREEN && controller->electrodesConnected()) {
             ui->timerLabel->setText("");
             ui->progressBar->setValue(0);
             ui->screenStack->setCurrentIndex(TREATMENT_SCREEN);
@@ -331,7 +328,6 @@ void MainWindow::on_selectButton_clicked()
         break;
     case SELECT_TIME_AND_DATE:
         // USER REQUESTS UPDATE DEVICE TIME AND DATE EVENT
-//        emit signalTimeAndDate();
         ui->screenStack->setCurrentIndex(SET_DATETIME_SCREEN);
         break;
     // Handle other cases as needed
@@ -350,6 +346,9 @@ void MainWindow::displayMessage(const QString& message, int returnScreen) {
     timer->setSingleShot(true);
     connect(timer, &QTimer::timeout, [this, returnScreen]() {
         ui->screenStack->setCurrentIndex(returnScreen);
+        if (returnScreen == MENU_SCREEN) {
+            ui->menuView->setFocus();
+        }
     });
     timer->start(3000);
 }
@@ -370,7 +369,7 @@ void MainWindow::on_pauseButton_clicked()
         emit pauseButtonPressed();
         ui->TreatmentIndicator->setStyleSheet("background-color: grey;");
         displayMessage("Treatment Session Paused", TREATMENT_SCREEN);
-        powerOffTimer->start(10000); // 20 seconds timeout
+        powerOffTimer->start(20000); // 20 seconds timeout
     }
 }
 
@@ -437,7 +436,6 @@ void MainWindow::slotDisplayGraphData(const Wave& waveData)
 
 void MainWindow::on_EEGSampleButton_clicked()
 {
-    // get electrode name from drop down
     QString electrodeSite = ui->electrodeComboBox->currentText();
     emit signalGetElectrodeEEGWave(electrodeSite);
 }
@@ -457,7 +455,6 @@ void MainWindow::slotDisplaySessionDates(QStringList sessionDates) {
 
 void MainWindow::onSessionDoubleClicked(const QModelIndex &index) {
     QString sessionFileName = index.data(Qt::DisplayRole).toString();
-    qDebug() << "Double-clicked on item:" << sessionFileName;
     emit getSessionLogData(sessionFileName);
 }
 
@@ -475,6 +472,8 @@ void MainWindow::on_electrodeDisconnect_clicked()
     if (controller->isSessionActive() || controller->isSessionPaused()) {
         displayMessage("Electrode Contact Lost, Please Reconnect", TREATMENT_SCREEN);
         powerOffTimer->start(20000);
+    } else {
+        ui->menuView->setFocus();
     }
 }
 
@@ -483,6 +482,8 @@ void MainWindow::on_electrodeReconnect_clicked()
     ui->ContactSecureIndicator->setStyleSheet("background-color: blue;");
     ui->ContactLostIndicator->setStyleSheet("background-color: grey;");
     emit electrodeContactRegained();
+    ui->menuView->setFocus();
+
 
     if (powerOffTimer->isActive()) {
         powerOffTimer->stop();
@@ -517,6 +518,8 @@ void MainWindow::slotTreatmentApplicationFinished() {
 
 
 void MainWindow::on_menuButton_clicked() {
+    if (ui->screenStack->currentIndex() == TREATMENT_SCREEN) return;
+
     if (ui->screenStack->currentIndex() == SET_DATETIME_SCREEN) {
         customDateTime = ui->dateTimeEdit->dateTime();
         referenceDateTime = QDateTime::currentDateTime();

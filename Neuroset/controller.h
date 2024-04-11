@@ -10,6 +10,7 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <defs.h>
+#include <iostream>
 #include "sessionlog.h"
 #include "filemanager.h"
 
