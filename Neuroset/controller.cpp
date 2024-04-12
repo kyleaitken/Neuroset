@@ -1,5 +1,21 @@
 #include "controller.h"
 
+/*****************************************************************************
+ * Controller [Controller Object]
+ *
+ *  - Controller thread handles operations of high level device event flow and
+ *    interaction with realtime viewer object MainWindow
+ *  - directly manages electrode concurrency events and discrete electrode
+ *    operation
+ *
+ *    Controller is a member of MainWindow
+ *      * thread execution in MainWindow Constructor
+ *          via QThread function ' controller->moveToThread( QThread* ) '
+ *
+ *      * thread exit in MainWindow Deconstructor
+ *
+ *****************************************************************************/
+
 Controller::Controller(QObject *parent) : QObject(parent){
     setupElectrodes();
     sessionTimer = new QTimer(this);

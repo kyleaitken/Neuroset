@@ -12,10 +12,20 @@
 #include "battery.h"
 #include "batterythread.h"
 
+/*****************************************************************************
+ * MainWindow [UI Object]
+ *
+ *  - Manages program simulation and is hard coded integration with Neuroset
+ *    Device via QT library and discrete display layout / styling
+ *  - Container for the application’s main widgets and controls
+ *  - Handles Real time concurrency for UI display events
+ *
+ *****************************************************************************/
+
 // the following are code events for device selection options in device main menu
-#define SELECT_NEW_SESSION      0 // new session event MACRO - MainWindow.h
-#define SELECT_SESSION_LOGS     1 // session logs event MACRO - MainWindow.h
-#define SELECT_TIME_AND_DATE    2 // time + date event MACRO - MainWindow.h
+#define SELECT_NEW_SESSION      0 // new session event int code - MainWindow.h
+#define SELECT_SESSION_LOGS     1 // session logs event int code  - MainWindow.h
+#define SELECT_TIME_AND_DATE    2 // time + date event int code - MainWindow.h
 
 QT_BEGIN_NAMESPACE
 namespace Ui
