@@ -159,7 +159,6 @@ void MainWindow::on_upButton_clicked()
 
         default:
             return;
-
     }
 }
 
@@ -195,9 +194,7 @@ void MainWindow::on_downButton_clicked()
 
         default:
             return;
-
     }
-
 }
 
 void MainWindow::receiveBatteryPercentage(int curBattery)
@@ -207,8 +204,7 @@ void MainWindow::receiveBatteryPercentage(int curBattery)
         batteryDied();
     }
     else if (curBattery == 5 && !battery->isCharging()) {
-        int currScreenStack = controller->isSessionActive() || controller->isSessionPaused() ? TREATMENT_SCREEN : MENU_SCREEN;
-        displayMessage("Battery Critically Low: Please Charge", currScreenStack);
+        displayMessage("Battery Critically Low: Please Charge", getCurrentScreenStack());
     }
     else if (curBattery < 25)
     {
@@ -585,6 +581,9 @@ void MainWindow::slotTreatmentSessionComplete()
 void MainWindow::on_patientStateComboBox_currentIndexChanged() {
     qInfo() << ui->patientStateComboBox->currentText();
     controller->setPatientState(ui->patientStateComboBox->currentText());
+    if (getCurrentScreenStack() == MENU_SCREEN) {
+        ui->menuView->setFocus();
+    }
 }
 
 void MainWindow::slotTreatmentApplicationStarted() {
@@ -604,7 +603,7 @@ void MainWindow::slotTreatmentApplicationFinished() {
 
 
 void MainWindow::on_menuButton_clicked() {
-    int currentScreen = ui->screenStack->currentIndex();
+    int currentScreen = getCurrentScreenStack();
 
     switch (currentScreen) {
         case SESSION_LOG_SCREEN:
@@ -623,5 +622,9 @@ void MainWindow::on_menuButton_clicked() {
         default:
             return;
     }
+}
+
+int MainWindow::getCurrentScreenStack() {
+    return ui->screenStack->currentIndex();
 }
 

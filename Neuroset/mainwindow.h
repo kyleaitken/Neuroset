@@ -92,7 +92,7 @@ private:
     Battery *battery;
     BatteryThread *batterythread;
     bool poweredOn = false;
-    int currScreenStack;
+    int currScreenStack = 0;
     QTimer *powerOffTimer;
     QDateTime customDateTime = QDateTime::currentDateTime();
     QDateTime referenceDateTime;
@@ -100,5 +100,6 @@ private:
     void turnDeviceScreenOff();
     void batteryDied();
     void displayMessage(const QString& message, int returnScreen);
+    int getCurrentScreenStack();
 };
 #endif // MAINWINDOW_H
