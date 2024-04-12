@@ -20,7 +20,6 @@ public:
     FileManager();
 
     void addSessionLog(SessionLog* log);
-    void writeSessionDataToFile(const QString &fileName, const QVector<FrequencyData> &freqData);
     QStringList getSessionDates();
     QStringList getFileData(const QString& partialFileName);
 
@@ -29,6 +28,7 @@ private:
     QString relativeDirPath = "Data Output";
 
     QString generateFileName(const QDateTime &date);
+    void writeSessionDataToFile(const QString &fileName, const QVector<FrequencyData> &freqData);
 
 
 };

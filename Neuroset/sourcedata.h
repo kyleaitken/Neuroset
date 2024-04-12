@@ -36,6 +36,8 @@ public:
     SourceData();
 
     QVector<EEGSourceData> getSourceData(PatientState state);
+
+private:
     double generateDominantAmplitude();
     double generateNonDominantAmplitude();
 };
