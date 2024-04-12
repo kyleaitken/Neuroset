@@ -14,19 +14,28 @@ void Electrode::startSession() {
 
 void Electrode::getInitialBaselineFrequency() {
     qInfo() << "Electrode " << electrodeName << " Calculating Dominant Frequency... ";
-    QVector<EEGSourceData> EEGData = source.getSourceData(patientState);
+    QVector<QVector<EEGSourceData>> listOfEEGData;
+    for (int i = 0; i < 5; i++) {
+        QVector<EEGSourceData> EEGData = source.getSourceData(patientState);
+        listOfEEGData.push_back(EEGData);
+    }
 
-    double dominantFrequency = calculateDominantFrequency(EEGData);
-    double roundedFrequency = std::round(dominantFrequency * 10) / 10;
+    double sumOfDomFreq = 0.0;
+    double numWaves = 5.0;
+    for (int i = 0; i < 5; i++) {
+        double dominantFrequency = calculateDominantFrequency(listOfEEGData[i]);
+        sumOfDomFreq += dominantFrequency;
+    }
+
+    double meanDomFreq = sumOfDomFreq / numWaves;
+    double roundedFrequency = std::round(meanDomFreq * 10) / 10;
 
     freqData.setBefore(roundedFrequency);
-
-    generateWaveData(EEGData);
-
+    generateWaveData(listOfEEGData);
 }
 
 
-void Electrode::generateWaveData(const QVector<EEGSourceData>& EEGData) {
+void Electrode::generateWaveData(const QVector<QVector<EEGSourceData>>& listOfEEGData) {
     int dataPointsPerStep = 200;
     double samplingRate = 200.0;
 
@@ -55,7 +64,8 @@ void Electrode::generateWaveData(const QVector<EEGSourceData>& EEGData) {
             EEGWaveData.xPlot.append(time);
 
             double yValue = 0.0;
-            for (const EEGSourceData& data : EEGData) {
+            QVector<EEGSourceData> individualEEGData = listOfEEGData[i];
+            for (const EEGSourceData& data : individualEEGData) {
                 yValue += data.amplitude * std::sin(2 * M_PI * data.frequency * time + data.offset);
             }
             EEGWaveData.yPlot.append(yValue);

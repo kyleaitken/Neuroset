@@ -43,7 +43,7 @@ private:
     // methods
     void startTreatment();
     double calculateDominantFrequency(const QVector<EEGSourceData>& EEGData);
-    void generateWaveData(const QVector<EEGSourceData>& EEGData);
+    void generateWaveData(const QVector<QVector<EEGSourceData>>& EEGData);
 
 signals:
     void initialBaselineFinished(int electrodeNum); // signals to controller that this electrode has finished gathering its initial freq
