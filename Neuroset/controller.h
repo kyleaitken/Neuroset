@@ -14,6 +14,23 @@
 #include "sessionlog.h"
 #include "filemanager.h"
 
+/*****************************************************************************
+ * Controller [Controller Object]
+ *
+ *  - Controller thread handles operations of high level device event flow and
+ *    interaction with realtime viewer object MainWindow
+ *  - directly manages electrode concurrency events and discrete electrode
+ *    operation
+ *
+ *    Controller is a member of MainWindow
+ *      * thread execution in MainWindow Constructor
+ *          via QThread function ' controller->moveToThread( QThread* ) '
+ *
+ *      * thread exit in MainWindow Deconstructor
+ *
+ *****************************************************************************/
+
+
 class Controller : public QObject
 {
     Q_OBJECT
@@ -21,6 +38,8 @@ class Controller : public QObject
 public:
     Controller(QObject *parent = nullptr);
     ~Controller();
+
+    // Public Member Functions
     bool electrodesConnected();
     void setPatientState(const QString& newState);
     bool isSessionActive();
@@ -29,30 +48,32 @@ public:
     void setElectrodeContactRestored();
 
 private:
+    // Private Member Variables
+
     // attributes
-    int numElectrodes = 7;
-    QDateTime customDateTime; // set when user specifies a date/time on the device
-    QDateTime referenceDateTime; // initialize when user sets a custom date/time for time stamp calculations
+    int numElectrodes = ELECTRODE_COUNT;       // hard coded number of electrodes (set to 7)
+    QDateTime customDateTime;    // Manages internal device date set when user specifies a date/time on the device
+    QDateTime referenceDateTime; // Manages internal device time initialized when user sets a custom date/time for time stamp calculations
+    QTimer *sessionTimer;
+    int remainingTime;
 
     // state
     mutable QMutex mutex;
     bool paused = false;
     bool electrodesHaveContact = false;
     bool sessionActive = false;
-    QTimer *sessionTimer;
-    int remainingTime;
     PatientState currentPatientState = PatientState::Resting;
 
-    // containees
-    FileManager fileManager;
-    QVector<Electrode *> electrodes;
-    QVector<QThread *> electrodeThreads;
-    std::set<int> electrodesFinishedInitialBaseline;
-    std::set<int> electrodesFinishedFinalBaseline;
-    std::set<int> electrodesFinishedTreatment;
+    // containers
+    FileManager fileManager;                            // manages database related events
+    QVector<Electrode *> electrodes;                    // container of pointers to electrodes
+    QVector<QThread *> electrodeThreads;                // container of pointers to electrode threads - electrodes passed to threads via moveToThread()
+    std::set<int> electrodesFinishedInitialBaseline;    // set to keep track of what electrodes finished their initial assigned task
+    std::set<int> electrodesFinishedFinalBaseline;      // set to keep track of what electrodes finished their final assigned task
+    std::set<int> electrodesFinishedTreatment;          // set to keep track of what electrodes finished their full assigned task
 
-    // methods
-    void setupElectrodes();
+    // Private Member Functions
+    void setupElectrodes();                             // CRITICAL CONTROLLER FUNCTION : initializes and executes all thread functions in device
     bool checkInitialBaselineFinished();
     bool checkFinalBaselineFinished();
     void startIndividualElectrodeTreatment(int electrodeNum);
@@ -88,9 +109,9 @@ signals:
     void startElectrodeInitialBaseline(); // tells all electrodes to get their initial baseline
     void startElectrodeFinalBaseline();   // tells all electrodes to get their final baseline
     void startElectrodeTreatment(int electrodeNum);
-    void pauseElectrodes();
-    void resumeSession();
-    void stopElectrodes();
+    void pauseElectrodes();                         // device pause event signal
+    void resumeSession();                           // device resume (start) event signal
+    void stopElectrodes();                          // device stop event (gracefull exit accross flexible current state)
     void powerStateChanged(bool newState);
     void updateTimerAndProgressDisplay(const QString& timer, int progressPercentage);
     void sessionDatesRetrieved(QStringList sessionDates);

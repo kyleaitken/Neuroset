@@ -1,10 +1,26 @@
 #include "battery.h"
 
+/*****************************************************************************
+ * Battery [Entity Object]
+ *
+ *  - entity handles battery level of device including depletion and charging
+ *    events
+ *  - implemented to update in real time via BatteryThread thread object
+ *
+ *    Battery is a member of BatteryThread
+ *      * In BatteryThread it is handled in a thread function
+ *
+ *    Battery is a member of MainWindow
+ *      * In MainWindow it is initialized and executed as a thread (as a
+ *        BatteryThread)
+ *
+ *****************************************************************************/
+
 Battery::Battery() {}
 
 void Battery::reduceBattery()
 {
-    if (this->curBattery > 0)
+    if (this->curBattery > EMPTY_BATTERY_LEVEL)
         this->curBattery -= 1;
 }
 
@@ -15,7 +31,7 @@ void Battery::setBattery(int battery)
 
 void Battery::increaseBattery()
 {
-    if (this->curBattery < 100)
+    if (this->curBattery < FULL_BATTERY_LEVEL)
         this->curBattery += 1;
 }
 

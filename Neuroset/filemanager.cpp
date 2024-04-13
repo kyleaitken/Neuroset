@@ -1,6 +1,27 @@
 #include "filemanager.h"
 #include <iostream>
 
+/*****************************************************************************
+ * FileManager [TextFile Database Manager Object]
+ *
+ *  - Handles Reading Writing events of session data using Text Files as a
+ *    method of database 'hard' storage on program exit
+ *
+ *    FileManager is a member of Controller
+ *       * Controller will pass the current session data to the FileManager
+ *         instance when a full treatment session is complete
+ *
+ *       * File storage maintaned in a directory called 'Data Output' that
+ *         will be created on first session file
+ *
+ *       * If the session is interupted, Controller will not invoke FileManager
+ *         to store the incomplete session data to a file
+ *
+ *       * files stored with the following format:
+ *         "Neuroset_Data_yyyy-MM-dd_HH-mm-ss"
+ *
+ *****************************************************************************/
+
 FileManager::FileManager() {}
 
 void FileManager::addSessionLog(SessionLog *log)

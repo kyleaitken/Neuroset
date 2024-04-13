@@ -1,6 +1,19 @@
 
 #include "batterythread.h"
 
+
+/*****************************************************************************
+ * BatteryThread [Thread Object]
+ *
+ *  - Thread handles concurrent operations of Battery Entity
+ *
+ *    BatteryThread is a member of MainWindow
+ *       * thread execution in MainWindow Constructor
+ *          via thread function ' batterythread->start() '
+ *
+ *****************************************************************************/
+
+
 BatteryThread::BatteryThread(Battery *battery, QObject *parent)
     : QThread(parent), battery(battery)
 {

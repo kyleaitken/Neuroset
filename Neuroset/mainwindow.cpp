@@ -3,6 +3,17 @@
 
 #include <iostream>
 
+/*****************************************************************************
+ * MainWindow [UI Object]
+ *
+ *  - Manages program simulation and is hard coded integration with Neuroset
+ *    Device via QT library and discrete display layout / styling
+ *  - Container for the application’s main widgets and controls
+ *  - Handles Real time concurrency for UI display events
+ *
+ *****************************************************************************/
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -199,7 +210,7 @@ void MainWindow::on_downButton_clicked()
 
 void MainWindow::receiveBatteryPercentage(int curBattery)
 {
-    if (curBattery == 0)
+    if (curBattery == EMPTY_BATTERY_LEVEL)
     {
         batteryDied();
     }

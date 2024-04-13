@@ -1,5 +1,23 @@
 #include "electrode.h"
 
+/*****************************************************************************
+ * Electrode [Entity Object]
+ *
+ *  - thread entity handles concurrent flow of EEG data between the controller
+ *    and source
+ *  - abstracted representation of a single electrode site that enables brain
+ *    wave current flow between neuroset device and the patient, but also
+ *    handles the device computational data processing and feedback events
+ *    for the site
+ *
+ *    Electrode is a member of Controller
+ *      * thread execution in Controller::setupElectrodes()
+ *          via QThread function ' electrode->moveToThread( QThread* ) '
+ *
+ *      * thread exit in Controller Deconstructor
+ *
+ *****************************************************************************/
+
 Electrode::Electrode(int electrodeNum, const QString &electrodeSiteName) : electrodeNum(electrodeNum)
 {
     electrodeName = electrodeSiteName;

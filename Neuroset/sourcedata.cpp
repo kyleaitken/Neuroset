@@ -1,5 +1,21 @@
 #include "sourcedata.h"
 
+/*****************************************************************************
+ * SourceData [Entity Object]
+ *
+ *  - Object to simulate a discrete EEG site producing unique wave data being
+ *    passed from the patient to the electrode placed at that site
+ *  - EEG brain wave data generated based on the PatientState enum set in the
+ *    simulator
+ *
+ *    Member of Electrode
+ *    *  Generates a random amplitude and frequency value in a hard capped
+ *       range based on PatientState
+ *
+ *    *  Data is then fetched from its associated electrode site
+ *
+ *****************************************************************************/
+
 SourceData::SourceData()
 {
 
