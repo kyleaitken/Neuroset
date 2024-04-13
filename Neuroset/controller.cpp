@@ -250,6 +250,7 @@ void Controller::slotGetElectrodeEEGWave(const QString& eName) {
 
 void Controller::setElectrodeContactLost(){
     if (sessionActive && electrodesHaveContact) {
+        qInfo() << "Electrode Contact Lost: Device begins beeping";
         electrodesHaveContact = false;
         pauseSession();
     } else {
@@ -259,6 +260,7 @@ void Controller::setElectrodeContactLost(){
 
 void Controller::setElectrodeContactSecured(){
     if (isSessionPaused() && !electrodesHaveContact) {
+        qInfo() << "Electrode Contact Restored: Device stops beeping.";
         electrodesHaveContact = true;
         resumeTreatmentSession();
     } else {
@@ -282,6 +284,3 @@ bool Controller::getElectrodesAreConnected() {
     return electrodesHaveContact;
 }
 
-void Controller::setElectrodeContactRestored() {
-    electrodesHaveContact = true;
-}

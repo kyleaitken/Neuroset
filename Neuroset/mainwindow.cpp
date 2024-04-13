@@ -577,7 +577,6 @@ void MainWindow::on_electrodeReconnect_clicked()
     emit electrodeContactRegained();
     ui->menuView->setFocus();
 
-
     if (powerOffTimer->isActive()) {
         powerOffTimer->stop();
     }

@@ -31,7 +31,7 @@ void Electrode::startSession() {
 
 
 void Electrode::getInitialBaselineFrequency() {
-    qInfo() << "Electrode " << electrodeName << " Calculating Dominant Frequency... ";
+    qInfo() << "Electrode " << electrodeName << " Calculating Baseline Dominant Frequency... ";
     QVector<QVector<EEGSourceData>> listOfEEGData;
     for (int i = 0; i < 5; i++) {
         QVector<EEGSourceData> EEGData = source.getSourceData(patientState);
@@ -109,6 +109,8 @@ double Electrode::calculateDominantFrequency(const QVector<EEGSourceData> &EEGDa
 
 
 void Electrode::getFinalBaselineFrequency(){
+    qInfo() << "Electrode " << electrodeName << " Calculating Final Dominant Frequency... ";
+
     for (int i = 0; i < 5; i++) {
         QThread::msleep(1200);
         QCoreApplication::processEvents();
@@ -145,12 +147,12 @@ void Electrode::startTreatmentListener(int electrodeNum) {
 
 void Electrode::startTreatment()
 {
-    qInfo() << "ELECTRODE " << electrodeName << " EMITTING TREATMENT";
+    qInfo() << "ELECTRODE " << electrodeName << " DELIVERING TREATMENT";
     int offset = 5;
 
     // Simulate some work that can be broken up so we can check the pause requested state
     for (int i = 0; i < 4; i++) {
-        qInfo() << "Applying " << offset << "Hz Offset To Dominant Frequency: " << freqData.getBefore();
+        qInfo() << "Delivering signal at " << offset << "Hz Offset To Dominant Frequency of " << freqData.getBefore() << " Hz";
         QThread::msleep(1200);
         QCoreApplication::processEvents();
 
