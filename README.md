@@ -25,7 +25,7 @@ ___
 
    #### MainWindow Design
    - **MainWindow** serves as an **Observer* that responds to notifications from the **Controller** and **Battery**, which operate as the **Subjects*, maintaining a flexible and decoupled architecture in the program design
-   - allows the **Controller** and **Battary** to broadcast changes in system state or behavior
+   - allows the **Controller** and **Battery** to broadcast changes in system state or behavior
    - **MainWindow**, as an **Observer*, updates its view based on these changes without requiring direct interactions
    #### MainWindow QT
    - Combines UI defined in **Ui::MainWindow** with application logic
