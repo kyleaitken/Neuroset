@@ -17,6 +17,29 @@ ___
 
 
 ___
+### WHAT EACH PERSON DID 
+Fred Berube
+* Battery & Battery Threads
+* Some UI work
+* Some sequence diagram
+
+Julian Patterson
+* FileManager & data storage / retrieval
+* Some sequence diagram
+
+Kyle Aitken 
+* Some UI work
+* Major logic
+
+Michael Anastasakis
+* Some UI work
+
+Jonathan Dorfman 
+* Some UI work
+* Some sequence diagram
+
+
+___
 ### CONTROLLER [Control Object] [Mediator]
    - **Controller** independantly handles distribution of behaviour for the **MainWindow** [Boundry/Ui Object], each **Electrode** [Entity Object] and the **FileManager** [Database Object] of the device
    - **Controller** inherits from QObject for leveraging access to QT signal/slot design tools and the property editor framework for this program
