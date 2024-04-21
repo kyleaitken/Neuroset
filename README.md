@@ -1,4 +1,4 @@
-# COMP3004FinalProject
+# Team 4 Final Submission for COMP 3004 Neuroset Medical Device
 ___
 ### PULL REPO
 - `git clone https://github.com/frederickberube0/COMP3004FinalProject`
