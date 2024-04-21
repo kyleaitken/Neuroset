@@ -5,6 +5,13 @@ ___
 
 - If having problems authenticating, try using the github CLI https://cli.github.com/
 ___
+### HOW TO RUN
+1. Pull the repo
+2. In QT Creator, click open project...
+3. Select the .pro file found in the neuroset subfolder of the repo
+4. Build & run the project by clicking the green triangle
+   
+___
 ### UML DIAGRAMS | USE CASE DOCUMENTS | TRACEBILITY MATRIX 
 * Shared google drive folder containing files: https://drive.google.com/drive/folders/1sLxRDO2KWqIFMNR3Zym54ZfWUgMryNb4?usp=sharing
 
