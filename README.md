@@ -32,6 +32,7 @@ Julian Patterson
 Kyle Aitken 
 * Some UI work
 * Major logic
+* Major documentation
 * Use Cases
 * State Machine Diagram
 * Class Diagram
@@ -41,6 +42,8 @@ Michael Anastasakis
 * EEG Plotting
 * EEG Research & Representation
 * Traceability matrix 
+* Major logic
+* Major documentation
 
 Jonathan Dorfman 
 * Some UI work
