@@ -19,13 +19,15 @@ ___
 ___
 ### WHAT EACH PERSON DID 
 Fred Berube
-* Battery & Battery Threads
+* Battery & Battery Threads & Device Charging
+* Some FileManager
 * Some UI work
 * Some sequence diagram
 
 Julian Patterson
 * FileManager & data storage / retrieval
 * Some sequence diagram
+* Some UI work
 
 Kyle Aitken 
 * Some UI work
@@ -43,6 +45,7 @@ Michael Anastasakis
 Jonathan Dorfman 
 * Some UI work
 * Some sequence diagram
+* Demo video
 
 
 ___
