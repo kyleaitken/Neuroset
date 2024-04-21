@@ -1,0 +1,223 @@
+<mxfile host="app.diagrams.net" modified="2024-04-17T13:19:24.962Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0" etag="62K3TFfBP6KZP4KLdm9y" version="24.2.3" type="google">
+  <diagram name="Page-1" id="Oy0Y39fKQE6i1su6KP_K">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-1" value="Controller" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-990" y="1010" width="510" height="570" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-2" value="&lt;div&gt;- numElectrodes: int&lt;/div&gt;&lt;div&gt;- customDateTime: QDateTime&lt;/div&gt;&lt;div&gt;- referenceDateTime: QDateTime&lt;/div&gt;&lt;div&gt;- mutex: QMutex&lt;/div&gt;&lt;div&gt;- paused: bool&lt;/div&gt;&lt;div&gt;- sessionActive: bool&lt;/div&gt;&lt;div&gt;- sessionTimer: QTimer&lt;/div&gt;&lt;div&gt;- remainingTime: int&lt;/div&gt;&lt;div&gt;- currentPatientState: PatientState&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-1">
+          <mxGeometry y="26" width="510" height="144" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-1">
+          <mxGeometry y="170" width="510" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-4" value="&lt;div&gt;+ electrodesConnected(): bool&lt;/div&gt;&lt;div&gt;+ isSessionActive(): bool&lt;/div&gt;&lt;div&gt;+ isSessionPaused(): bool&lt;/div&gt;- setupElectrodes()&lt;div&gt;- checkInitialBaselineFinished(): bool&lt;/div&gt;&lt;div&gt;- checkFinalBaselineFinished(): bool&lt;/div&gt;&lt;div&gt;- startIndividualElectrodeTreatment(electrodeNum: int)&lt;/div&gt;&lt;div&gt;- recordSession()&lt;/div&gt;&lt;div&gt;- resetState()&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Slots:&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;+ startNewSession();&amp;nbsp;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;+ pauseSession();&lt;/div&gt;&lt;div&gt;+ resumeTreatmentSession();&lt;/div&gt;&lt;div&gt;+ stopSession();&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;+ setElectrodeFinishedInitialBaseline(int electrodeNum);&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;+ setElectrodeFinishedFinalBaseline(int electrodeNum);&lt;/div&gt;&lt;div&gt;+ setElectrodeFinishedTreatment(int electrodeNum);&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;+ setElectrodeContactLost();&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;+ setElectrodeContactSecured();&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;+ getSessionLogData(sessionName: QString);&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;+ getPreviousSessionDatesForPC();&lt;/div&gt;&lt;div&gt;+ getPreviousSessionDatesForDevice();&lt;/div&gt;&lt;div&gt;+ updateTimeAndDate(customDateTime: QDateTime, referenceDateTime: QDateTime);&lt;/div&gt;&lt;div&gt;+ updateSessionTimerAndProgress();&lt;/div&gt;&lt;div&gt;+ slotGetElectrodeEEGWave(eName: QString);&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-1">
+          <mxGeometry y="178" width="510" height="392" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-5" value="Electrode" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-470" y="1590" width="480" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-6" value="- electrodeNum: int&lt;div&gt;- electrodeName: QString&lt;br&gt;&lt;div&gt;- mutex: QMutex&lt;/div&gt;&lt;div&gt;- pauseRequested: bool&lt;/div&gt;&lt;div&gt;- stopRequested: bool&lt;/div&gt;&lt;/div&gt;&lt;div&gt;- patientState: PatientState&lt;/div&gt;&lt;div&gt;- EEGWaveData: Wave&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-5">
+          <mxGeometry y="26" width="480" height="124" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-7" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-5">
+          <mxGeometry y="150" width="480" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-8" value="&lt;div&gt;+ getWaveData(): Wave&lt;/div&gt;- startTreatment()&lt;div&gt;- calculateDominantFrequency(EEGData: QVector&amp;lt;EEGSourceData&amp;gt;): double&lt;/div&gt;&lt;div&gt;- generateWaveData(EEGData: QVector&amp;lt;EEGSourceData&amp;gt;)&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;Slots:&lt;/div&gt;&lt;div&gt;&lt;div&gt;+ startSession();&lt;/div&gt;&lt;div&gt;+ getInitialBaselineFrequency();&lt;/div&gt;&lt;div&gt;+ getFinalBaselineFrequency();&lt;/div&gt;&lt;div&gt;+ startTreatmentListener(electrodeNum: int);&lt;/div&gt;&lt;div&gt;+ handlePauseRequested();&lt;/div&gt;&lt;div&gt;+ resume();&lt;/div&gt;&lt;div&gt;+ stop();&lt;/div&gt;&lt;div&gt;+ slotUpdatePatientState(newState: PatientState);&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-5">
+          <mxGeometry y="158" width="480" height="262" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-13" value="SessionLog" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-770" y="2125" width="220" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-14" value="- sessionDateTime: QDateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-13">
+          <mxGeometry y="26" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-15" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-13">
+          <mxGeometry y="52" width="220" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-17" value="FrequencyData" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-390" y="2290" width="200" height="114" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-18" value="- before: double&lt;div&gt;- after: double&lt;/div&gt;&lt;div&gt;- electrodeSiteName: QString&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-17">
+          <mxGeometry y="26" width="200" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-19" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-17">
+          <mxGeometry y="80" width="200" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-20" value="+ reset()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-17">
+          <mxGeometry y="88" width="200" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-21" value="MainWindow&lt;span style=&quot;color: rgba(0, 0, 0, 0); font-family: monospace; font-size: 0px; font-weight: 400; text-align: start; text-wrap: nowrap;&quot;&gt;%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22FrequencyData%22%20style%3D%22swimlane%3BfontStyle%3D1%3Balign%3Dcenter%3BverticalAlign%3Dtop%3BchildLayout%3DstackLayout%3Bhorizontal%3D1%3BstartSize%3D26%3BhorizontalStack%3D0%3BresizeParent%3D1%3BresizeParentMax%3D0%3BresizeLast%3D0%3Bcollapsible%3D1%3BmarginBottom%3D0%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22345%22%20y%3D%22670%22%20width%3D%22160%22%20height%3D%2286%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3CmxCell%20id%3D%223%22%20value%3D%22%2B%20field%3A%20type%22%20style%3D%22text%3BstrokeColor%3Dnone%3BfillColor%3Dnone%3Balign%3Dleft%3BverticalAlign%3Dtop%3BspacingLeft%3D4%3BspacingRight%3D4%3Boverflow%3Dhidden%3Brotatable%3D0%3Bpoints%3D%5B%5B0%2C0.5%5D%2C%5B1%2C0.5%5D%5D%3BportConstraint%3Deastwest%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%222%22%3E%3CmxGeometry%20y%3D%2226%22%20width%3D%22160%22%20height%3D%2226%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3CmxCell%20id%3D%224%22%20value%3D%22%22%20style%3D%22line%3BstrokeWidth%3D1%3BfillColor%3Dnone%3Balign%3Dleft%3BverticalAlign%3Dmiddle%3BspacingTop%3D-1%3BspacingLeft%3D3%3BspacingRight%3D3%3Brotatable%3D0%3BlabelPosition%3Dright%3Bpoints%3D%5B%5D%3BportConstraint%3Deastwest%3BstrokeColor%3Dinherit%3B%22%20vertex%3D%221%22%20parent%3D%222%22%3E%3CmxGeometry%20y%3D%2252%22%20width%3D%22160%22%20height%3D%228%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3CmxCell%20id%3D%225%22%20value%3D%22%2B%20method(type)%3A%20type%22%20style%3D%22text%3BstrokeColor%3Dnone%3BfillColor%3Dnone%3Balign%3Dleft%3BverticalAlign%3Dtop%3BspacingLeft%3D4%3BspacingRight%3D4%3Boverflow%3Dhidden%3Brotatable%3D0%3Bpoints%3D%5B%5B0%2C0.5%5D%2C%5B1%2C0.5%5D%5D%3BportConstraint%3Deastwest%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%222%22%3E%3CmxGeometry%20y%3D%2260%22%20width%3D%22160%22%20height%3D%2226%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E&lt;/span&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-385" y="570" width="465" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-22" value="- controllerThread: QThread&lt;div&gt;- ui: Ui&lt;/div&gt;&lt;div&gt;- poweredOn: bool&lt;/div&gt;&lt;div&gt;- int currScreenStack&lt;/div&gt;&lt;div&gt;- powerOffTimer: QTimer&lt;/div&gt;&lt;div&gt;- customDateTime: QDateTime&lt;/div&gt;&lt;div&gt;- referenceDateTime: QDateTime&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-21">
+          <mxGeometry y="26" width="465" height="114" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-23" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-21">
+          <mxGeometry y="140" width="465" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-24" value="+ togglePower()&lt;div&gt;- batteryDied()&lt;/div&gt;&lt;div&gt;- turnDeviceScreenOff()&lt;/div&gt;&lt;div&gt;- displayMessage(message: QString, returnScreen: int)&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Slots:&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- updateUITimerAndProgress(timeString: QString, progressPercentage: int);&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- receiveBatteryPercentage(curBattery: int);&lt;/div&gt;&lt;div&gt;- slotDisplayGraphData(waveData: Wave);&lt;/div&gt;&lt;div&gt;- slotDisplaySessionDatesOnPC(sessionDates: QStringList);&lt;/div&gt;&lt;div&gt;- slotDisplaySessionDatesOnDevice(QStringList sessionDates);&lt;/div&gt;&lt;div&gt;- slotDisplaySessionLogData(sessionLogData: QStringList);&lt;/div&gt;&lt;div&gt;- slotTreatmentSessionComplete();&lt;/div&gt;&lt;div&gt;- slotTreatmentApplicationStarted();&lt;/div&gt;&lt;div&gt;- slotTreatmentApplicationFinished();&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-21">
+          <mxGeometry y="148" width="465" height="262" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-25" value="FileManager" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1230" y="1810" width="450" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-26" value="- relatveDirPath: QString" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-25">
+          <mxGeometry y="26" width="450" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-27" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-25">
+          <mxGeometry y="52" width="450" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-28" value="&lt;div&gt;+ addSessionLog(log: SessionLog)&lt;/div&gt;&lt;div&gt;+ getSessionDates(): QStringList&lt;/div&gt;&lt;div&gt;+ getFileData(partialFileName: QString): QStringList&lt;/div&gt;- generateFileName(date: QDateTime): QString&lt;div&gt;- writeSessionDataToFile(fileName: QString, freqData: QVector&amp;lt;FrequencyData&amp;gt;)&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-25">
+          <mxGeometry y="60" width="450" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-29" value="Battery" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1150" width="160" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-30" value="- curBattery: int&lt;div&gt;- charging: bool&lt;/div&gt;&lt;div&gt;- on: bool&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-29">
+          <mxGeometry y="26" width="160" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-31" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-29">
+          <mxGeometry y="100" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-32" value="+ reduceBattery()&lt;div&gt;+ increaseBattery()&lt;/div&gt;&lt;div&gt;+ isCharging()&lt;/div&gt;&lt;div&gt;+ isOn()&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-29">
+          <mxGeometry y="108" width="160" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-33" value="BatteryThread" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="1020" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-34" value="+ run()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-33">
+          <mxGeometry y="26" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-35" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-33">
+          <mxGeometry y="52" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-53" value="SourceData" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="2214" width="400" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-55" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-53">
+          <mxGeometry y="26" width="400" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ZfkGPgESfzgNHYzenl_e-56" value="&lt;div&gt;+ getSourceData(state: PatientState): QVector&amp;lt;EEGSourceData)&lt;/div&gt;- generateDominantAmplitude(): double&lt;div&gt;- generateNonDominantAmplitude(): double&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ZfkGPgESfzgNHYzenl_e-53">
+          <mxGeometry y="34" width="400" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-1" value="QThread" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="690" width="160" height="34" as="geometry">
+            <mxRectangle x="250" y="690" width="90" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="advFgCIbPEVCiyVxe3Cj-1">
+          <mxGeometry y="26" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-6" value="" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.681;exitY=-0.035;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="ZfkGPgESfzgNHYzenl_e-33" target="advFgCIbPEVCiyVxe3Cj-1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="-150" y="980" as="sourcePoint" />
+            <mxPoint x="10" y="980" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-11" value="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-430" y="665" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-14" value="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="250" y="990" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-17" value="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-790" y="970" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-21" value="1" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.006;exitY=0.881;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="ZfkGPgESfzgNHYzenl_e-22" target="ZfkGPgESfzgNHYzenl_e-1">
+          <mxGeometry x="-1" y="3" relative="1" as="geometry">
+            <mxPoint x="-470" y="1130" as="sourcePoint" />
+            <mxPoint x="-310" y="1130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-26" value="1" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ZfkGPgESfzgNHYzenl_e-34" target="ZfkGPgESfzgNHYzenl_e-29">
+          <mxGeometry x="-0.819" y="-9" relative="1" as="geometry">
+            <mxPoint x="-530" y="970" as="sourcePoint" />
+            <mxPoint x="-370" y="970" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-29" value="1" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;rounded=0;exitX=0.993;exitY=0.623;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ZfkGPgESfzgNHYzenl_e-24" target="ZfkGPgESfzgNHYzenl_e-33">
+          <mxGeometry x="-0.8402" y="3" relative="1" as="geometry">
+            <mxPoint x="-140" y="880" as="sourcePoint" />
+            <mxPoint x="20" y="880" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-30" value="1" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;rounded=0;exitX=0.438;exitY=1.002;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ZfkGPgESfzgNHYzenl_e-4" target="ZfkGPgESfzgNHYzenl_e-25">
+          <mxGeometry x="-0.9234" y="11" relative="1" as="geometry">
+            <mxPoint x="-550" y="1570" as="sourcePoint" />
+            <mxPoint x="-390" y="1570" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-31" value="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-1010" y="1780" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-32" value="" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" target="ZfkGPgESfzgNHYzenl_e-5">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="-480" y="1380" as="sourcePoint" />
+            <mxPoint x="-340" y="1510" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="-380" y="1380" />
+              <mxPoint x="-280" y="1380" />
+              <mxPoint x="-230" y="1380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-33" value="1..*" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-230" y="1560" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-34" value="1" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;rounded=0;exitX=0.534;exitY=1.003;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ZfkGPgESfzgNHYzenl_e-8" target="ZfkGPgESfzgNHYzenl_e-53">
+          <mxGeometry x="-0.9264" y="14" relative="1" as="geometry">
+            <mxPoint x="-310" y="1850" as="sourcePoint" />
+            <mxPoint x="-150" y="1850" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-35" value="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="210" y="2180" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-36" value="1" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=0;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;rounded=0;exitX=0.425;exitY=1.009;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="ZfkGPgESfzgNHYzenl_e-8" target="ZfkGPgESfzgNHYzenl_e-17">
+          <mxGeometry x="-0.7903" y="6" relative="1" as="geometry">
+            <mxPoint x="-220" y="2010" as="sourcePoint" />
+            <mxPoint x="-60" y="2010" as="targetPoint" />
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="-266" y="2160" />
+              <mxPoint x="-266" y="2160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-37" value="1" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=0;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ZfkGPgESfzgNHYzenl_e-13" target="ZfkGPgESfzgNHYzenl_e-17">
+          <mxGeometry x="-0.8769" y="5" relative="1" as="geometry">
+            <mxPoint x="-410" y="1960" as="sourcePoint" />
+            <mxPoint x="-250" y="1960" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-38" value="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-310" y="2270" width="60" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-39" value="0..*" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-390" y="2250" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-40" value="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1120" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-41" value="1" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;rounded=0;exitX=0.486;exitY=0.998;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ZfkGPgESfzgNHYzenl_e-24" target="ZfkGPgESfzgNHYzenl_e-29">
+          <mxGeometry x="-0.8973" y="19" relative="1" as="geometry">
+            <mxPoint x="-240" y="1150" as="sourcePoint" />
+            <mxPoint x="-80" y="1150" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="advFgCIbPEVCiyVxe3Cj-42" value="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1120" width="60" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
