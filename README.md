@@ -1,5 +1,4 @@
 # Team 4 Final Submission for COMP 3004 Neuroset Medical Device
-
 ___
 ### HOW TO RUN
 1. Pull the repo
